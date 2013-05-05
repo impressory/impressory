@@ -1,0 +1,28 @@
+@()
+
+<div class="main-content-surround">
+
+  <!-- Loading notice in background -->
+  <div class="loading-notice dont-print" ng-show="viewing.Content.display.kind == 'web page'">
+    External content not displaying? Some sites don't like to be
+    framed. Try using the <i class="icon-external-link"></i>
+    Pop-out button in the toolbar to open it in a new tab.
+  </div>
+  
+  <!-- Content is placed here by Javascript -->
+  <div ng-controller="Impressory.Controllers.ViewContent.MainContent" class="content-container">
+  
+  <!--  <div im-viewing-content></div> -->
+    <div ng-switch="viewing.Content.display.kind" class="full-height">
+      <div ng-switch-when="web page" class="full-height">
+        @kinds.webPage()
+      </div>
+      <div ng-switch-when="sequence">
+        @kinds.contentSequence()
+      </div>
+      <div ng-switch-default>      
+        @kinds.noContent()
+      </div>
+    </div>
+  </div>
+</div>

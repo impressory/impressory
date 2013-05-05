@@ -1,0 +1,80 @@
+
+.front-page {
+
+  .about-banner {
+    background-color: rgb(100, 108, 108);
+    color: white;
+    
+    padding: 20px 0 20px 0;
+    
+    h1,h2,h3,h4 {
+      color: white;
+    }
+    
+    .infoItem {
+        margin: 0 0 0 10px;
+        max-width: 750px;
+        padding: 10px 10px 10px 10px;
+    }
+    
+    .news {
+      .infoItem;
+        background-color: rgb(180, 120, 70);
+        .border-radius(3px);
+    }
+
+  }
+  
+  
+
+  
+  h2 {
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9)
+  }
+  
+  @bookW: 300px;
+  @bookImW: 100px;
+  @bookH: 150px;
+  @bookImG: 5px;
+  @bookG: 15px;
+  
+  .bookRow {
+      margin: 20px 20px 20px 20px;
+  
+      .books {
+          margin-bottom: 20px;
+  
+          .noBooks {
+              @lh: 25px;
+              font-size: @lh;
+              line-height: @lh;
+              color: #888;
+          }
+  
+          .book {
+              display: inline-block;
+              vertical-align: top;
+              margin-right: @bookG;
+              margin-bottom: @bookG;
+  
+              .image {
+                  width: @bookImW;
+                  height: @bookH;
+                  float: left;
+                  margin-right: @bookImG;
+  
+                  img {
+                      max-width: @bookImW;
+                      max-height: @bookH;
+                  }
+              }
+              .details {
+                  display: inline-block;
+                  width: @bookW - @bookImW - @bookG;
+                  max-height: @bookH;
+                  display: inline-block;
+              }
+          }
+      }
+  }
+}

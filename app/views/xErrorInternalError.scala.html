@@ -1,0 +1,31 @@
+@(msg: String)
+
+@templateFront("theIntelligentBook.com") {
+
+    <div class="siteHeader">
+        <div class="">
+            <div>
+                <a href="/"><img height="40" style="height: 40px" id="logo" alt="The Intelligent Book" src="/assets/images/iblogoonly.png"></a>
+                <ul class="siteHeaderMenuItems pull-right">
+                  <li>InternalServerError</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+  <img src=@routes.Assets.at("/images/error.png") style="float: left; margin: 20px; margin-left: 120px; height: 300px;"/>
+  
+  <style>
+  h1 small {
+    color: rgb(240,180,90);
+    display: block;
+    margin-top: 20px;
+  }
+  
+  </style>
+  
+  <h1><small>500 Internal Error</small> Bother!</h1>
+  <p>We fouled that one up good and proper.  Here's the error details:</p>
+  <pre>@msg</pre>
+
+}

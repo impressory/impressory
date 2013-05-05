@@ -1,0 +1,59 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+
+# Partials
+
+GET     /partials/*template         com.impressory.play.controllers.Application.partial(template:String)
+
+# Debugging
+GET     /session                    com.impressory.play.controllers.Application.inspectSession
+POST    /printit                    com.impressory.play.controllers.Application.printItOut
+
+
+# Auth
+GET     /auth/twitter               com.impressory.auth.controllers.TwitterController.authenticate
+GET     /auth/twitter/register      com.impressory.auth.controllers.TwitterController.viewRegisterUser
+POST    /auth/twitter/register      com.impressory.auth.controllers.TwitterController.registerUser
+GET     /auth/addTwitter            com.impressory.auth.controllers.TwitterController.addTwitter
+
+POST    /logInUP                    com.impressory.play.controllers.UserController.logInUP
+POST    /logInEP                    com.impressory.play.controllers.UserController.logInEP
+POST    /signUp                     com.impressory.play.controllers.UserController.signUp
+POST    /logOut                     com.impressory.play.controllers.UserController.logOut
+
+# Non-API routes
+GET     /logIn                      com.impressory.play.controllers.Application.viewLogIn
+GET     /self                       com.impressory.play.controllers.Application.viewSelf
+
+# Home page
+GET     /                           com.impressory.play.controllers.Application.index
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+# Self
+POST    /self/details               com.impressory.play.controllers.UserController.editDetails
+POST    /self/loginDetails          com.impressory.play.controllers.UserController.editLoginDetails
+POST    /self/id/:id/remove         com.impressory.play.controllers.UserController.removeIdentity(id)
+
+# Users
+GET     /users/:id                  com.impressory.play.controllers.UserController.user(id:String)
+GET     /usernames/:u               com.impressory.play.controllers.UserController.usernameAvailable(u:String)              
+
+# Courses
+GET     /courses/listed             com.impressory.play.controllers.CourseController.listedCourses
+GET     /courses/my                 com.impressory.play.controllers.CourseController.myCourses
+POST    /courses/create             com.impressory.play.controllers.CourseController.createCourse
+
+# Course
+GET     /course/:id                 com.impressory.play.controllers.CourseController.get(id)
+
+# Content
+GET     /course/:id/content         com.impressory.play.controllers.ContentController.contentQuery(id: String, entryId: Option[String] ?= None, adj:Option[String] ?= None, noun:Option[String] ?= None, topic:Option[String] ?= None, site:Option[String] ?= None)
+POST    /course/:id/addContent      com.impressory.play.controllers.ContentController.createContent(id: String)
+
+# EventRoom
+GET     /eventRoom/ssevents         com.impressory.play.controllers.EventController.serverSentEvents
+POST    /eventRoom/subscribe        com.impressory.play.controllers.EventController.subscribe

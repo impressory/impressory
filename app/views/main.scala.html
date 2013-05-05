@@ -1,0 +1,10 @@
+@(u:Option[play.api.libs.json.JsValue])
+
+@templateFront("Impressory") {
+
+	<div ng-view class="full-height"></div>
+}
+
+@for(j <- u) {
+  <script>LoggedInUser = @Html(j.toString)</script>
+}

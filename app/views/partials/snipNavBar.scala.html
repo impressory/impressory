@@ -1,0 +1,23 @@
+@() 
+
+  <div class="navbar navbar-fixed-top"><div class="navbar-inner">
+  <div class="container">
+    <a class="brand" href="/">Awarinator</a>
+    
+    <span ng-controller="Awarinator.Controllers.IsLoggedInCtrl">
+      <span ng-switch on="login.type"> 
+  	    <ul class="nav pull-right" ng-switch-when="user">  	      
+          <li><a ng-href="/help">Help</a></li>
+          <li><a href="#" ng-click="logout()">Logout</a></li>
+	        <li><a ng-href="/self">{{login.user.nickname}}</a></li>
+	      </ul>
+	      <ul class="nav pull-right" ng-switch-when="none">
+          <li><a ng-href="/help">Help</a></li>
+	        <li><a ng-href="/logIn">Login</a></li> 
+	        <li ><a ng-href="/signUp">Sign Up</a></li>	        
+	      </ul>
+	    </span>
+    </span>
+  </div>
+  </div></div>
+  <div style="height: 40px;">&nbsp;</div>

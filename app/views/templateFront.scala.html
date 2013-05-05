@@ -1,0 +1,35 @@
+@(title: String)(content: Html)
+<!DOCTYPE html>
+<html>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">    
+    <link href="//netdna.bootstrapcdn.com/bootswatch/2.3.1/spacelab/bootstrap.no-icons.min.css" rel="stylesheet">
+
+    <link href="@routes.Assets.at("stylesheets/main.css")" rel="stylesheet">
+    
+    <title>@title</title>
+    <div ng-app="impressory" class="full-height">
+      @content
+    </div>
+    
+    <!-- JQuery, required for Bootstrap -->
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    
+    <!-- Bootstrap -->
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+
+    <!-- Angular.js -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.5/angular.min.js"></script>    
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.5/angular-resource.min.js"></script>
+
+    <!-- EventRoom -->
+    <script src="@routes.Assets.at("javascripts/eventRoom.js")"></script>
+
+    <!-- d3.js, used for charting -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.0.8/d3.min.js"></script>
+    
+    <!-- Impressory, via require.js -->
+    @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/main").url)
+    
+    
+</html>

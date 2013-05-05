@@ -1,0 +1,27 @@
+@()
+
+<div class="subheader-course" ng-controller="Impressory.Controllers.Course.Cover">
+
+  <div class="book-navbar">
+    <div class="book-image">
+      <img src="{{ course.coverImageURL || 'http://placehold.it/100x150' }}" alt="cover image"/>
+    </div>
+    <div class="book-title">
+      <h1>{{ course.title || 'Untitled Course' }}</h1>
+    </div>
+    <ul class="nav">
+      <li><a ng-href='{{ "/course/" + course.id }}'>Cover &amp; membership</a></li>
+      
+      <li><a ng-href='{{ "/course/" + course.id + "/listContent" }}'>Content</a></li> 
+      <li><a ng-href='{{ "/course/" + course.id + "/chat" }}'>Chat Stream</a></li>
+      <li><a ng-href='{{ "/course/" + course.id + "/qna" }}'>Q&amp;A</a></li>
+      <li><a ng-href='{{ "/course/" + course.id + "/charts" }}'>Charts</a></li>
+
+    </ul>
+
+  </div>
+
+
+
+</div>
+<div style="clear: both;"></div>

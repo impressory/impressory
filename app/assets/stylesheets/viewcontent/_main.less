@@ -1,0 +1,27 @@
+.impressory-content-viewer {
+
+  @bg: #f9f9f9;
+  @linkfg: #005090;
+    
+  @topNavBg: #ececec;
+  
+  @buttonHighlightCol: lighten(@topNavBg, 5%);
+  @tagCol: darken(@topNavBg, 3%);
+  
+  @zPanel: 2;
+  @zPanelControl: 4;
+  @zBottomPanel: 6;
+  @zTopPanel: 6;
+  @zContent: 1;
+  
+  @bottomPanelSize: 50%;
+  
+  .topNavGradient {
+      #gradient > .vertical(#ececec, #e0e0e0);
+  }
+
+  @import "_layout.less";
+  @import "_topNav.less";
+  @import "_slideSorter.less";
+  @import "_mainContent.less";
+}

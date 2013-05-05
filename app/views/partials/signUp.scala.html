@@ -1,0 +1,20 @@
+@headerFront()
+
+<div class="container">
+<h1>Sign up here!</h1>
+  <div class="well" ng-controller="Impressory.Controllers.LogIn.SignUp">
+    <form name="signup">
+      <label>Email address</label>
+      <input type="text" ng-model="user.email" />
+      <label>Password</label>
+      <input type="password" ng-model="user.password" />
+      <div ng-repeat="error in errors">
+        <div class="alert alert-error">{{ error }}</div>
+      </div>
+      <div>
+      <button class="btn" ng-click="cancel()">Cancel</button>
+      <button class="btn btn-primary" ng-click="submit(user)">Sign Up</button>
+      </div>
+    </form>
+  </div>
+</div>

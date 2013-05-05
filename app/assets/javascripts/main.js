@@ -1,0 +1,37 @@
+/*
+ * Require.js set of modules for various info style pages.
+ * (At the moment we're just including everything!)
+ */
+require([
+  "model/base",
+  "modules/app",
+  "modules/viewingCourse",
+  
+  "controllers/login/IsLoggedIn",
+  "controllers/login/LogInForm",
+  "controllers/login/SignUp",
+  
+  "controllers/self/Self",
+  
+  "controllers/front/ListedCourses",
+  "controllers/front/MyCourses",
+  
+  "controllers/course/Create",
+  "controllers/course/Cover",
+  
+  "controllers/viewContent/ViewContent",
+  "controllers/viewContent/Layout",
+  "controllers/viewContent/TopNav",
+  "controllers/viewContent/SlideSorter",
+  "controllers/viewContent/MainContent",
+  
+  "controllers/addContent/TopLevel",
+  "controllers/addContent/GenericAddForm",
+  "controllers/addContent/WebPage",
+  "controllers/addContent/Sequence"
+  
+], function(l) {
+	console.log("library has loaded")
+	
+	angular.bootstrap(document, ['impressory'])
+})

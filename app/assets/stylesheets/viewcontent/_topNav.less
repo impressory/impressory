@@ -1,0 +1,176 @@
+
+.viewer-top-nav {
+
+  @topNavSize: 25px;
+  @topNavPad: 3px;
+  @topNavLineHeight: @topNavSize - 2* @topNavPad;
+  @topNavTextSize: 15px;
+
+  @activeFG: white;
+  @activeBG: orange;
+
+  top: 0;
+  position: relative;
+  width: 100%;
+
+  z-index: @zTopPanel;
+
+  
+  /*
+   * Top navigation bar
+   */
+  .top-nav-fixed {
+      min-height: @topNavSize + 2 * @topNavPad;
+      position: fixed;
+      width: 100%;
+      top: 0px;  
+  }
+  
+  .top-nav-menu {
+  
+      background-color: white;
+      border-bottom: 1px solid #e9e9e9;
+      
+      position: relative;
+      top: 0;
+  
+      font-size: @topNavTextSize;
+      line-height: @topNavSize;
+  
+      button.command {
+          font-size: @topNavTextSize;
+          line-height: @topNavSize;
+          border: none;
+          background: none;
+          line-height: @topNavLineHeight;
+          padding: 2px 4px 2px 4px;
+          color: @linkfg;
+          border-radius: 2px;
+          min-width: 25px;
+      }
+      button.command.thin {
+        min-width: 15px;
+      }
+      button.command:hover {
+          text-decoration: none;
+          background-color: @buttonHighlightCol;
+          .box-shadow(inset 0 1px 1px rgba(0, 0, 0, 0.05));
+      }
+      button.command:disabled {
+          color: #a4adb4;
+      }
+      button.command.active {
+        color: @activeFG;
+        background-color: @activeBG;
+      }
+      
+      a.command {
+          display: inline-block;
+          padding: 0px 2px 0px 2px;
+          color: @linkfg;
+      }
+      a.command:hover {
+          text-decoration: none;
+          background-color: @buttonHighlightCol;
+          .border-radius(3px);
+          .box-shadow(inset 0 1px 1px rgba(0, 0, 0, 0.05));
+      }
+      
+      span.spacer {
+        padding-left: 10px;
+      }
+      
+      ul {
+          list-style: none;
+          position:absolute;
+          bottom: 0px;
+          margin: 0 2px 0 2px;
+          padding-top: @topNavPad;
+          height: @topNavSize + @topNavPad + @topNavPad;
+  
+          li {
+            line-height: @topNavSize;
+          }
+          
+  
+          li.navli {
+              float: left;            
+          }
+      }
+      ul.bookNav {
+          left: 0px;
+          li.navli {
+              a {
+                  display: inline-block;
+                  img {
+                      position: relative;
+                      height: 20px;
+                      width: 27px;
+                      height: @topNavSize;
+                  }
+              }
+          }
+      }
+      ul.ceTools {
+          right: 0px;
+          li.navli a {
+          }
+      }
+  
+      .ceInfo {
+          line-height: @topNavSize;
+          padding-top: 3px;
+          padding-bottom: 3px;
+          margin-left: 40px;
+          margin-right: 100px;
+  
+          .title {
+              font-weight: bold;
+          }
+  
+          .tags {
+              display: inline-block;
+          }
+          .adj:after,.noun:after,.topic:after {
+              content: ",";
+          }
+          .adj:last-child:after,.noun:last-child:after,.topic:last-child:after {
+              content: "";
+          }
+          .topic.main {
+              font-weight: bold;
+          }
+  
+          .adj,.topic,.noun {
+              padding: 3px;
+          }
+          .preposition {
+              color: gray;
+          }
+  
+          button.topic {
+              border: none;
+              background: none;
+              line-height: normal;
+              padding: 3px 2px 3px 2px;
+              color: @linkfg;
+              vertical-align: baseline;
+          }
+          button.topic:hover {
+              text-decoration: none;
+              background-color: @buttonHighlightCol;
+              .border-radius(3px);
+              .box-shadow(inset 0 1px 1px rgba(0, 0, 0, 0.05));
+          }
+  
+  
+      }
+  }
+  
+  /*
+   * Element that pushes material out from behind the fixed top-nav-menu
+   */
+  .fixed-spacer {
+    min-height: @topNavSize + 2 * @topNavPad;  
+  }
+}

@@ -1,0 +1,30 @@
+@(msg:String)
+
+@templateFront("theIntelligentBook.com") {
+
+    <div class="siteHeader">
+        <div class="">
+            <div>
+                <a href="/"><img height="40" style="height: 40px" id="logo" alt="The Intelligent Book" src="/assets/images/iblogoonly.png"></a>
+                <ul class="siteHeaderMenuItems pull-right">
+                  <li>NotFound</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+  <img src=@routes.Assets.at("/images/notFound.png") style="float: left; margin: 20px; margin-left: 120px; height: 300px;"/>
+  
+  <style>
+  h1 small {
+    color: rgb(240,180,90);
+    display: block;
+    margin-top: 20px;
+  }
+  
+  </style>
+  
+  <h1><small>404 Not Found</small> Someone check the map...</h1>
+  <p>Whatever you were looking for, it ain't here.</p>
+
+}

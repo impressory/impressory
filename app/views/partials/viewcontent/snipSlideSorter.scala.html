@@ -1,0 +1,46 @@
+@()
+
+<div class="slide-sorter"
+  ng-controller="Impressory.Controllers.ViewContent.SlideSorter">
+
+  <button class="left command active" ng-click="panels.toggleSlideSorter()"> 
+    <img src='/assets/images/slideSorter_full.png' alt="Slide sorter" />
+  </button>
+
+  <div class="slides">
+
+    <div class="slide">
+    
+      <div class="slide-number">0</div>
+      <div class="name">{{ content.entry.title || ('Untitled'
+        )}}</div>
+      <div class="kind">{{ content.entry.kind }}</div>
+    </div>
+
+    <div ng-repeat="entry in content.entry.entries" class="slide">
+      <div class="slide-number">{{ $index }}</div>
+      <div class="name">{{ entry.title || ('Untitled' )}}</div>
+      <div class="kind">{{ entry.kind }}</div>
+    </div>
+
+    <div class="make-presentation" ng-hide="content.entry.kind == 'sequence'">
+      <p>You're not viewing this entry as part of a sequence. You can create a sequence around it if you like.</p>
+      <button class="btn-mini btn-primary" ng-click="makeSequence()">
+        Create sequence
+      </button>
+    </div>
+
+  </div>
+
+<!-- 
+  <div class="commands">
+      <button class="command require-pres-edit">
+        <i class="icon-tags"></i>
+      </button>
+      <button class="command require-pres-edit"
+        onclick="IBViewer.showRemovePresEntriesForm();">
+        <i class="icon-remove"></i>
+      </button>
+  </div>
+ -->
+</div>

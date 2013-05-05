@@ -1,0 +1,31 @@
+@()
+
+@{
+/*
+ * Note that this expects an ancestor controller to have a 
+ * panels.closeAddContent() method.
+ */
+}
+<div ng-controller="Impressory.Controllers.AddContent.GenericAddForm">
+  <h4>Create content sequence</h4>
+
+  <p>
+  Content sequences let you click through other content items
+  one after another. Items can be included in more than one
+  content sequence.
+  </p>
+
+  <div>
+    <label>Name</label> <input ng-model="toAdd.entry.title" placeholder="Optional" />
+  </div>
+  
+  <div>
+    <label>Note</label>
+    <textarea ng-model="toAdd.entry.note" placeholder="Optional"></textarea>
+  </div>
+  
+  <div>
+    <button class="btn" ng-click="panels.closeAddContent()">Cancel</button>
+    <button class="btn btn-primary" ng-click="submit('sequence')">Add</button>
+  </div>
+</div>

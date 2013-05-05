@@ -1,0 +1,149 @@
+/*
+ * Middle panes structure -- left and right panels, edges, etc.
+ */
+#middle-wrap {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    top: 0px;
+
+    #middle {
+        @leftPanelWidth: 200px;
+        @rightPanelWidth: 180px;
+        @controlWidth: 20px;
+        @leftEdgeWidth: 20px;
+        @rightEdgeWidth: 20px;
+
+        position: relative;
+        top:0px;
+        width: 100%;
+        height: 100%;
+
+        @lShadow: 2px 2px 0 0px rgba(0, 0, 0, 0.1);
+
+        @lpTrans: left .2s linear;
+
+        #left-edge {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;            
+            padding-top: 32px; 
+            background-color: white;           
+              
+            border-right: 1px solid #e9e9e9;
+            
+              
+            z-index: @zPanel - 1;
+            width: @controlWidth;
+            text-align: center;
+
+            button {
+                border: none;
+                border-radius: 2px;
+                background: none;
+                line-height: normal;
+                font-size: 24px;
+                padding: 6px 2px 6px 2px;
+                color: #888;
+                width: @controlWidth;
+            }
+            button:hover {
+                .topNavGradient;
+                text-decoration: none;
+            }
+            button:disabled {
+                color: #bbb;
+            }
+        }
+
+        .content-panel{
+            margin-left: @leftEdgeWidth + 1;
+            margin-right: @rightEdgeWidth + 1;
+            z-index: @zContent;
+
+            /*
+               Position the element so that contained 'absolute'
+               elements will work
+             */
+            position: relative;
+            left: 0px;
+            height: 100%;
+        }
+        .content-panel.right-open {
+            margin-right: @rightPanelWidth + @controlWidth + 1;
+        }
+
+        .v-center {
+          min-height: 10em;
+          display: table-cell;
+          vertical-align: middle
+        }
+
+        #right-edge {
+            position: fixed;
+            right: 0px;
+            top: 0;  
+            height: 100%;
+            padding-top: 32px;
+            background-color: white;           
+            
+            border-left: 1px solid #e9e9e9;
+            
+            
+            z-index: @zPanel - 1;
+            width: @controlWidth;
+            text-align: center;
+            vertical-align: center;
+
+            button {
+                border: none;
+                background: none;
+                line-height: normal;
+                padding: 6px 2px 6px 2px;
+                font-size: 24px;
+                color: #888;
+                
+                width: @controlWidth;
+            }
+            button:hover {
+                .border-radius(3px);
+                .topNavGradient;
+                text-decoration: none;
+            }
+            button:disabled {
+                color: #bbb;
+            }
+
+
+        }
+        #right-edge.right-open {
+            right: @rightPanelWidth;
+        }
+        
+        #right-panel {
+            position: fixed;
+            height: 100%;
+            right: 0px;
+
+            background-color: white;
+            border-left: 1px solid #e9e9e9;
+
+
+            .transition(right .2s linear);
+
+            overflow-y: scroll;
+            overflow-x: hidden;
+
+            width: @rightPanelWidth;
+            height: 100%;
+            z-index: @zPanel;
+
+        }
+        #right-panel.closed {
+            right: -@rightPanelWidth;
+            display: none;
+        }
+
+    }
+}

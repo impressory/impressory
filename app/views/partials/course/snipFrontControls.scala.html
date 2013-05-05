@@ -1,0 +1,44 @@
+@()
+
+<div class="controls">
+    <div class="basicActions" ng-show='course.permissions.read'>
+        <h4>Read</h4>
+        <ul>
+            <li><a ng-href="/course/{{course.id}}/viewContent?topic=page one">Open to page One</a></li>
+            <li><a href=''>Index</a></li>
+        <li><a href=''>Chat stream</a></li>
+        </ul>
+    </div>
+
+    <div class="adminActions" ng-show='course.permissions.edit'>
+        <h4>Administer</h4>
+        <ul>
+            <li><a href="">Edit details</a></li>
+            <li><a href="">Manage invites</a></li>
+        </ul>
+    </div>
+
+
+    <div class="yourRoles">
+        <h4>Roles</h4>
+        <p ng-hide="course.registration">You are not registered with this book.</p>
+        
+        <div ng-show='course.registration'>
+          <p>You have the following roles on this book:</p>
+          <ul>
+              <li ng-repeat="role in course.registration.roles">{{role}}</li>
+          </ul>
+        </div>
+
+        <div class="inviteForm">
+            <form method="POST" action="">
+                <h5>Use invite code</h5>
+                <input type="text" name="code" placeholder="code" />
+                <button type="submit" class="btn">Use</button>
+            </form>
+        </div>
+    </div>
+
+
+
+</div>

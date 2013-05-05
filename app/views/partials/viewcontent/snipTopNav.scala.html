@@ -1,0 +1,100 @@
+@()
+
+<div class="viewer-top-nav" ng-controller="Impressory.Controllers.ViewContent.TopNav">
+
+  <div class="top-nav-fixed dont-print">
+    <div class="top-nav-menu">
+    
+      <ul class="bookNav">
+        <li class="navli">
+          <button title="Menu" class="command" ng-class="{ 'active': panels.top == 'menu' }" ng-click="panels.toggleTopMenu()">
+            <b>|||</b>
+          </button>
+        </li>
+      </ul>
+  
+      <ul class="ceTools">
+        <li class="navli">
+          <button class="command require-edit"
+            title="Edit details and tags"
+            onclick="javascript: IBAddForms.showEditTags(IBViewer.currCe(), IBViewer.viewing.presentation);">
+            <i class="icon-tags"></i>
+          </button>
+        </li>
+        <li class="navli">
+          <button class="command require-edit"
+            id="edit-button" title="Edit content"
+            onclick="javascript: IBViewer.editContent();">
+            <i class="icon-edit"></i>
+          </button></li>
+        <li class="navli">
+          <button class="command require-add" ng-class="{ 'active': panels.top == 'addContent' }" ng-click="panels.toggleAddContent()">
+            <i class="icon-plus"></i>
+          </button>
+        </li>
+      </ul>
+  
+      <div id="ceInfo" class="ceInfo">
+  
+        <span>
+          <button class="command thin require-vote" ng-click="downVote();" title="downvote">
+            <i class="icon-sort-down"></i>
+          </button> 
+          <span>{{ viewing.Content.display.score || 0 }}</span>
+          <button class="command thin require-vote" ng-click="upVote();" title="upvote">
+            <i class="icon-sort-up"></i>
+          </button>
+        </span> 
+        <span class="title">{{ viewing.Content.display.title || '(Untitled)' }}</span>
+        <span> 
+          <a class="command content-url-link" title="open content in new tab" target="_blank">
+            <i class="icon-external-link"></i>
+          </a>
+        </span> 
+        <span class="spacer"></span> 
+        <span>
+          <button class="command require-chat" title="Comments" onclick="javascript: IBViewer.showCommentsModal();">
+            <span >{{ viewing.Content.display.commentCount || 0 }}</span> <i class="icon-comments"></i>
+          </button>
+        </span> 
+        <span class="spacer"></span> 
+        <span class="tags"> 
+          <span class="adjs">
+            <span ng-repeat="adj in viewing.Content.display.adjectives" class="adj">{{ adj }}</span> 
+          </span> 
+          <span class="nouns">
+            <span ng-repeat="noun in viewing.Content.display.nouns" class="noun">{{ noun }}</span>           
+          </span> 
+          <span class="preposition">about</span> 
+          <span class="topics"> 
+            <button ng-repeat="topic in viewing.Content.display.topics" class="topic">{{ topic }}</button> 
+          </span>
+        </span>
+  
+      </div>
+    </div>
+
+    <div class="overlay">
+      <div ng-switch="panels.top">
+      
+        <div ng-switch-when="menu" >
+          @views.html.partials.headerFront()
+          @views.html.partials.course.subheadCourse()
+        </div>
+        <div ng-switch-when="addContent" >
+          @views.html.partials.addcontent.addContent()
+        </div>
+        <div ng-switch-when="slideSorter" >
+          @snipSlideSorter()
+        </div>
+      
+      </div>
+    </div>
+
+  </div>
+  
+  
+  <!-- Space within the relative  -->
+  <div class="fixed-spacer">&nbsp;</div>
+
+</div>

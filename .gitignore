@@ -1,0 +1,26 @@
+
+*.class
+*.log
+
+# Maven/sbt output directory
+target
+
+# Test database
+lift_example
+
+# Mac
+*.DS_Store
+
+# IntelliJ
+.idea
+.idea_modules
+
+# Eclipse
+.cache
+.classpath
+*.swp
+.project
+.settings
+.target
+
+tmp

@@ -1,0 +1,122 @@
+
+@topHalfHeight: 300px;
+
+.topHalf {
+  margin: 18px @sidePadD 0 @sidePadD; 
+}
+
+.controlSect {
+    padding: 5px;
+    background-color: rgba(0,0,0,0.05);
+    .border-radius(5px);
+    margin-bottom: 10px;
+}
+
+.controls {
+    height: @topHalfHeight;
+    float: right;
+    margin-right: @sidePadD;
+
+    .basicActions, .adminActions, .yourRoles {
+        .controlSect;
+    }
+
+    .yourRoles {
+        .inviteForm {
+            .border-radius(5px);
+            background-color: rgba(255,220,140,0.7);
+            padding: 0 5px 5px 5px;
+
+            form {
+                margin-bottom: 0px;
+
+                input {
+                    width: 150px;
+                    margin-bottom: 0px;
+                }
+            }
+        }
+    }
+
+}
+
+@imW: 200px;
+@imH: 300px;
+.coverImage {
+    width: @imW;
+    height: @imH;
+    float: left;
+    margin: 0 @sidePadD 0 @sidePadD;
+    .border-radius(5px);
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 5px;
+
+
+    img {
+        max-width: @imW;
+        max-height: @imH;
+    }
+}
+
+
+.bookDetails {
+    max-height: @topHalfHeight;
+    margin-left: @sidePadD;
+    margin-right: @sidePadD;
+    label {
+        color: gray;
+        margin: 5px 0 0 0;
+    }
+}
+.verb {
+    color: gray;
+}
+
+/* --- Book nav bar --- */
+
+.book-navbar {
+
+  padding: 5px 20px 5px 20px;
+
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #e0e0e0;
+  
+  .book-image {
+    float: left;
+    max-height: 40px;
+    
+    img {
+      height: 50px;
+      margin-right: 20px;
+      }
+  }
+  
+  ul.nav {
+    margin-bottom: 0px;
+    
+    li {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  }
+}
+
+/* -- content page -- */
+
+ul.content-list {
+  
+  margin: 0 0 20px 0;
+  list-style: none;
+  
+  li {
+    margin: 10px 0 10px 0;
+  }
+  
+  .title {
+    font-size: 15px;
+    font-weight: bold;
+  } 
+  .date {
+    color: blue;
+  }
+}

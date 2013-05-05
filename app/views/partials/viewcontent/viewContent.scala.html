@@ -1,0 +1,57 @@
+@()
+
+<div class="impressory-content-viewer full-height"
+  ng-controller="Impressory.Controllers.ViewContent.ViewContent">
+  <div ng-controller="Impressory.Controllers.ViewContent.Layout" class="full-height">
+    @snipTopNav()
+
+    <div id="middle-wrap" class="full-height">
+      <div id="middle" class="full-height">
+
+        <div id="left-edge" class="dont-print">
+          <button class="command" ng-click="panels.toggleSlideSorter()"> 
+            <img src='/assets/images/slideSorter_full.png' alt="Slide sorter" />
+          </button>
+        
+          <div class="v-center">
+            <button class="command" type="button" onclick="javascript: IBViewer.prevSlide()">
+              <i class="icon-angle-left"></i>
+            </button>
+  
+            <button class="command" type="button" onclick="javascript: IBViewer.prevSlide()">
+              <i class="icon-double-angle-left"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div id="right-panel" ng-show="panels.right">@snipChatPane()</div>
+
+        <div id="right-edge" class="dont-print" ng-class="{ 'right-open': panels.right }">
+
+          <button class="command" ng-click="panels.toggleRight()"> 
+            <img src='/assets/images/sq_chat.png' alt="Chat pane" />
+          </button>
+
+          <div class="v-center">
+            <button id="next-button" type="button"
+              onclick="javascript: IBViewer.nextSlide()">
+              <i class="icon-angle-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- The content -->
+        <div class="content-panel full-height" ng-class="{ 'right-open': panels.right }">
+          @snipMainContent()</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="ib-bottom-panel-holder" class="dont-print">
+    <div id="ib-bottom-panel-controls"></div>
+    <div id="ib-bottom-panel"></div>
+  </div>
+
+</div>
+

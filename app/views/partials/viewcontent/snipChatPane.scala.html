@@ -1,0 +1,11 @@
+@()
+
+<form action="#">
+  <textarea id="chat-content" class="require-chat"
+    name="content" placeholder="Say something"></textarea>
+  <input type="checkbox" id="chat-anon" value="true" /><i>anonymously</i>
+  <button type="button" class="btn-mini require-chat"
+    onclick="javascript: IBViewer.chat();">Chat</button>
+
+</form>
+<div class="chat-stream"></div>

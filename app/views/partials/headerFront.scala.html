@@ -1,0 +1,32 @@
+@()
+<div class="front-site-header">
+  <div class="inavbar">
+    <div class="">
+      <ul class="site-header-menu-items">
+        <li ><a class="logo" href="/"><img alt="Impresory" src="/assets/images/iblogoonly.png"></a>
+        <li id="hm_books" class="siteHeaderMenuItem"><a href="/">Home</a></li>
+        <li id="hm_about" class="siteHeaderMenuItem"><a
+          href="/about">About</a></li>
+        <li id="hm_blog" class="siteHeaderMenuItem"><a
+          href="http://theintelligentbook.blogspot.com">Blog</a></li>
+        <li><a href="/help">Help</a></li>
+      </ul>
+
+      <span ng-controller="Impressory.Controllers.LogIn.IsLoggedIn"> <span
+        ng-switch on="login.type">
+          <ul class="site-header-menu-items pull-right" ng-switch-when="user">
+            <li><a href="#" ng-click="logout()">Logout</a></li>
+            <li><a ng-href="/self">{{login.user.nickname}}</a></li>
+          </ul>
+          <ul class="site-header-menu-items pull-right" ng-switch-when="none">
+            <li><a ng-href="/logIn">Login</a></li>
+            <li><a ng-href="/signUp">Sign Up</a></li>
+          </ul>
+      </span>
+      </span>
+    </div>
+
+  </div>
+  
+  <div class="offset">&nbsp;</div>
+</div>

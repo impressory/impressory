@@ -1,0 +1,113 @@
+/* Slide sorter */
+
+.slide-sorter {
+
+  padding: 3px;
+  background-color: white;
+  border-bottom: 1px solid #e9e9e9;
+  
+  button.left.command.active {
+    float: left;
+    
+    border: none;
+    border-radius: 2px;
+    background-color: orange;
+    line-height: normal;
+    font-size: 24px;
+    padding: 6px 2px 6px 2px;
+    color: #888;
+    width: 20px;
+  }
+  
+
+  .ss-scroll {
+    position: relative;
+    top: 0;
+    margin-bottom: 50px;
+  }
+
+  .slides {
+
+    margin-left: 25px;
+
+    .slide {
+      display: inline-block;
+      vertical-align: top;
+      width: 160px;
+      height: 80px;
+      
+      padding: 2px 3px 2px 3px;
+
+      .slide-number:after {
+          content: ".";
+      }
+
+      /* Check-box for selecting slides */
+      .slide-select {
+          float: right;
+          vertical-align: middle;
+          margin-right: 5px;
+      }
+
+      background-color: whitesmoke;
+      margin: 5px;
+    }
+    .slide.active {
+        background-color: #e0f0ff;
+    }
+    .slide:hover {
+        background-color: #d0e0ff;
+        cursor: pointer;
+    }
+
+    .make-presentation {
+      display: inline-block;
+      vertical-align: top;
+      margin: 5px;          
+    }
+
+  }
+
+  .ss-commands {
+      .topNavGradient;
+
+
+      button.command {
+          border: none;
+          background: none;
+          line-height: normal;
+          padding: 3px 12px 3px 12px;
+          color: @linkfg;
+      }
+      button.command:hover {
+          text-decoration: none;
+          background-color: @buttonHighlightCol;
+          .border-radius(3px);
+          .box-shadow(inset 0 1px 1px rgba(0, 0, 0, 0.05));
+      }
+      button.command:disabled {
+          color: #a4adb4;
+      }
+      .add {
+          display: inline-block;
+          button {
+              padding-left: 20px;
+              padding-right: 20px;
+          }
+
+          button.link-button {
+              display: block;
+              width: 100%;
+              text-align: left;
+              color: #222;
+          }
+          button.link-button:hover {
+              color: white;
+              background-color: @linkfg;
+          }
+      }
+      .group-actions {
+          float: right;
+      }
+    }
+}

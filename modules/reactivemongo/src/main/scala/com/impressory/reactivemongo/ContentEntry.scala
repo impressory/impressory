@@ -59,7 +59,7 @@ class ContentEntry (
 
   def id = _id
   
-  def course = new RefById(classOf[Course], _course)
+  lazy val course = (new RefById(classOf[Course], _course)).lookUp
   
   def addedBy = new RefById(classOf[User], _addedBy)
   
@@ -72,7 +72,7 @@ object ContentEntry extends FindById[ContentEntry] {
   /* Note that when we write a content entry we do not write the votes or comments */
   implicit object bsonWriter extends BSONDocumentWriter[ContentEntry] {
     def write(ce: ContentEntry) = BSONDocument(
-      "_id" -> ce._id, "course" -> ce._course, "addedBy" -> ce._addedBy,
+      "course" -> ce._course, "addedBy" -> ce._addedBy,
       "kind" -> ce.kind,
       "adjs" -> ce.adjectives, "nouns" -> ce.nouns, "topics" -> ce.topics,
       "site" -> ce.site, "title" -> ce.title, "note" -> ce.note, 
@@ -104,6 +104,9 @@ object ContentEntry extends FindById[ContentEntry] {
         site = doc.getAs[String]("site").getOrElse("local"),
         title = doc.getAs[String]("title"),
         note = doc.getAs[String]("note"),
+        protect = doc.getAs[Boolean]("protect").getOrElse(false),
+        inTrash = doc.getAs[Boolean]("inTrash").getOrElse(false),
+        showFirst = doc.getAs[Boolean]("showFirst").getOrElse(false),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
       )
@@ -155,12 +158,20 @@ object ContentEntry extends FindById[ContentEntry] {
       case Some(wp:WebPage) => WebPage.bsonWriter.write(wp) 
       case _ => BSONDocument()
     }
-    val docWithItem = doc ++ BSONDocument("item" -> item)
+    val docWithItem = doc ++ BSONDocument("_id" -> ce._id, "item" -> item)
     
     val fle = DB.coll(collName).save(docWithItem)
     val fut = fle.map { _ => ce.itself } recover { case x:Throwable => RefFailed(x) }
     new RefFutureRef(fut)    
   }
   
+  /**
+   * Saves a content entry. Note this doesn't write the item, comments, or other componentns that are independently altered
+   */
+  def saveExisting(ce:ContentEntry) = {
+    val fle = DB.coll(collName).update(BSONDocument("_id" -> ce.id), BSONDocument("$set" -> ce))
+    val fut = fle.map { _ => ce.itself } recover { case x:Throwable => RefFailed(x) }
+    new RefFutureRef(fut)    
+  }  
   
 }

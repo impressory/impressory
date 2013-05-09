@@ -15,16 +15,14 @@
   
       <ul class="ceTools">
         <li class="navli">
-          <button class="command require-edit"
-            title="Edit details and tags"
-            onclick="javascript: IBAddForms.showEditTags(IBViewer.currCe(), IBViewer.viewing.presentation);">
+          <button class="command require-edit" ng-class="{ 'active': panels.top == 'editDetails' }"
+            title="Edit details and tags" ng-click="panels.toggleEditDetails()">
             <i class="icon-tags"></i>
           </button>
         </li>
         <li class="navli">
-          <button class="command require-edit"
-            id="edit-button" title="Edit content"
-            onclick="javascript: IBViewer.editContent();">
+          <button class="command require-edit"  
+            id="edit-button" title="Edit content">
             <i class="icon-edit"></i>
           </button></li>
         <li class="navli">
@@ -46,14 +44,10 @@
           </button>
         </span> 
         <span class="title">{{ viewing.Content.display.title || '(Untitled)' }}</span>
-        <span> 
-          <a class="command content-url-link" title="open content in new tab" target="_blank">
-            <i class="icon-external-link"></i>
-          </a>
-        </span> 
         <span class="spacer"></span> 
         <span>
-          <button class="command require-chat" title="Comments" onclick="javascript: IBViewer.showCommentsModal();">
+          <button class="command require-chat" ng-class="{ 'active': panels.top == 'comments' }" 
+                  title="Comments" ng-click="panels.toggleComments();">
             <span >{{ viewing.Content.display.commentCount || 0 }}</span> <i class="icon-comments"></i>
           </button>
         </span> 
@@ -67,7 +61,7 @@
           </span> 
           <span class="preposition">about</span> 
           <span class="topics"> 
-            <button ng-repeat="topic in viewing.Content.display.topics" class="topic">{{ topic }}</button> 
+            <button ng-repeat="topic in viewing.Content.display.topics" ng-class="{ 'active': (panels.top == 'contentForTopic') && (searchTopic == topic) }" ng-click="panels.toggleContentForTopic(topic)" class="topic command">{{ topic }}</button> 
           </span>
         </span>
   
@@ -86,6 +80,15 @@
         </div>
         <div ng-switch-when="slideSorter" >
           @snipSlideSorter()
+        </div>
+        <div ng-switch-when="editDetails" >
+          @snipEditDetails()
+        </div>
+        <div ng-switch-when="comments" >
+          @snipViewComments()
+        </div>
+        <div ng-switch-when="contentForTopic" >
+          @snipContentForTopic()
         </div>
       
       </div>

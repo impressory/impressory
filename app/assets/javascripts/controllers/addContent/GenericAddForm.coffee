@@ -4,7 +4,16 @@ define(["./base"], (l) ->
   
     $scope.errors = [ ]
   
-    $scope.toAdd = { }
+    $scope.toAdd = { 
+      entry: {
+        adjectives: []
+        nouns: []
+        topics: Impressory.Model.Viewing.Content.display?.topics || [ "nothing" ]
+      }
+    }
+    
+    # So that subcomponents looking for entry will work
+    $scope.entry = $scope.toAdd.entry
   
     $scope.submit = (kind) ->
       $scope.toAdd["kind"] = kind

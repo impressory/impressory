@@ -10,13 +10,23 @@
   @above
 
   <div>
-    <label>Name</label> <input ng-model="toAdd.entry.title" placeholder="Optional" />
+    <label>Name</label> <input type="text" ng-model="toAdd.entry.title" placeholder="Optional" />
   </div>
   
   <div>
     <label>Note</label>
     <textarea ng-model="toAdd.entry.note" placeholder="Optional"></textarea>
   </div>
+  
+  <div style="margin-bottom: 10px;">
+    <div ng-show="tagsVisible">
+      @views.html.partials.components.snipEditTags()
+    </div>
+    <button class="btn btn-link" ng-hide="tagsVisible" ng-click="tagsVisible = !tagsVisible">show tags</button>
+    <button class="btn btn-link" ng-show="tagsVisible" ng-click="tagsVisible = !tagsVisible">hide tags</button>
+  </div>
+  
+  <div ng-repeat="error in errors" class="alert alert-error">{{ error }}</div>
   
   <div>
     <button class="btn" ng-click="panels.closeAddContent()">Cancel</button>

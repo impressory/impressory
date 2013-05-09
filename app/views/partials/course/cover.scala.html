@@ -1,35 +1,37 @@
 @() @views.html.partials.headerFront() @subheadCourse()
 
-<div class="topHalf" ng-controller="Impressory.Controllers.Course.Cover">
-  @snipFrontControls()
-
-  <div class="coverImage">
-    <img ng-src="{{ course.coverImageURL || 'http://placehold.it/200x300' }}" alt="cover image" />
+<div class="course-cover-page" ng-controller="Impressory.Controllers.Course.Cover">
+  <div class="topHalf" >
+    @snipFrontControls()
+  
+    <div class="coverImage">
+      <img ng-src="{{ course.coverImageURL || 'http://placehold.it/200x300' }}" alt="cover image" />
+    </div>
+  
+    <div class="bookDetails">
+      <p>
+        <label>Short name:</label> 
+        <span id="bookShortName" class="bookShortName">{{ course.shortName || 'No short name' }}</span>
+      </p>
+  
+  
+      <p>
+        <label>Short description:</label> 
+        <span id="bookShortDescription" class="bookShortDescription">{{ course.shortDescription || 'Undescribed' }}</span>
+      </p>
+  
+      <p>
+        <label>Long description:</label> 
+        <span id="bookLongDescription" class="description">{{ course.longDescription || 'Undescribed' }}</span>
+      </p>
+  
+      <p>
+        <label>Sign up policy:</label> <span class="description">{{ course.signupPolicy }}</span>
+      </p>
+  
+    </div>
+  
   </div>
-
-  <div class="bookDetails">
-    <p>
-      <label>Short name:</label> 
-      <span id="bookShortName" class="bookShortName">{{ course.shortName || 'No short name' }}</span>
-    </p>
-
-
-    <p>
-      <label>Short description:</label> 
-      <span id="bookShortDescription" class="bookShortDescription">{{ course.shortDescription || 'Undescribed' }}</span>
-    </p>
-
-    <p>
-      <label>Long description:</label> 
-      <span id="bookLongDescription" class="description">{{ course.longDescription || 'Undescribed' }}</span>
-    </p>
-
-    <p>
-      <label>Sign up policy:</label> <span class="description">{{ course.signupPolicy }}</span>
-    </p>
-
-  </div>
-
+  
+  <div class="contentTypes"></div>
 </div>
-
-<div class="contentTypes"></div>

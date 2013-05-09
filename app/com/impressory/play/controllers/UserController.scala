@@ -2,15 +2,16 @@ package com.impressory.play.controllers
 
 import com.wbillingsley.handy._
 import Ref._
-
+import com.wbillingsley.handyplay._
+import com.wbillingsley.handyplay.RefConversions._
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
-
 import com.impressory.api._
 import com.impressory.play.model._
 import ResultConversions._
 import JsonConverters._
+import play.api.libs.iteratee.Enumerator
 
 object UserController extends Controller {
   
@@ -27,6 +28,18 @@ object UserController extends Controller {
 	  Ok(user)
 	}
 	r    
+  }
+  
+  def findUsersById = Action(parse.json) { implicit request =>
+    
+    val ids = (request.body \ "ids").asOpt[Set[String]].getOrElse(Set.empty)
+	val users = for (
+	    user <- new RefManyById(classOf[User], ids.toSeq);
+	    j <- user.itself.toJson
+	) yield j
+
+	val en = Enumerator("{ \"users\": [") andThen users.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
+    Ok.stream(en).as("application/json")
   }
   
   /**
@@ -48,7 +61,7 @@ object UserController extends Controller {
     
     val resp = for (
       u <- User.createByEmail(email, password);
-      j <- u.itself.toJson
+      j <- u.itself.toJsonForSelf
     ) yield {
       val session = RequestUtils.withLoggedInUser(request.session, u.itself)         
       Ok(Json.obj("user" -> j)).withSession(session)
@@ -67,7 +80,7 @@ object UserController extends Controller {
         un <- Ref(username);
         pw <- Ref(password);
         u <- User.byUsername(un) if (u.pwhash == Some(u.hash(pw))); 
-        j <- u.itself.toJson        
+        j <- u.itself.toJsonForSelf
      ) yield {
       val session = RequestUtils.withLoggedInUser(request.session, u.itself)         
       Ok(Json.obj("user" -> j)).withSession(session)
@@ -87,7 +100,7 @@ object UserController extends Controller {
         un <- Ref(email);
         pw <- Ref(password);
         u <- User.byEmail(un) if (u.pwhash == u.hash(pw)); 
-        j <- u.itself.toJson        
+        j <- u.itself.toJsonForSelf        
      ) yield {
       val session = RequestUtils.withLoggedInUser(request.session, u.itself)         
       Ok(Json.obj("user" -> j)).withSession(session)
@@ -109,7 +122,7 @@ object UserController extends Controller {
       u.name = (request.body \ "name").asOpt[String]
       u.avatar = (request.body \ "avatar").asOpt[String]
       
-      for (j <- u.save.toJson) yield Ok(Json.obj("user" -> j))
+      for (j <- u.save.toJsonForSelf) yield Ok(Json.obj("user" -> j))
       
     }).flatten
     resp
@@ -127,7 +140,7 @@ object UserController extends Controller {
       u.email = (request.body \ "email").asOpt[String]
       u.username = (request.body \ "username").asOpt[String]
       
-      for (j <- u.save.toJson) yield Ok(Json.obj("user" -> j))
+      for (j <- u.save.toJsonForSelf) yield Ok(Json.obj("user" -> j))
       
     }).flatten
     resp
@@ -163,7 +176,7 @@ object UserController extends Controller {
     val ur = RequestUtils.loggedInUser(request)
   	val resp = (for (u <- ur) yield {
   	  u.identities = u.identities.filter(_._id.stringify != id)
-      for (j <- u.save.toJson) yield Ok(Json.obj("user" -> j))
+      for (j <- u.save.toJsonForSelf) yield Ok(Json.obj("user" -> j))
   	}).flatten
   	resp
   }

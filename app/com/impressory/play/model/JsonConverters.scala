@@ -26,7 +26,25 @@ object JsonConverters {
     /**
      * JSON representation for other users
      */
-    def toJson: Ref[JsValue] = {
+    def toJson: Ref[JsObject] = {
+      for (
+        user <- u;
+        identities <- user.identities.toRefMany.toJson
+      ) yield {
+        Json.obj(
+          "id" -> user.id.stringify,
+          "name" -> user.name, 
+          "nickname" -> user.nickname,
+          "username" -> user.username,
+          "avatar" -> user.avatar
+        )
+      }
+    }
+    
+    /**
+     * JSON representation for other users
+     */
+    def toJsonForSelf: Ref[JsValue] = {
       for (
         user <- u;
         identities <- user.identities.toRefMany.toJson
@@ -42,7 +60,7 @@ object JsonConverters {
           "identities" -> identities.toSeq
         )
       }
-    }
+    }    
   }
   
   implicit class IdentityToJson(val i: Ref[Identity]) extends AnyVal {
@@ -156,8 +174,38 @@ object JsonConverters {
         "nouns" -> ce.nouns,
         "topics" -> ce.topics,
 //        "highlightTopic" -> Json.toJson(ce.highlightTopic),
-        "site" -> ce.site)
+        "site" -> ce.site,
+        "updated" -> ce.updated,
+        "created" -> ce.created,
+        "addedBy" -> ce._addedBy.stringify)
     }
+    
+    
+    /**
+     * JSON for a Course, including registration and permission 
+     * information for this User.
+     */
+    def toJsonForAppr(appr:Approval[User]) = {
+      val rr = for (
+        ce <- entry
+      ) yield {
+        
+        // Permissions.
+        val perms = for (
+           read <- optionally(appr ask Permissions.ReadEntry(ce.itself));
+           edit <- optionally(appr ask Permissions.EditContent(ce.itself))
+        ) yield Json.obj(
+          "read" -> read.isDefined,
+          "edit" -> edit.isDefined
+        )
+        
+        // Combine the JSON responses, noting that reg or perms might be RefNone
+        for (ej <- ce.itself.toJson; p <- optionally(perms)) yield ej ++ Json.obj(
+          "permissions" -> p
+        )
+      }
+      rr.flatten
+    }    
     
   }
   

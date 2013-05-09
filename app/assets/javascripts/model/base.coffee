@@ -28,8 +28,13 @@ define(["lib/eventRoom"], (er) ->
         Course: { }
         
         Content: { }
-      
+        
+        Users: { 
+          cache: { }
+        }
+        
       }
+      
     }
     
     #EventRoom: EventRoom.create()

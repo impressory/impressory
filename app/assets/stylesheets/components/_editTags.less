@@ -1,0 +1,56 @@
+.component-edit-tags {
+
+  @adjCol: #f0d0f0;
+  @nounCol: #fff0d0;
+  @topicCol: #d0f0ff;
+
+  margin-bottom: 10px;
+
+  .tags {
+      display: inline-block;
+      margin-bottom: 5px;
+      
+      .adj, .noun,.topic {
+      
+          border-radius: 2px;
+          border: 1px solid #ddd;
+          
+          margin-right: 5px;
+          
+          padding: 2px;
+
+          .delete {
+              background: none;
+              border: none;
+              color: #aaa;
+              
+              vertical-align: baseline;
+          }
+          button:hover {
+              color: black;
+          }
+      }
+      .adj {
+          background-color: @adjCol;
+      }
+      .noun {
+          background-color: @nounCol;
+      }
+      .topic {
+          background-color: @topicCol;
+      }
+  }
+  
+
+  button.adj {
+    background: @adjCol; 
+  }
+  button.noun {
+    background: @nounCol; 
+  }
+
+  button.topic {
+    background: @topicCol; 
+  }  
+
+}

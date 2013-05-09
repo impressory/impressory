@@ -21,8 +21,15 @@ object ContentModel {
   val defaultTopic = "page one"
   
   def update(ce:ContentEntry, jsVal: JsValue) = {
-    for (title <- (jsVal \ "title").asOpt[String]) { ce.title = Some(title) }
-    for (sn <- (jsVal \ "note").asOpt[String]) { ce.note = Some(sn) }
+    
+    ce.title = (jsVal \ "title").asOpt[String]
+    ce.note = (jsVal \ "note").asOpt[String]
+    ce.adjectives = (jsVal \ "adjectives").asOpt[Set[String]].getOrElse(Set.empty)
+    ce.nouns = (jsVal \ "nouns").asOpt[Set[String]].getOrElse(Set.empty)
+    ce.topics = (jsVal \ "topics").asOpt[Set[String]].getOrElse(Set.empty)
+    ce.inTrash = (jsVal \ "inTrash").asOpt[Boolean].getOrElse(false)
+    ce.protect = (jsVal \ "protect").asOpt[Boolean].getOrElse(false)
+    ce.showFirst = (jsVal \ "showFirst").asOpt[Boolean].getOrElse(false)
     ce
   }      
   
@@ -68,6 +75,18 @@ object ContentModel {
       val filtered = all.withFilter(applyFilters(_, filters))
       pick(filtered)
     }).flatten 
+  }  
+
+  def entriesForTopic(course:Ref[Course], tok:Approval[User], topic:Option[String], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
+    (for (approved <- tok ask Read(course)) yield {
+      val all = ContentEntry.byTopic(course, topic.getOrElse(defaultTopic))
+      all
+    }).flatten 
+  }  
+  
+  
+  def filteredEntriesForTopic(course:Ref[Course], tok:Approval[User], topic:Option[String], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
+    entriesForTopic(course, tok, topic).withFilter(applyFilters(_, filters))
   }  
   
   /**

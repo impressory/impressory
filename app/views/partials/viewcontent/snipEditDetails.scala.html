@@ -1,0 +1,65 @@
+@()
+
+<div class="edit-tags" ng-controller="Impressory.Controllers.ViewContent.EditDetails">
+  <div class="container">
+    <input type="hidden" name="presentation" class="presentation" />
+
+    <form class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label">Content ID</label>
+            <div class="controls">
+              <label class="entry-id">{{ entry.id }}</label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Name</label>
+            <div class="controls">
+              <input ng-model="entry.title" class="ce_name" type="text" placeholder="Optional" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Note</label>
+            <div class="controls">
+              <textarea ng-model="entry.note" class="ce_note" type="text" placeholder="Optional"></textarea>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Tags</label>
+            <div class="controls">
+              @views.html.partials.components.snipEditTags()
+            </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">Flags</label>
+          <div class="controls">
+            <div class="flags">
+              <label class="checkbox"><input type="checkbox" ng-model="entry.inTrash" class="in-trash" /> In trash</label>
+              <label class="checkbox"><input type="checkbox" ng-model="entry.showFirst" class="show-first"/> Show first</label>
+              <label class="checkbox"><input type="checkbox" ng-model="entry.protect" class="protect" /> Protect</label>
+            </div>
+          </div>          
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">&nbsp;</label>
+          <div class="controls">
+          <div ng-repeat="error in errors" class="alert alert-error">
+            {{ error }}
+          </div>
+          </div>          
+        </div>        
+
+        <div class="control-group">
+          <label class="control-label">&nbsp;</label>
+          <div class="controls">
+            <div>
+                <button type="button" class="btn" ng-click="panels.toggleEditDetails()">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="submit()">Save</button>
+            </div>
+          </div>          
+        </div>        
+    </form>
+
+
+  </div>
+</div>

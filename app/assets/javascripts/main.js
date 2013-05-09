@@ -6,6 +6,7 @@ require([
   "model/base",
   "modules/app",
   "modules/viewingCourse",
+  "modules/viewingUsers",
   
   "controllers/login/IsLoggedIn",
   "controllers/login/LogInForm",
@@ -19,11 +20,15 @@ require([
   "controllers/course/Create",
   "controllers/course/Cover",
   
+  "controllers/components/EditTags",
+
   "controllers/viewContent/ViewContent",
   "controllers/viewContent/Layout",
   "controllers/viewContent/TopNav",
   "controllers/viewContent/SlideSorter",
   "controllers/viewContent/MainContent",
+  "controllers/viewContent/EditDetails",
+  "controllers/viewContent/ListContentForTopic",
   
   "controllers/addContent/TopLevel",
   "controllers/addContent/GenericAddForm",

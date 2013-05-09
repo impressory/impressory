@@ -62,6 +62,10 @@ define(["./app"], () ->
           viewing.Content = res.data
           @updateLocation(true)
           @updateDisplayedEntry()
+        , (erres) =>
+          if (erres.data?.error == "not found") 
+            viewing.Content.entry = {}
+            @updateDisplayedEntry()
         )
           
       # Gets the current entry (which may be an entry in a sequence)

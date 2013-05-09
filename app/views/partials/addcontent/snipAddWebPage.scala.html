@@ -6,8 +6,10 @@
   <h4>Add web page</h4>
 
   <div>
-    <label>URL</label> <input ng-model="toAdd.webpage.url" required="true" />
+    <label>URL</label> <input type="text" ng-model="toAdd.webpage.url" required="true" />
   </div>
+
+  <div ng-init="entry.nouns = [ 'Web page' ]"></div>
 </div>
 
 }

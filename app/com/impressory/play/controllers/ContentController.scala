@@ -133,5 +133,40 @@ object ContentController extends Controller {
     val result = newContentEntry(course, user, request.body)
     result
   }
+  
+  def editTags(courseId: String, entryId: String) = Action(parse.json) { implicit request => 
+    val entry = RefById(classOf[ContentEntry], entryId)
+    val user = RequestUtils.loggedInUser(request)
+    
+    val r = for (
+      e <- entry;
+      u <- optionally(user);
+      approval = Approval(u);
+      approved <- approval ask Permissions.EditContent(e.itself);
+      updated = ContentModel.update(e, request.body);
+      saved <- ContentEntry.saveExisting(updated);
+      json <- saved.itself.toJsonForAppr(approval)
+    ) yield {
+      Ok(Json.obj("course" -> json))
+    }
+    r
+  
+  }
+  
+  def entriesForTopic(courseId: String, topic:Option[String]) = Action { implicit request => 
+    val course = RefById(classOf[Course], courseId)
+    val user = RequestUtils.loggedInUser(request)
+
+    val entries = for (
+      c <- course;
+      u <- optionally(user);
+      approval = Approval(u);
+      e <- ContentModel.entriesForTopic(c.itself, approval, topic);
+      j <- e.itself.toJson
+    ) yield j
+      
+    val en = Enumerator("{ \"entries\": [") andThen entries.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
+    Ok.stream(en).as("application/json")    
+  }
 
 }

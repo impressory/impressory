@@ -21,7 +21,7 @@ define(["model/base"], () ->
         when('/createCourse', { templateUrl: 'partials/course_create.html' }).
         when('/course/:courseId', { templateUrl: '/partials/course_cover.html' }).
         when('/course/:courseId/listContent', { templateUrl: '/partials/course_listContent.html' }).
-        when('/course/:courseId/viewContent', { templateUrl: '/partials/course_viewContent.html' }).
+        when('/course/:courseId/viewContent', { templateUrl: '/partials/course_viewContent.html', reloadOnSearch: false }).
         otherwise({ redirectTo: '/' })
     ])
     

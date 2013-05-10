@@ -1,9 +1,10 @@
 @()
 
-<div class="main-content-surround">
+
+<div class="main-content-surround" ng-repeat="entry in viewing.Content.displaySeq" ng-class="{ hidden: entry.id != viewing.Content.display.id }">
 
   <!-- Loading notice in background -->
-  <div class="loading-notice dont-print" ng-show="viewing.Content.display.kind == 'web page'">
+  <div class="loading-notice dont-print" ng-show="entry.kind == 'web page'">
     External content not displaying? Some sites don't like to be
     framed. Try using the <i class="icon-external-link"></i>
     Pop-out button in the toolbar to open it in a new tab.
@@ -13,16 +14,30 @@
   <div ng-controller="Impressory.Controllers.ViewContent.MainContent" class="content-container">
   
   <!--  <div im-viewing-content></div> -->
-    <div ng-switch="viewing.Content.display.kind" class="full-height">
-      <div ng-switch-when="web page" class="full-height">
+    <div ng-switch="entry.kind" >
+      <div ng-switch-when="web page" >
         @kinds.webPage()
       </div>
       <div ng-switch-when="sequence">
         @kinds.contentSequence()
       </div>
+      <div ng-switch-when="Google Slides">
+        @kinds.googleSlides()
+      </div>
+      <div ng-switch-when="YouTube video">
+        @kinds.youTubeVideo()
+      </div>
       <div ng-switch-default>      
-        @kinds.noContent()
+        <div class="alert alert-error">
+            Whoops, we seem to have an unrecognised kind of content
+        </div>
       </div>
     </div>
+
   </div>
 </div>
+
+<div ng-show="viewing.Content.noContent">
+  @kinds.noContent()
+</div>
+

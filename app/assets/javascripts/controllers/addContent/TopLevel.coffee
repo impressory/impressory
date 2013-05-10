@@ -10,16 +10,30 @@ define(["./base"], (l) ->
       ],
       
       "Presentation": [
-        { kind: "GoogleSlides", text: "Google Slides" }
+        { kind: "Google Slides", text: "Google Slides" }
       ],
 
       "Video": [
-        { kind: "YouTube", text: "YouTube" }
+        { kind: "YouTube video", text: "YouTube" }
       ],
       
       "Sequence": [
         { kind: "sequence", text: "Content Sequence" }
+      ],
+      
+      "Broadcast": [
+      
+      ],
+      
+      "Wiki": [
+      
+      ],
+      
+      "Poll": [
+      
       ]
+      
+      
     
     }
      

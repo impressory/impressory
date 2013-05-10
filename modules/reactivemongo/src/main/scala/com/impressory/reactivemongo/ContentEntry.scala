@@ -89,6 +89,8 @@ object ContentEntry extends FindById[ContentEntry] {
       val item:Option[ContentItem] = kind match {
         case ContentSequence.itemType => doc.getAs[ContentSequence]("item")
         case WebPage.itemType => doc.getAs[WebPage]("item")
+        case GoogleSlides.itemType => doc.getAs[GoogleSlides]("item")
+        case YouTubeVideo.itemType => doc.getAs[YouTubeVideo]("item")
         case _ => None
       }
 
@@ -156,6 +158,8 @@ object ContentEntry extends FindById[ContentEntry] {
     val item = ce.item match {
       case Some(cs:ContentSequence) => ContentSequence.bsonWriter.write(cs) 
       case Some(wp:WebPage) => WebPage.bsonWriter.write(wp) 
+      case Some(gs:GoogleSlides) => GoogleSlides.format.write(gs)
+      case Some(y:YouTubeVideo) => YouTubeVideo.format.write(y)
       case _ => BSONDocument()
     }
     val docWithItem = doc ++ BSONDocument("_id" -> ce._id, "item" -> item)

@@ -183,6 +183,8 @@ object JsonConverters {
           ce.item match {
             case Some(wp:WebPage) => wp.toJson.itself
             case Some(cs:ContentSequence) => cs.itself.toJson
+            case Some(gs:GoogleSlides) => GoogleSlidesToJson.writes(gs).itself
+            case Some(y:YouTubeVideo) => YouTubeVideoToJson.writes(y).itself
             case _ => RefNone
           }
         }
@@ -286,4 +288,8 @@ object JsonConverters {
     }
   }
 
+  
+  implicit val GoogleSlidesToJson = Json.format[GoogleSlides]
+  implicit val YouTubeVideoToJson = Json.format[YouTubeVideo]
+  
 }

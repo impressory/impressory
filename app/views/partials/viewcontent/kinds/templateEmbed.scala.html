@@ -1,0 +1,8 @@
+@(above: => Html)
+
+@above
+
+<div ng-controller="Impressory.Controllers.ViewContent.IframeSizer">
+  <iframe ng-src="{{ embedUrl }}" style="border: none" ng-style="{ height: fillHeight }">
+  </iframe>
+</div>

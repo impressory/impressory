@@ -105,6 +105,8 @@ object ContentController extends Controller {
         (requestBody \ "kind").asOpt[String] match {
           case Some(ContentSequence.itemType) => SequenceModel.create(c.itself, approval, updated, requestBody).itself
           case Some(WebPage.itemType) => WebPageModel.create(c.itself, approval, updated, requestBody).itself
+          case Some(GoogleSlides.itemType) => OtherExternalsModel.createGoogleSlides(c.itself, approval, updated, requestBody).itself
+          case Some(YouTubeVideo.itemType) => OtherExternalsModel.createYouTubeVideo(c.itself, approval, updated, requestBody).itself
           case _ => RefNone
         }        
       };

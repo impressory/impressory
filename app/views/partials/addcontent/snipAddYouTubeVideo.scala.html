@@ -1,0 +1,19 @@
+@()
+
+@templateAddForm("YouTube video") {
+
+<div>
+  <h4>Add YouTube video</h4>
+  
+  <p>
+    Paste the embed code or video URL in below -- Impressory will extract the relevant info.
+  </p>
+
+  <div>
+    <label>Embed code / URL</label> <input type="text" ng-model="toAdd.item.embedCode" required="true" />
+  </div>
+
+  <div ng-init="entry.nouns = [ 'Video' ]"></div>
+</div>
+
+}

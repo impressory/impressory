@@ -35,4 +35,9 @@ package object model {
   type WebPage = reactivemongo.WebPage
   val WebPage = reactivemongo.WebPage
   
+  type GoogleSlides = reactivemongo.GoogleSlides
+  val GoogleSlides = reactivemongo.GoogleSlides
+  type YouTubeVideo = reactivemongo.YouTubeVideo
+  val YouTubeVideo = reactivemongo.YouTubeVideo
+  
 }

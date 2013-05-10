@@ -1,6 +1,6 @@
 define(["./base"], (l) ->
 
-  Impressory.Controllers.AddContent.GenericAddForm = ["$scope", "$http", "viewingCourse", ($scope, $http, viewingCourse) ->
+  Impressory.Controllers.AddContent.GenericAddForm = ["$scope", "$http", "viewingContent", ($scope, $http, viewingContent) ->
   
     $scope.errors = [ ]
   
@@ -24,10 +24,7 @@ define(["./base"], (l) ->
         if (data.error?)
           $scope.errors = [ data.error ]
         else
-          Impressory.Model.Viewing.Content = data
-          console.log("Updating data on successful post")
-          viewingCourse.updateLocation(false)
-      
+          viewingContent.viewThisData(data)
       ).error((data) ->
          $scope.errors = [ "Unexpected error" ]
          console.log(data)

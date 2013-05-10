@@ -1,0 +1,19 @@
+@()
+
+@templateAddForm("Google Slides") {
+
+<div>
+  <h4>Add Google Slides</h4>
+  
+  <p>
+    Paste the embed code or presentation URL in below -- Impressory will extract the relevant info.
+  </p>
+
+  <div>
+    <label>Embed code / URL</label> <input type="text" ng-model="toAdd.item.embedCode" required="true" />
+  </div>
+
+  <div ng-init="entry.nouns = [ 'Presentation' ]"></div>
+</div>
+
+}

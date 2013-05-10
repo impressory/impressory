@@ -3,7 +3,6 @@
  */
 #middle-wrap {
     position: relative;
-    height: 100%;
     width: 100%;
     top: 0px;
 
@@ -45,14 +44,14 @@
                 line-height: normal;
                 font-size: 24px;
                 padding: 6px 2px 6px 2px;
-                color: #888;
+                color: @linkfg;
                 width: @controlWidth;
             }
             button:hover {
                 .topNavGradient;
                 text-decoration: none;
             }
-            button:disabled {
+            button:disabled, button.disabled {
                 color: #bbb;
             }
         }
@@ -68,7 +67,6 @@
              */
             position: relative;
             left: 0px;
-            height: 100%;
         }
         .content-panel.right-open {
             margin-right: @rightPanelWidth + @controlWidth + 1;
@@ -102,7 +100,7 @@
                 line-height: normal;
                 padding: 6px 2px 6px 2px;
                 font-size: 24px;
-                color: #888;
+                color: @linkfg;
                 
                 width: @controlWidth;
             }
@@ -111,7 +109,7 @@
                 .topNavGradient;
                 text-decoration: none;
             }
-            button:disabled {
+            button:disabled, button.disabled {
                 color: #bbb;
             }
 

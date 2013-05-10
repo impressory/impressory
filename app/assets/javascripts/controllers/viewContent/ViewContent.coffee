@@ -1,6 +1,6 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.ViewContent.ViewContent = ["$scope", "$routeParams", "$location", "viewingCourse", ($scope, $routeParams, $location, viewingCourse) ->
+  Impressory.Controllers.ViewContent.ViewContent = ["$scope", "$routeParams", "$location", "viewingContent", ($scope, $routeParams, $location, viewingContent) ->
 
 
     updateView = (path) ->
@@ -13,15 +13,22 @@ define(["./base"], (l) ->
         site: $routeParams.site
       }
       
-      viewingCourse.queryContent($scope.entryQuery)
+      viewingContent.lookUp($scope.entryQuery)
       
-    $scope.$watch('$location.path()', updateView)
+    updateView()
+      
+    $scope.$on('$routeUpdate', updateView)
     
     $scope.viewing = Impressory.Model.Viewing
     
     # Used by ng-click in slide-sorter, amongst others
-    $scope.lookUp = (params) -> $location.search(params)
-        
+    $scope.lookUp = (params) -> viewingContent.lookUp(params)
+    
+    $scope.goToPrevEntry = () -> viewingContent.goToPrevEntry()
+    
+    $scope.goToNextEntry = () -> viewingContent.goToNextEntry()
+    
+    $scope.goToStart = () -> viewingContent.goToStart()
   
   ]
 

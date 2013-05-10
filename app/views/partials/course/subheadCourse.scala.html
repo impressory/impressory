@@ -4,7 +4,7 @@
 
   <div class="course-navbar">
     <div class="book-image">
-      <img src="{{ course.coverImageURL || 'http://placehold.it/100x150' }}" alt="cover image"/>
+      <img ng-src="{{ course.coverImageURL || 'http://placehold.it/100x150' }}" alt="cover image"/>
     </div>
     <div class="book-title">
       <h1>{{ course.title || 'Untitled Course' }}</h1>

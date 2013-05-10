@@ -25,7 +25,7 @@ require([
   "controllers/viewContent/ViewContent",
   "controllers/viewContent/Layout",
   "controllers/viewContent/TopNav",
-  "controllers/viewContent/SlideSorter",
+  "controllers/viewContent/Sequence",
   "controllers/viewContent/MainContent",
   "controllers/viewContent/EditDetails",
   "controllers/viewContent/ListContentForTopic",

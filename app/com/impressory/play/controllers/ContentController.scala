@@ -119,7 +119,7 @@ object ContentController extends Controller {
       eis <- ContentModel.entryInSequence(saved.itself, RefNone);
       
       // Convert to JSON
-      j <- eis.itself.toJson
+      j <- eis.itself.toJsonForAppr(approval)
     ) yield Ok(j)    
   }
 

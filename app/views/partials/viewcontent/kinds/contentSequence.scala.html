@@ -1,9 +1,13 @@
 @()
 
-<div class="no-content-notice">
+<div class="content-sequence-contents" ng-controller="Impressory.Controllers.ViewContent.Sequence">
   <h1>{{ viewing.Content.entry.title || 'Untitled sequence' }}</h1>
           
   <p>
-    A content sequence of {{ viewing.Content.entries.length || 0 }} items.
+    A content sequence of {{ viewing.Content.display.item.entries.length || 0 }} items.
   </p>
+  <hr />
+  <div>
+    @views.html.partials.components.snipListEntries()
+  </div>
 </div>

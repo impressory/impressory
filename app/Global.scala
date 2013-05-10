@@ -47,10 +47,12 @@ object Global extends GlobalSettings with AcceptExtractors {
           User.manyById(ids).asInstanceOf[RefMany[T]]
         }
         case c if c == classOf[Course] => {
-          println(r.rawIds)
           val ids = for (id <- r.rawIds; c <- HasBSONId.GetsBSONId.canonical(id)) yield c
-          println(ids)
           Course.manyById(ids).asInstanceOf[RefMany[T]]
+        }
+        case c if c == classOf[ContentEntry] => {
+          val ids = for (id <- r.rawIds; c <- HasBSONId.GetsBSONId.canonical(id)) yield c
+          ContentEntry.manyById(ids).asInstanceOf[RefMany[T]]
         }
         case _ => RefFailed(new IllegalArgumentException(s"I don't know how to look up class ${r.clazz.getName}"))
         }

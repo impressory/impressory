@@ -80,7 +80,7 @@ object ContentSequence {
         _id = doc.getAs[BSONObjectID]("_id").get,
         _course = doc.getAs[BSONObjectID]("course"),
         _ce = doc.getAs[BSONObjectID]("ce"),
-        _entries = doc.getAs[Seq[BSONObjectID]]("_id").getOrElse(Seq.empty),
+        _entries = doc.getAs[Seq[BSONObjectID]]("entries").getOrElse(Seq.empty),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)        
       )

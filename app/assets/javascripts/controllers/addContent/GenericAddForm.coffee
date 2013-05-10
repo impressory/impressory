@@ -10,10 +10,13 @@ define(["./base"], (l) ->
         nouns: []
         topics: Impressory.Model.Viewing.Content.display?.topics || [ "nothing" ]
       }
+      item: {}
     }
     
     # So that subcomponents looking for entry will work
     $scope.entry = $scope.toAdd.entry
+    
+    $scope.item = $scope.toAdd.item
   
     $scope.submit = (kind) ->
       $scope.toAdd["kind"] = kind

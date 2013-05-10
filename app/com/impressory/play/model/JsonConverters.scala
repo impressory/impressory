@@ -146,16 +146,12 @@ object JsonConverters {
   
   implicit class ContentEntryToJson(val entry: Ref[ContentEntry]) extends AnyVal {
 
-    def toJson = {
-      
+    /**
+     * Basic core JSON other methods add to
+     */
+    def toJsonCore = {
       for (
-        ce <- entry;
-        item <- optionally {
-          ce.item match {
-            case Some(wp:WebPage) => wp.toJson.itself
-            case _ => RefNone
-          }
-        }
+        ce <- entry
       ) yield Json.obj(
         "id" -> ce.id.stringify,
         "course" -> ce._course.stringify,
@@ -167,27 +163,49 @@ object JsonConverters {
         "title" -> ce.title,
         "note" -> ce.note,
         "kind" -> Json.toJson(ce.kind),
-        "item" -> item,
-//        "url" -> Json.toJson(viewUrl(ce)),
-//        "editUrl" -> Json.toJson(editUrl(ce)),
         "adjectives" -> ce.adjectives,
         "nouns" -> ce.nouns,
         "topics" -> ce.topics,
-//        "highlightTopic" -> Json.toJson(ce.highlightTopic),
         "site" -> ce.site,
         "updated" -> ce.updated,
         "created" -> ce.created,
         "addedBy" -> ce._addedBy.stringify)
+    }    
+    
+    /**
+     * JSON for a course, without permissions etc
+     */
+    def toJson:Ref[JsObject] = {
+      for (
+        ce <- entry;
+        cj <- ce.itself.toJsonCore;
+        item <- optionally {
+          ce.item match {
+            case Some(wp:WebPage) => wp.toJson.itself
+            case Some(cs:ContentSequence) => cs.itself.toJson
+            case _ => RefNone
+          }
+        }
+      ) yield {
+        cj ++ Json.obj("item" -> item)
+      }
     }
     
     
     /**
-     * JSON for a Course, including registration and permission 
+     * JSON for a Course, including permissions 
      * information for this User.
      */
-    def toJsonForAppr(appr:Approval[User]) = {
+    def toJsonForAppr(appr:Approval[User]):Ref[JsObject] = {
       val rr = for (
-        ce <- entry
+        ce <- entry;
+        item <- optionally {
+          ce.item match {
+            case Some(wp:WebPage) => wp.toJson.itself
+            case Some(cs:ContentSequence) => cs.itself.toJsonForAppr(appr)
+            case _ => RefNone
+          }
+        }        
       ) yield {
         
         // Permissions.
@@ -201,7 +219,8 @@ object JsonConverters {
         
         // Combine the JSON responses, noting that reg or perms might be RefNone
         for (ej <- ce.itself.toJson; p <- optionally(perms)) yield ej ++ Json.obj(
-          "permissions" -> p
+          "permissions" -> p,
+          "item" -> item
         )
       }
       rr.flatten
@@ -219,6 +238,15 @@ object JsonConverters {
         "entry" -> entry,
         "seqIndex" -> eis.index.orElse(Some(-1)))
     }
+    
+    def toJsonForAppr(appr:Approval[User]) = {
+      for (
+        eis <- eInSeq;
+        entry <- eis.entry.itself.toJsonForAppr(appr)
+      ) yield Json.obj(
+        "entry" -> entry,
+        "seqIndex" -> eis.index.orElse(Some(-1)))
+    }    
   }
   
   implicit class WebPageToJson(val wp: WebPage) extends AnyVal {
@@ -227,4 +255,35 @@ object JsonConverters {
       "noFrame" -> wp.noFrame
     )
   }
+
+  implicit class ContentSequenceToJson(val rcs: Ref[ContentSequence]) extends AnyVal {
+
+    def toJson = {
+      for (
+        cs <- rcs;
+        
+        // This ensures we don't go into an infinite loop if a sequence has somehow included its own item
+        filteredEntries = cs.entries.withFilter(_.item match {
+          case Some(cs:ContentSequence) => false;
+          case _ => true
+        });
+        
+        entries <- filteredEntries.flatMap(_.itself.toJson).toRefOne
+      ) yield {
+        println(s"ENTRYIDS ${cs._entries}")
+        println(s"ENTRIES $entries")
+        Json.obj(
+        "entries" -> entries.toSeq)
+      }
+    }
+    
+    def toJsonForAppr(appr:Approval[User]) = {
+      for (
+        cs <- rcs;
+        entries <- cs.entries.withFilter(_._id != cs._id).flatMap(_.itself.toJsonForAppr(appr)).toRefOne
+      ) yield Json.obj(
+        "entries" -> entries.toSeq)      
+    }
+  }
+
 }

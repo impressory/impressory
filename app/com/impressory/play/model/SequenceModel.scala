@@ -29,7 +29,9 @@ object SequenceModel {
    * Creates but does not save a ContentSequence, wrapped in a ContentEntry
    */
   def create(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
-    val including = Ref.fromOptionId(classOf[ContentEntry], (data \ "includingCE").asOpt[String]) 
+    val including = Ref.fromOptionId(classOf[ContentEntry], (data \ "item" \ "including").asOpt[String]) 
+    
+    println(s"Including is $including")
     
     val s = new ContentSequence
     s._entries = including.getId.toSeq

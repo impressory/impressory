@@ -36,23 +36,35 @@ define(["./app"], () ->
       # Gets content, from JSON or requesting it
       queryContent: (params) ->
         if (params.entryId?)
-          @contentFromViewing(params["courseId"], params["entryId"]) || @fetchContent(params)
+          @contentFromViewing(params["entryId"]) || @fetchContent(params)
         else 
           @fetchContent(params)
           
+          
+      # Looks through the current entry (assuming it's a sequence) to find within it
+      # the entry with the specified ID.
+      slideIndex: (id) ->
+        items = viewing.Content.entry?.item?.entries 
+        found = -1
+        i = 0
+        while (found < 0 and i < items?.length)
+          if items[i].id == id
+            found = i
+          i++
+        found
+          
       # Tries to find the requested content in Model.Viewing.Content
-      contentFromViewing: (courseId, entryId) ->
-        if (viewing.Course?.id == courseId)
-          if (entryId? and viewing.Content.entry?.id == entryId)
-            viewing.Content.seqIndex = -1
-            @updateDisplayedEntry()
-          else if (entryId? and viewing.Content.entry?.item?.entries?.indexOf(entryId) >= 0)
-            viewing.Content.seqIndex = viewing.Content.entry?.item?.entries?.indexOf(entryId)
+      contentFromViewing: (entryId) ->
+        if (entryId? and viewing.Content.entry?.id == entryId)
+          viewing.Content.seqIndex = -1
+          @updateDisplayedEntry()
+        else
+          sIndex = @slideIndex(entryId) 
+          if (entryId? and sIndex >= 0)
+            viewing.Content.seqIndex = sIndex
             @updateDisplayedEntry()
           else
             null
-        else
-          null
         
       
       # Calls the server to query for content, returning a promise to look up the new current entry

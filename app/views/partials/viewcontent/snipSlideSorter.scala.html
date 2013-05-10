@@ -1,7 +1,7 @@
 @()
 
 <div class="slide-sorter"
-  ng-controller="Impressory.Controllers.ViewContent.SlideSorter">
+  ng-controller="Impressory.Controllers.ViewContent.Sequence">
 
   <button class="left command active" ng-click="panels.toggleSlideSorter()"> 
     <img src='/assets/images/slideSorter_full.png' alt="Slide sorter" />
@@ -9,7 +9,7 @@
 
   <div class="slides">
 
-    <div class="slide">
+    <div class="slide" ng-click="lookUp({entryId: content.entry.id})">
     
       <div class="slide-number">0</div>
       <div class="name">{{ content.entry.title || ('Untitled'
@@ -17,17 +17,23 @@
       <div class="kind">{{ content.entry.kind }}</div>
     </div>
 
-    <div ng-repeat="entry in content.entry.entries" class="slide">
-      <div class="slide-number">{{ $index }}</div>
-      <div class="name">{{ entry.title || ('Untitled' )}}</div>
-      <div class="kind">{{ entry.kind }}</div>
+    <div ng-repeat="entry in entries" class="slide" ng-click="lookUp({entryId: entry.id})">
+        <div class="slide-number">{{ $index + 1 }}</div>
+        <div class="name">{{ entry.title || ('Untitled' )}}</div>
+        <div class="kind">{{ entry.kind }}</div>
     </div>
 
     <div class="make-presentation" ng-hide="content.entry.kind == 'sequence'">
-      <p>You're not viewing this entry as part of a sequence. You can create a sequence around it if you like.</p>
-      <button class="btn-mini btn-primary" ng-click="makeSequence()">
-        Create sequence
-      </button>
+      <div ng-controller="Impressory.Controllers.AddContent.GenericAddForm">
+        <p>You're not viewing this entry as part of a sequence. You can create a sequence around it if you like.</p>
+        
+        <div ng-init="entry.nouns = [ 'Sequence' ]"></div>
+        <div ng-init="item.including = viewing.Content.display.id"></div>
+        
+        <button class="btn-mini btn-primary" ng-click="submit('sequence')">
+          Create sequence
+        </button>
+      </div>
     </div>
 
   </div>

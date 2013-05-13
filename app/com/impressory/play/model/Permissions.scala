@@ -44,6 +44,21 @@ object Permissions {
       } orIfNone Refused("Book not found")
     }
   }  
+  
+  /**
+   * Read a book or an entry in a book
+   * @param bookRef
+   */
+  case class Chat(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
+    def resolve(prior:Approval[User]) = {
+      course flatMap { c =>
+	    c.chatPolicy match {
+	      case CourseChatPolicy.allReaders => prior ask Read(c.itself)
+	      case _ => hasRole(c.itself, prior.who, CourseRole.Chatter)
+        }
+      } orIfNone Refused("Course not found")
+    }
+  }  
 
   case class ReadEntry(entry:Ref[ContentEntry]) extends PermOnIdRef[User, ContentEntry](entry) {
     def resolve(prior:Approval[User]) = prior ask Read(entry flatMap(_.course))  

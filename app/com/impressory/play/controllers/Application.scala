@@ -65,10 +65,11 @@ object Application extends Controller {
       case "logIn.html" => Ok(views.html.partials.logIn())
       case "self.html" => Ok(views.html.partials.self())
       
-      case "course_create.html" => Ok(views.html.partials.course.create())
-      case "course_cover.html" => Ok(views.html.partials.course.cover())
-      case "course_listContent.html" => Ok(views.html.partials.course.listContent())
-      case "course_viewContent.html" => Ok(views.html.partials.viewcontent.viewContent())
+      case "course/create.html" => Ok(views.html.partials.course.create())
+      case "course/cover.html" => Ok(views.html.partials.course.cover())
+      case "course/listContent.html" => Ok(views.html.partials.course.listContent())
+      case "course/chatRoom.html" => Ok(views.html.partials.course.chatRoom())
+      case "course/viewContent.html" => Ok(views.html.partials.viewcontent.viewContent())
       case _ => NotFound(s"No such partial template: $templ")
     }
   }

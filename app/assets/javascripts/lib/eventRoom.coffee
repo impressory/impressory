@@ -42,20 +42,23 @@ class EventViewer
   # { type: "pollResults", id: pollId }
   # etc
   subscribe: (subscription) ->
-    if @connected() 
-      data = {
-        listenerName : @serverListenerName
-        subscription : subscription
-      }
-      console.log(data)
-      jQuery.ajax({
-        url: @subscribeUrl
-        data: JSON.stringify(data)
-        type: 'POST'
-        contentType: 'application/json'
-      })
-      @rememberedSubscriptions.push(subscription)
-      null      
+    if subscription?
+      if @connected() 
+        data = {
+          listenerName : @serverListenerName
+          subscription : subscription
+        }
+        console.log(data)
+        jQuery.ajax({
+          url: @subscribeUrl
+          data: JSON.stringify(data)
+          type: 'POST'
+          contentType: 'application/json'
+        })
+        @rememberedSubscriptions.push(subscription)
+        null
+      else
+        @pendingSubscriptions.push(subscription)      
       
   # If a subscription comes in while we're still trying to 
   # connect, but before the connection has been established,

@@ -20,6 +20,18 @@ object JsonConverters {
       }
     }
   }  
+
+  implicit class StringifyJsValue(val en: Enumerator[JsValue]) extends AnyVal {
+    def stringify = {
+      var sep = ""
+      for (j <- en) yield {
+        val s = sep + j.toString
+        sep = ","
+        s
+      }
+    }
+  }  
+  
   
   implicit class UserToJson(val u: Ref[User]) extends AnyVal {
         
@@ -154,7 +166,7 @@ object JsonConverters {
         ce <- entry
       ) yield Json.obj(
         "id" -> ce.id.stringify,
-        "course" -> ce._course.stringify,
+        "course" -> ce.course,
         "protect" -> ce.protect,
         "showFirst" -> ce.showFirst,
         "inTrash" -> ce.inTrash,
@@ -169,7 +181,7 @@ object JsonConverters {
         "site" -> ce.site,
         "updated" -> ce.updated,
         "created" -> ce.created,
-        "addedBy" -> ce._addedBy.stringify)
+        "addedBy" -> ce.addedBy)
     }    
     
     /**
@@ -288,6 +300,15 @@ object JsonConverters {
     }
   }
 
+  implicit object WritesRecordedChatEvent extends Writes[RecordedChatEvent] {
+    val ChatCommentToJson = Json.writes[ChatComment]
+    
+    def writes(rce:RecordedChatEvent) = rce match {
+      case cc:ChatComment => Json.obj("type" -> "chat") ++ ChatCommentToJson.writes(cc)
+      case _ => Json.obj("error" -> "unrecognised event")
+    }
+  }
+  
   
   implicit val GoogleSlidesToJson = Json.format[GoogleSlides]
   implicit val YouTubeVideoToJson = Json.format[YouTubeVideo]

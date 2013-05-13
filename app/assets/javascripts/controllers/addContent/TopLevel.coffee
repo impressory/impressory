@@ -22,14 +22,17 @@ define(["./base"], (l) ->
       ],
       
       "Broadcast": [
-      
+        { kind : "YouTube video", text: "YouTube" }
       ],
       
       "Wiki": [
-      
+        { kind : "Markdown wiki", text: "Markdown" },
+        { kind : "Structured wiki", text: "Page builder" }
       ],
       
       "Poll": [
+        { kind : "Pick poll", text: "Tick the box" },
+        { kind : "Free text poll", text: "Free text poll" }
       
       ]
       

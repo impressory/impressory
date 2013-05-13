@@ -1,6 +1,6 @@
 package com.impressory.play.eventroom
 
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{Json, JsValue, Writes}
 import com.wbillingsley.eventroom.{EventRoomGateway, Member, ListenTo, EREvent}
 import com.wbillingsley.handy.Ref._
 import com.wbillingsley.eventroom.Subscribe
@@ -12,11 +12,17 @@ case class Mem(u: Option[User]) extends Member {
   
   val nickname = u.flatMap(_.nickname).getOrElse("Anonymous")
   
-  def toJson = Some(Json.obj(
+  implicit def toJson = Some(Json.obj(
     "id" -> u.map(_.id.stringify),
     "nickname" -> nickname 
   ))
 
+}
+
+object Mem {
+  implicit object Writes extends Writes[Mem] {
+    def writes(m:Mem) = m.toJson.get
+  }
 }
 
 object EventRoom extends EventRoomGateway {

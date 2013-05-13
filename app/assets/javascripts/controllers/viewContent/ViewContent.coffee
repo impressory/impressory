@@ -2,8 +2,9 @@ define(["./base"], (l) ->
 
   Impressory.Controllers.ViewContent.ViewContent = ["$scope", "$routeParams", "$location", "viewingContent", ($scope, $routeParams, $location, viewingContent) ->
 
-
     updateView = (path) ->
+      $scope.courseId = $routeParams.courseId
+
       $scope.entryQuery = {
         courseId: $routeParams.courseId
         entryId: $routeParams.entryId

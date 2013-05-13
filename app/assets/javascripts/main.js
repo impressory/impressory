@@ -7,6 +7,7 @@ require([
   "modules/app",
   "modules/viewingCourse",
   "modules/viewingContent",
+  "modules/viewingEvents",
   "modules/viewingUsers",
   
   "controllers/login/IsLoggedIn",
@@ -31,6 +32,8 @@ require([
   "controllers/viewContent/EditDetails",
   "controllers/viewContent/ListContentForTopic",
   "controllers/viewContent/IframeSizer",
+  
+  "controllers/eventRoom/ViewEvents",
   
   "controllers/addContent/TopLevel",
   "controllers/addContent/GenericAddForm",

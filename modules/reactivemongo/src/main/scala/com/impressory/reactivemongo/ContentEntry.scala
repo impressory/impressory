@@ -15,9 +15,9 @@ trait ContentItem {
 
 class ContentEntry (
     
-  val _course: BSONObjectID,
+  val course: Ref[Course],
   
-  val _addedBy: BSONObjectID,
+  val addedBy: Ref[User],
   
   var kind: Option[String] = None,
   
@@ -59,10 +59,6 @@ class ContentEntry (
 
   def id = _id
   
-  lazy val course = (new RefById(classOf[Course], _course)).lookUp
-  
-  def addedBy = new RefById(classOf[User], _addedBy)
-  
 }
 
 object ContentEntry extends FindById[ContentEntry] {
@@ -72,7 +68,7 @@ object ContentEntry extends FindById[ContentEntry] {
   /* Note that when we write a content entry we do not write the votes or comments */
   implicit object bsonWriter extends BSONDocumentWriter[ContentEntry] {
     def write(ce: ContentEntry) = BSONDocument(
-      "course" -> ce._course, "addedBy" -> ce._addedBy,
+      "course" -> ce.course, "addedBy" -> ce.addedBy,
       "kind" -> ce.kind,
       "adjs" -> ce.adjectives, "nouns" -> ce.nouns, "topics" -> ce.topics,
       "site" -> ce.site, "title" -> ce.title, "note" -> ce.note, 
@@ -96,8 +92,8 @@ object ContentEntry extends FindById[ContentEntry] {
 
       val entry = new ContentEntry(
         _id = doc.getAs[BSONObjectID]("_id").get,
-        _course = doc.getAs[BSONObjectID]("course").get,
-        _addedBy = doc.getAs[BSONObjectID]("addedBy").get,
+        course = doc.getRef(classOf[Course], "course"),
+        addedBy = doc.getRef(classOf[User], "addedBy"),
         kind = doc.getAs[String]("kind"),
         item = item,
         adjectives = doc.getAs[Set[String]]("adjs").getOrElse(Set.empty),
@@ -129,11 +125,7 @@ object ContentEntry extends FindById[ContentEntry] {
   }
   
   def unsaved(course: Ref[Course], addedBy: Ref[User], kind:Option[String] = None) = {
-    for (
-      c <- Ref(course.getId) orIfNone RefFailed(new IllegalStateException("Course had no ID")); 
-      u <- Ref(addedBy.getId) orIfNone RefFailed(new IllegalStateException("User had no ID"))
-    ) yield new ContentEntry(_course = c, _addedBy = u, kind=kind)
-    
+    new ContentEntry(course=course, addedBy=addedBy, kind=kind).itself
   }
   
   /**

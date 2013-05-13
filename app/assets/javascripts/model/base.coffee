@@ -33,11 +33,19 @@ define(["lib/eventRoom"], (er) ->
           cache: { }
         }
         
+        EventRoom: {
+        
+          events: [
+            { type: 'chat', text: 'hello there' }
+          ]
+        
+        }
+        
       }
       
     }
     
-    #EventRoom: EventRoom.create()
+    EventRoom: null
   
   }
   

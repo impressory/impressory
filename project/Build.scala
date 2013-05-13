@@ -26,19 +26,23 @@ object ApplicationBuild extends Build {
       "com.wbillingsley" %% "handy-play" % "0.4-SNAPSHOT",
       "com.wbillingsley" %% "eventroom" % "0.1-SNAPSHOT"
     )
-    
-    lazy val aaaMain = play.Project(appName, appVersion, appDependencies).settings(
-        
-    	templatesImport += "com.wbillingsley.handy._",
-        
-  		resolvers += "handy" at "https://bitbucket.org/wbillingsley/mavenrepo/raw/master/snapshots/",
-    	
-      resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
 
+  lazy val aaaMain = play.Project(appName, appVersion, appDependencies).settings(
+
+    templatesImport += "com.wbillingsley.handy._",
+
+    resolvers += "handy" at "https://bitbucket.org/wbillingsley/mavenrepo/raw/master/snapshots/",
+
+    resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
+
+    requireJs ++= Seq(
+          "main.js" 
+    )
+    
         // Add your own project settings here      
-    ).dependsOn(
+  ).dependsOn(
       impressoryApi,
       impressoryReactivemongo
-    )
+  )
 
 }

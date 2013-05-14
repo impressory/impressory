@@ -77,7 +77,7 @@ object ContentModel {
     }).flatten 
   }  
 
-  def entriesForTopic(course:Ref[Course], tok:Approval[User], topic:Option[String], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
+  def entriesForTopic(course:Ref[Course], tok:Approval[User], topic:Option[String]):RefMany[ContentEntry] = {
     (for (approved <- tok ask Read(course)) yield {
       val all = ContentEntry.byTopic(course, topic.getOrElse(defaultTopic))
       all
@@ -89,6 +89,13 @@ object ContentModel {
     entriesForTopic(course, tok, topic).withFilter(applyFilters(_, filters))
   }  
   
+  def allEntries(course:Ref[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
+    (for (approved <- tok ask Read(course)) yield {
+      val all = ContentEntry.byCourse(course)
+      all
+    }).flatten 
+  }  
+
   /**
    * Pairs a ContentEntry wth a containing sequence
    */

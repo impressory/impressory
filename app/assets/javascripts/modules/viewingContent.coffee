@@ -3,14 +3,14 @@ define(["./app"], () ->
   Impressory.angularApp.service('viewingContent', ['$http', '$location', '$rootScope', '$window', ($http, $location, $rootScope, $window) ->
       
     viewing = Impressory.Model.Viewing
-    
+   
     $(window).on('resize', () ->
       console.log("resize ")
       $rootScope.wh = $window.innerHeight 
       $rootScope.$apply()
     )
 
-    $rootScope.wh = $window.innerHeight 
+    $rootScope.wh = $window.innerHeight    
    
     {
 
@@ -38,7 +38,19 @@ define(["./app"], () ->
             @updateDisplayedEntry()
           else
             null
-        
+      
+      
+      # Tries to find the given entry in the viewing set
+      findEntryInViewing: (entryId) -> 
+        if (entryId? and viewing.Content.entry?.id == entryId)
+          viewing.Content.entry
+        else
+          sIndex = @slideIndex(entryId)
+          if (sIndex >= 0)
+            viewing.Content.entry.item.entries(sIndex)
+          else 
+            null
+          
       
       # Calls the server to query for content, returning a promise to look up the new current entry
       fetchContent: (params) ->
@@ -56,6 +68,18 @@ define(["./app"], () ->
         viewing.Content = data
         @updateDisplayedEntry()
       
+      
+      # Attempts to update the data of an entry; if it's not in the vewing set, just views it.
+      updateEntryInPlace: (entry) ->
+        inview = @findEntryInViewing(entry.id)
+        if (inview)
+          angular.copy(entry, inview)
+          @updateDisplayedEntry()
+        else
+          @viewThisData({
+            entry: entry
+            seqIndex: -1
+          })
           
       # Gets the current entry (which may be an entry in a sequence)
       currentEntry: () ->

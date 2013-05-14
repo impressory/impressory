@@ -1,0 +1,28 @@
+@()
+
+<div class="edit-content-frame" ng-controller="Impressory.Controllers.EditContent.EditContent">
+
+  <div class="container">
+    <div ng-switch="entry.kind" >
+        <div ng-switch-when="web page" >
+          @views.html.partials.editcontent.kinds.webPage()
+        </div>
+        <div ng-switch-when="Google Slides">
+          @views.html.partials.editcontent.kinds.googleSlides()
+        </div>
+        <div ng-switch-when="YouTube video">
+          @views.html.partials.editcontent.kinds.youTubeVideo()
+        </div>
+        <div ng-switch-default>      
+          <div class="alert alert-error">
+              Whoops, we seem to have an unrecognised kind of content
+          </div>
+        </div>
+      </div>
+  
+    <div class="edit-content-footer">
+      <button class="btn" ng-click="panels.toggleEditContent()">Cancel</button>
+      <button class="btn btn-primary" ng-click="save()">Save</button>
+    </div>
+  </div>
+</div>

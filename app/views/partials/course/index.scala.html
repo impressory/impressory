@@ -1,0 +1,11 @@
+@() @views.html.partials.headerFront() @subheadCourse()
+
+<div ng-controller="Impressory.Controllers.Course.Index" class="course-index">
+
+
+  <div class="container">
+    <h3>Everything in the course</h3>
+    @views.html.partials.components.snipListEntries()
+  </div>
+
+</div>

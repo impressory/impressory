@@ -21,6 +21,7 @@ require([
   
   "controllers/course/Create",
   "controllers/course/Cover",
+  "controllers/course/Index",
   
   "controllers/components/EditTags",
 
@@ -32,6 +33,8 @@ require([
   "controllers/viewContent/EditDetails",
   "controllers/viewContent/ListContentForTopic",
   "controllers/viewContent/IframeSizer",
+  
+  "controllers/editContent/EditContent",
   
   "controllers/eventRoom/ViewEvents",
   

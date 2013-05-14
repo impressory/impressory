@@ -55,7 +55,9 @@ GET     /course/:id                 com.impressory.play.controllers.CourseContro
 GET     /course/:id/content         com.impressory.play.controllers.ContentController.contentQuery(id: String, entryId: Option[String] ?= None, adj:Option[String] ?= None, noun:Option[String] ?= None, topic:Option[String] ?= None, site:Option[String] ?= None)
 POST    /course/:id/addContent      com.impressory.play.controllers.ContentController.createContent(id: String)
 POST    /course/:courseId/entry/:entryId/editTags      com.impressory.play.controllers.ContentController.editTags(courseId: String, entryId: String)
+POST    /course/:courseId/entry/:entryId/editItem      com.impressory.play.controllers.ContentController.editItem(courseId: String, entryId: String)
 GET     /course/:id/entriesForTopic com.impressory.play.controllers.ContentController.entriesForTopic(id: String, topic:Option[String] ?= None)
+GET     /course/:id/allEntries      com.impressory.play.controllers.ContentController.allEntries(id: String)
 
 # EventRoom
 GET     /eventRoom/ssevents         com.impressory.play.controllers.EventController.serverSentEvents

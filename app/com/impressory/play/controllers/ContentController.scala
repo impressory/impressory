@@ -136,6 +136,39 @@ object ContentController extends Controller {
     result
   }
   
+  def editItem(courseId: String, entryId: String) = Action(parse.json) { implicit request => 
+    val entry = RefById(classOf[ContentEntry], entryId)
+    val user = RequestUtils.loggedInUser(request)
+    
+    val r = for (
+      // Resolve the references now, to save resolving them multiple times later
+      e <- entry;
+      u <- optionally(user);
+      
+      // Check the user is allowed to create the content (and to protect it if they've chosen to)
+      approval = Approval(u);
+      approved <- approval ask Permissions.EditContent(e.itself);
+      
+            // Add an appropriate item
+      updated <- {
+        e.item match {
+          case Some(wp:WebPage) => WebPageModel.updateWebPage(e, request.body)
+          case Some(y:YouTubeVideo) => { e.item = Some(OtherExternalsModel.updateYouTubeVideo(y,request.body)); e.itself }
+          case Some(gs:GoogleSlides) => { e.item = Some(OtherExternalsModel.updateGoogleSlides(gs,request.body)); e.itself }
+          case _ => RefNone
+        }        
+      };
+      
+      saved <- ContentEntry.saveWithItem(updated);
+      
+      // Convert to JSON
+      j <- saved.itself.toJsonForAppr(approval)
+    ) yield {
+      Ok(Json.obj("entry" -> j))
+    }
+    r
+  }
+  
   def editTags(courseId: String, entryId: String) = Action(parse.json) { implicit request => 
     val entry = RefById(classOf[ContentEntry], entryId)
     val user = RequestUtils.loggedInUser(request)
@@ -171,4 +204,20 @@ object ContentController extends Controller {
     Ok.stream(en).as("application/json")    
   }
 
+  def allEntries(courseId: String) = Action { implicit request => 
+    val course = RefById(classOf[Course], courseId)
+    val user = RequestUtils.loggedInUser(request)
+
+    val entries = for (
+      c <- course;
+      u <- optionally(user);
+      approval = Approval(u);
+      e <- ContentModel.allEntries(c.itself, approval);
+      j <- e.itself.toJson
+    ) yield j
+      
+    val en = Enumerator("{ \"entries\": [") andThen entries.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
+    Ok.stream(en).as("application/json")    
+  }  
+  
 }

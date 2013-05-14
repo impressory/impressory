@@ -9,9 +9,6 @@ import play.api.libs.concurrent.Execution.Implicits._
 import com.wbillingsley.handyplay.RefEnumIter
 import com.impressory.api.UserError
 
-trait ContentItem {
-  val itemType:String
-}
 
 class ContentEntry (
     
@@ -113,7 +110,6 @@ object ContentEntry extends FindById[ContentEntry] {
   }  
   
   def byTopic(course:Ref[Course], topic:String):RefMany[ContentEntry] = {
-    
     val res = for (cid <- course.getId) yield {
       val query = BSONDocument("course" -> cid, "topics" -> topic)
       val coll = DB.coll(collName)
@@ -121,9 +117,18 @@ object ContentEntry extends FindById[ContentEntry] {
       new RefEnumIter(cursor.enumerateBulks)
     }
     res.getOrElse(RefNone)
-    
   }
   
+  def byCourse(course:Ref[Course]):RefMany[ContentEntry] = {
+    val res = for (cid <- course.getId) yield {
+      val query = BSONDocument("course" -> cid)
+      val coll = DB.coll(collName)
+      val cursor = coll.find(query).cursor[ContentEntry]
+      new RefEnumIter(cursor.enumerateBulks)
+    }
+    res.getOrElse(RefNone)
+  }
+
   def unsaved(course: Ref[Course], addedBy: Ref[User], kind:Option[String] = None) = {
     new ContentEntry(course=course, addedBy=addedBy, kind=kind).itself
   }
@@ -131,15 +136,29 @@ object ContentEntry extends FindById[ContentEntry] {
   /**
    * Updates the Item in a ContentEntry
    */
-  def setItem[I >: ContentItem](ce:Ref[ContentEntry], item:I)(implicit dw:BSONDocumentWriter[I]) = {
+  def setItem(ce:Ref[ContentEntry], item:ContentItem):Ref[ContentEntry] = {
     val res = for (cid <- ce.getId) yield {
       val query = BSONDocument("_id" -> cid)
-      val update = BSONDocument("$set" -> BSONDocument("item" -> item))
+      val update = BSONDocument("$set" -> BSONDocument("item" -> item, "updated" -> System.currentTimeMillis()))
       val fle = DB.coll(collName).update(query, update)
       val rfr = fle.map { _ => byId(cid) } recover { case x:Throwable => RefFailed(x) }
       new RefFutureRef(rfr)
     }
-    res.getOrElse()
+    res.getOrElse(RefNone)
+  }
+  
+  /**
+   * Saves the content entry including its item. This tends to be used where editing the item also updates
+   * the metadata (eg, changing the URL of a web page may change the site metadata)
+   */
+  def saveWithItem(ce:ContentEntry) = {
+    ce.updated = System.currentTimeMillis()
+    val doc = bsonWriter.write(ce)
+    val docWithItem = doc ++ BSONDocument("_id" -> ce._id, "item" -> ce.item)
+    
+    val fle = DB.coll(collName).save(docWithItem)
+    val fut = fle.map { _ => ce.itself } recover { case x:Throwable => RefFailed(x) }
+    new RefFutureRef(fut)    
   }
   
   /**
@@ -147,14 +166,7 @@ object ContentEntry extends FindById[ContentEntry] {
    */
   def saveNew(ce:ContentEntry) = {
     val doc = bsonWriter.write(ce)
-    val item = ce.item match {
-      case Some(cs:ContentSequence) => ContentSequence.bsonWriter.write(cs) 
-      case Some(wp:WebPage) => WebPage.bsonWriter.write(wp) 
-      case Some(gs:GoogleSlides) => GoogleSlides.format.write(gs)
-      case Some(y:YouTubeVideo) => YouTubeVideo.format.write(y)
-      case _ => BSONDocument()
-    }
-    val docWithItem = doc ++ BSONDocument("_id" -> ce._id, "item" -> item)
+    val docWithItem = doc ++ BSONDocument("_id" -> ce._id, "item" -> ce.item)
     
     val fle = DB.coll(collName).save(docWithItem)
     val fut = fle.map { _ => ce.itself } recover { case x:Throwable => RefFailed(x) }

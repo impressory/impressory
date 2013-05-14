@@ -36,6 +36,8 @@ package object model {
   type ContentEntry = reactivemongo.ContentEntry
   val ContentEntry = reactivemongo.ContentEntry
   
+  type ContentItem = reactivemongo.ContentItem
+  
   type ContentSequence = reactivemongo.ContentSequence
   val ContentSequence = reactivemongo.ContentSequence
   

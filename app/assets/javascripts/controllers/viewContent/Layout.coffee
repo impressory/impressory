@@ -30,6 +30,9 @@ define(["./base"], (l) ->
       toggleEditDetails: () -> 
         @top = if (@top == "editDetails") then null else "editDetails"
 
+      toggleEditContent: () -> 
+        @top = if (@top == "editContent") then null else "editContent"
+
       toggleComments: () -> 
         @top = if (@top == "comments") then null else "comments"
         

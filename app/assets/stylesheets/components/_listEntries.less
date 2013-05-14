@@ -15,6 +15,14 @@
   
   .entry {
     padding: 5px;
+    
+    .adj:after,.noun:after,.topic:after {
+        content: ",";
+    }
+    .adj:last-child:after,.noun:last-child:after,.topic:last-child:after {
+        content: "";
+    }
+    
   }
   .entry:nth-child(even) {
     background-color: #fbfbfb;

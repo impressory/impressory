@@ -21,7 +21,7 @@
           </button>
         </li>
         <li class="navli">
-          <button class="command require-edit"  
+          <button class="command require-edit" ng-class="{ 'active': panels.top == 'editContent' }" ng-click="panels.toggleEditContent()"
             id="edit-button" title="Edit content">
             <i class="icon-edit"></i>
           </button></li>
@@ -89,6 +89,9 @@
         </div>
         <div ng-switch-when="contentForTopic" >
           @snipContentForTopic()
+        </div>
+        <div ng-switch-when="editContent" >
+          @snipEditContent()
         </div>
       
       </div>

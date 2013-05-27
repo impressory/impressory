@@ -1,0 +1,22 @@
+@()
+
+@templateAddForm("Markdown page") {
+
+<div>
+  <h4>Create Markdown page</h4>
+  
+  <p>
+    This creates a Wiki page in "Markdown" format. For example:
+    <pre>This is in __bold__</pre>
+    becomes
+    <blockquote>This is in <b>bold</b></blockquote>
+  </p>
+  
+  <p>
+    You can also write presentations using this format.
+  </p>
+
+  <div ng-init="entry.nouns = [ 'Presentation' ]"></div>
+</div>
+
+}

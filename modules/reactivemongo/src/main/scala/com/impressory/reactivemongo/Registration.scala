@@ -9,7 +9,7 @@ import com.impressory.api._
 
 class Registration(
 
-  val _course: BSONObjectID,
+  val course: Ref[Course],
 
   var roles: Set[CourseRole] = Set(CourseRole.Reader),
   
@@ -23,8 +23,6 @@ class Registration(
 
   def id = _id
   
-  def course = RefById(classOf[Course], _course)
-
 }
 
 object Registration {
@@ -41,7 +39,7 @@ object Registration {
   implicit object bsonWriter extends BSONDocumentWriter[Registration] {
     def write(reg: Registration) = BSONDocument(
       "_id" -> reg._id,
-      "course" -> reg._course,
+      "course" -> reg.course,
       "roles" -> reg.roles,
       "updated" -> reg.updated,
       "created" -> reg.created
@@ -53,7 +51,7 @@ object Registration {
 
       new Registration(
         _id = doc.getAs[BSONObjectID]("_id").get,
-        _course = doc.getAs[BSONObjectID]("course").get,
+        course = doc.getRef(classOf[Course], "course"),
         roles = doc.getAs[Set[CourseRole]]("roles").getOrElse(Set.empty),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)

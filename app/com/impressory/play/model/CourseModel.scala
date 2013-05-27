@@ -34,5 +34,43 @@ object CourseModel {
     ) yield saved
   }
   
+  
+  def updateInvite(ci:CourseInvite, jsVal:JsValue) = {
+    for (code <- (jsVal \ "code").asOpt[String] if !code.trim().isEmpty) { ci.code = code.trim() }
+    for (limitedNum <- (jsVal \ "limitedNumber").asOpt[Boolean]) { ci.limitedNumber = limitedNum }
+    for (remaining <- (jsVal \ "remaining").asOpt[Int]) { ci.remaining = remaining }
+    for (
+      (role, value) <- (jsVal \ "roles").asOpt[Map[String, Boolean]].getOrElse(Map.empty) 
+    ) {
+      if (value) {
+        ci.roles += CourseRole.valueOf(role)
+      } else {
+        ci.roles -= CourseRole.valueOf(role)
+      }
+    }
+    ci
+  }
+  
+  def createInvite(approval:Approval[User], course:Ref[Course], config: JsValue):Ref[CourseInvite] = {
+    for (
+      c <- course;
+      a <- approval ask Permissions.ManageCourseInvites(c.itself);
+      invite = new CourseInvite(course, addedBy = approval.who);
+      upd = updateInvite(invite, config);
+      saved <- CourseInvite.saveNew(upd)
+    ) yield saved
+  }
+  
+  
+  def useInvite(approval:Approval[User], course:Ref[Course], code: String) = {
+    for (
+      c <- course;
+      approved <- approval ask Permissions.RegisterUsingInvite(course);
+      invite <- CourseInvite.availableByCode(c.itself, code);
+      used <- CourseInvite.use(invite.itself, approval.who);
+      reg <- User.register(approval.who, course, invite.roles)
+    ) yield reg
+  }
+  
 
 }

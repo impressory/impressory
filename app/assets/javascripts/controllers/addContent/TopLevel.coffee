@@ -26,7 +26,7 @@ define(["./base"], (l) ->
       ],
       
       "Wiki": [
-        { kind : "Markdown wiki", text: "Markdown" },
+        { kind : "Markdown page", text: "Markdown" },
         { kind : "Structured wiki", text: "Page builder" }
       ],
       

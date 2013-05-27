@@ -30,40 +30,29 @@ object ContentController extends Controller {
     val course = RefById(classOf[Course], courseId)
     val user = RequestUtils.loggedInUser(request)
     
-    val entry = entryId match {
-      // An entry ID has been given. Fetch it if allowed.
-      case Some(eid) => {
-        val entry = RefById(classOf[ContentEntry], eid)
-        
-        for (
-          u <- optionally(user);
-          e <- entry;
-          approval = Approval(u);
-          a <- approval ask Permissions.ReadEntry(e.itself)
-        ) yield e
-      }
-      
-      // An entry ID has not been given. Search according to the filters.
-      case None => {
-        
-        val filters = Map.empty[String, String] ++
-          adj.map { a => "adjective" -> a } ++
-          noun.map { n => "noun" -> n } ++
-          site.map { s => "site" -> s }
-          
-        for (
-          u <- optionally(user);
-          c <- course;
-          approval = Approval(u);
-          e <- ContentModel.recommendCE(c.itself, approval, topic, filters)
-        ) yield e
-      }
-    }
-    
-    // Find whether to display this entry as part of a ContentSequence
     val result = for (
-        eis <- ContentModel.entryInSequence(entry, RefNone);
-        j <- eis.itself.toJson
+      u <- optionally(user);
+      approval = Approval(u);
+      
+      e <- entryId match {
+        case Some(eid) => {
+          // An entry ID has been given. Fetch it if allowed.          
+          val entry = RefById(classOf[ContentEntry], eid)
+          for (e <- entry; a <- approval ask Permissions.ReadEntry(e.itself)) yield e
+        }
+        case None => {
+          // An entry ID has not been given. Search according to the filters.
+          val filters = Map.empty[String, String] ++
+            adj.map { a => "adjective" -> a } ++
+            noun.map { n => "noun" -> n } ++
+            site.map { s => "site" -> s }
+            for (c <- course; e <- ContentModel.recommendCE(c.itself, approval, topic, filters)) yield e
+        }
+      };
+      
+      // Find whether to display this entry as part of a ContentSequence
+      eis <- ContentModel.entryInSequence(e.itself, RefNone);
+      j <- eis.itself.toJsonForAppr(approval)
     ) yield Ok(j)
       
     result
@@ -107,6 +96,7 @@ object ContentController extends Controller {
           case Some(WebPage.itemType) => WebPageModel.create(c.itself, approval, updated, requestBody).itself
           case Some(GoogleSlides.itemType) => OtherExternalsModel.createGoogleSlides(c.itself, approval, updated, requestBody).itself
           case Some(YouTubeVideo.itemType) => OtherExternalsModel.createYouTubeVideo(c.itself, approval, updated, requestBody).itself
+          case Some(MarkdownPage.itemType) => MarkdownPageModel.create(c.itself, approval, updated)
           case _ => RefNone
         }        
       };
@@ -155,6 +145,7 @@ object ContentController extends Controller {
           case Some(wp:WebPage) => WebPageModel.updateWebPage(e, request.body)
           case Some(y:YouTubeVideo) => { e.item = Some(OtherExternalsModel.updateYouTubeVideo(y,request.body)); e.itself }
           case Some(gs:GoogleSlides) => { e.item = Some(OtherExternalsModel.updateGoogleSlides(gs,request.body)); e.itself }
+          case Some(mp:MarkdownPage) => MarkdownPageModel.updateItem(e, request.body)
           case _ => RefNone
         }        
       };

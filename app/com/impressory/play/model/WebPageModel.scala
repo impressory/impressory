@@ -12,6 +12,11 @@ import play.api.libs.json._
  */
 object WebPageModel {
 
+  def toJson(wp:WebPage) = Json.obj(
+      "url" -> wp.url,
+      "noFrame" -> wp.noFrame
+  )
+  
   def site(url: String) = {
     import java.net.{ URI, URISyntaxException }
 

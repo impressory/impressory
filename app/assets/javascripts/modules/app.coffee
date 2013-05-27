@@ -1,7 +1,7 @@
 
 define(["model/base"], () ->
-  
-  Impressory.angularApp = angular.module('impressory', ['ngResource'])
+ 
+  Impressory.angularApp = angular.module('impressory', ['ngSanitize'])
   
   Impressory.angularApp.config(['$locationProvider', ($locationProvider) ->
       $locationProvider.html5Mode(true)
@@ -20,6 +20,7 @@ define(["model/base"], () ->
         when('/help', { templateUrl: 'partials/help.html' }).
         when('/createCourse', { templateUrl: 'partials/course/create.html' }).
         when('/course/:courseId', { templateUrl: '/partials/course/cover.html' }).
+        when('/course/:courseId/invites', { templateUrl: '/partials/course/invites.html' }).
         when('/course/:courseId/listContent', { templateUrl: '/partials/course/listContent.html' }).
         when('/course/:courseId/index', { templateUrl: '/partials/course/index.html' }).
         when('/course/:courseId/chatRoom', { templateUrl: '/partials/course/chatRoom.html' }).

@@ -1,6 +1,6 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.ViewContent.Layout = ["$scope", ($scope) ->
+  Impressory.Controllers.ViewContent.Layout = ["$scope", "$location", ($scope, $location) ->
   
     # Used by the contentForTopic subview
     $scope.searchTopic = null
@@ -42,7 +42,15 @@ define(["./base"], (l) ->
         else
           $scope.searchTopic = topic 
           "contentForTopic"
+          
+      closeTop: () -> @top = null 
     }
+    
+    $scope.$on('$routeUpdate', (path) ->
+      $scope.panels.closeTop()
+    )
+  
+    
   ]
 
 )

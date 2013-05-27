@@ -21,8 +21,8 @@ object CourseController extends Controller {
   var defaultPageOneContent = "(to be loaded)";
     
   /**
-   * HTML Form handler for creating a book; redirects to the book's cover page
-   * @return redirects to the book's cover page
+   * Handler for creating a book
+   * { course: { ... } }
    */
   def createCourse = Action(parse.json) { implicit request =>
     val user = RequestUtils.loggedInUser(request)
@@ -38,6 +38,10 @@ object CourseController extends Controller {
     resp
   }
 
+  /**
+   * Courses for which the "listed" flag has been set
+   * { courses: [ ... ] }
+   */
   def listedCourses = Action { implicit request => 
     val user = RequestUtils.loggedInUser(request)
 
@@ -51,12 +55,19 @@ object CourseController extends Controller {
     Ok.stream(en).as("application/json")
   }
   
+  /**
+   * Courses for which the logged in user is registered, in JSON format
+   * { courses: [ ... ] }
+   */
   def myCourses = Action { implicit request => 
     val user = RequestUtils.loggedInUser(request)
     
     val courses = for (
       u <- user;
-      c <- new RefManyById(classOf[Course], u.registrations.map(_._course));
+      courseIds = {
+        for (r <- u.registrations; id <- r.course.getId) yield id
+      };
+      c <- new RefManyById(classOf[Course], courseIds);
       j <- c.itself.toJson
     ) yield j
       
@@ -64,7 +75,10 @@ object CourseController extends Controller {
     Ok.stream(en).as("application/json")
   }
   
-  def get(cid:String) = Action { implicit request => 
+  /**
+   * JSON for a specific course
+   */
+  def get(cid:String) = Angular { Action { implicit request => 
     val user = RequestUtils.loggedInUser(request)
     
     val r = for (
@@ -73,8 +87,57 @@ object CourseController extends Controller {
       j <- c.itself.toJsonForAppr(Approval(u))
     ) yield Ok(j)
     r
-    
-  }
+  }}
 
+  /**
+   * Invites for a specific course
+   */
+  def invites(cid: String) = Angular { Action { implicit request => 
+    val user = RequestUtils.loggedInUser(request)
+    val course = RefById(classOf[Course], cid)
+    
+    val invites = for (
+      u <- optionally(user);
+      approval = Approval(u);
+      c <- course;
+      approved <- approval ask Permissions.ManageCourseInvites(c.itself);
+      is <- CourseInvite.byCourse(c.itself);
+      j <- is.itself.toJson
+    ) yield j
+      
+    val en = Enumerator("{ \"invites\": [") andThen invites.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
+    Ok.stream(en).as("application/json")
+  }}
+  
+  /**
+   * Creates an invite that will allow someone to register for a course
+   */
+  def createInvite(cid:String) = Action(parse.json) { implicit request => 
+    val user = RequestUtils.loggedInUser(request)
+    val course = RefById(classOf[Course], cid)
+
+    val r = for (
+      ci <- CourseModel.createInvite(Approval(user), course, request.body);
+      j <- ci.itself.toJson
+    ) yield Ok(j)
+    r
+  }
+  
+  /**
+   * Registers the logged in user for the given course using the invite code.
+   */
+  def useInvite(cid:String) = Action(parse.json) { implicit request => 
+    val user = RequestUtils.loggedInUser(request)
+    val course = RefById(classOf[Course], cid)
+
+    val r = for (
+      code <- Ref((request.body \ "code").asOpt[String]) orIfNone UserError("No code entered");
+      u <- user;
+      c <- course;
+      reg <- CourseModel.useInvite(Approval(u.itself), c.itself, code);
+      j <- reg.itself.toJson
+    ) yield Ok(j)
+    r
+  }
 
 }

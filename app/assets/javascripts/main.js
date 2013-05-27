@@ -3,12 +3,15 @@
  * (At the moment we're just including everything!)
  */
 require([
+  "lib/eventRoom",
+         
   "model/base",
   "modules/app",
   "modules/viewingCourse",
   "modules/viewingContent",
   "modules/viewingEvents",
   "modules/viewingUsers",
+  "modules/markdownService",
   
   "controllers/login/IsLoggedIn",
   "controllers/login/LogInForm",
@@ -22,8 +25,10 @@ require([
   "controllers/course/Create",
   "controllers/course/Cover",
   "controllers/course/Index",
+  "controllers/course/Invites",
   
   "controllers/components/EditTags",
+  "controllers/components/FillHeight",
 
   "controllers/viewContent/ViewContent",
   "controllers/viewContent/Layout",
@@ -32,7 +37,6 @@ require([
   "controllers/viewContent/MainContent",
   "controllers/viewContent/EditDetails",
   "controllers/viewContent/ListContentForTopic",
-  "controllers/viewContent/IframeSizer",
   
   "controllers/editContent/EditContent",
   
@@ -41,7 +45,10 @@ require([
   "controllers/addContent/TopLevel",
   "controllers/addContent/GenericAddForm",
   "controllers/addContent/WebPage",
-  "controllers/addContent/Sequence"
+  "controllers/addContent/Sequence",
+  
+  "controllers/markdownPage/View",
+  "controllers/markdownPage/Edit"
   
 ], function(l) {
 	console.log("library has loaded")

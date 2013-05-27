@@ -47,6 +47,9 @@ package object model {
   type ChatComment = reactivemongo.ChatComment
   val ChatComment = reactivemongo.ChatComment
   
+  type CourseInvite = reactivemongo.CourseInvite
+  val CourseInvite = reactivemongo.CourseInvite
+  
   type RecordedChatEvent = reactivemongo.RecordedChatEvent
   
   
@@ -54,6 +57,11 @@ package object model {
   val GoogleSlides = reactivemongo.GoogleSlides
   type YouTubeVideo = reactivemongo.YouTubeVideo
   val YouTubeVideo = reactivemongo.YouTubeVideo
+  type MarkdownPage = reactivemongo.MarkdownPage
+  val MarkdownPage = reactivemongo.MarkdownPage
+  type MultipleChoicePoll = reactivemongo.MultipleChoicePoll
+  val MultipleChoicePoll = reactivemongo.MultipleChoicePoll
+  
   
   implicit object bsonWrites extends Writes[BSONObjectID] {
     def writes(id:BSONObjectID) = JsString(id.stringify)

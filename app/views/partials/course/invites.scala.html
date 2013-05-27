@@ -1,0 +1,70 @@
+<div ng-controller="Impressory.Controllers.Course.Cover">
+
+@() @views.html.partials.headerFront() @subheadCourse()
+
+<div class="container" ng-controller="Impressory.Controllers.Course.Invites">
+  
+    <div class="alert alert-error" ng-repeat="error in errors">{{ error }}</div>
+  
+    <h3>Invites</h3>
+    <p>
+    Invites are one of the ways you can allow students and other staff to register for your
+    course. Create the invite, give the code to whoever you want to register, and ask them to enter it in the orange
+    box on the cover page.
+    </p>
+
+    <h4>Active invites for this course</h4>
+    
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Roles</th>
+          <th>Used</th>
+          <th>Remaining</th>
+        </tr>
+      </thead>
+      <tbody style="background-color: white;">
+        <tr ng-repeat="invite in invites">
+          <td>{{ invite.code }}</td>
+          <td>
+            <span ng-repeat="role in invite.roles">{{ role }}</span>
+          </td>
+          <td>{{ invite.used }}</td>
+          <td>
+            <span ng-show="invite.limitedNumber">{{ invite.remaining }}</span>
+            <span ng-hide="invite.limitedNumber">Unlimited</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <form class="form-inline"><fieldset>
+      <h4>Create an invite</h4>
+      
+      
+      <h5>Code</h5>
+      <p>
+        <input ng-model="newInvite.code" placeholder="(Auto-generate)" type="text" value="" />
+      </p>
+      
+      <h5>Roles this invite will grant</h5>
+      <p>
+      @for(role <- com.impressory.api.CourseRole.values) {
+        <label class="invites-inline-label checkbox">
+          <input type="checkbox" ng-model="newInvite.roles.@role" />
+          @role &nbsp;
+        </label>
+      }
+      </p>
+      
+      <h5>Number of uses</h5>
+      <p>
+      <label class="invites-inline-label checkbox"><input type="checkbox" ng-model="newInvite.limitedNumber" /> limited to</label>
+      <input id="create-invite-number" type="number" ng-model="newInvite.remaining" ng-disabled="!newInvite.limitedNumber" placeholder="how many"/>
+      </p>
+      <button class="btn btn-primary" ng-click="create(newInvite)">Create</button>
+    </fieldset></form>  
+  
+</div>
+</div>

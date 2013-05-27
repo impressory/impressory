@@ -15,13 +15,13 @@
   
       <ul class="ceTools">
         <li class="navli">
-          <button class="command require-edit" ng-class="{ 'active': panels.top == 'editDetails' }"
+          <button class="command require-edit" ng-disabled="!viewing.Content.display.permissions.edit" ng-class="{ 'active': panels.top == 'editDetails' }"
             title="Edit details and tags" ng-click="panels.toggleEditDetails()">
             <i class="icon-tags"></i>
           </button>
         </li>
         <li class="navli">
-          <button class="command require-edit" ng-class="{ 'active': panels.top == 'editContent' }" ng-click="panels.toggleEditContent()"
+          <button class="command require-edit" ng-disabled="!viewing.Content.display.permissions.edit" ng-class="{ 'active': panels.top == 'editContent' }" ng-click="panels.toggleEditContent()"
             id="edit-button" title="Edit content">
             <i class="icon-edit"></i>
           </button></li>
@@ -68,8 +68,9 @@
       </div>
     </div>
 
-    <div class="overlay">
-      <div ng-switch="panels.top">
+    <!-- Stop the fixed content from overflowing the screen. Note that the switch still works off the TopNav controller -->
+    <div class="overlay" ng-controller="Impressory.Controllers.Components.FillHeight">
+      <div ng-switch="panels.top" ng-style="{ 'max-height': fillHeight, 'overflow-y': 'auto' }">
       
         <div ng-switch-when="menu" >
           @views.html.partials.headerFront()

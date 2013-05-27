@@ -51,6 +51,11 @@ POST    /courses/create             com.impressory.play.controllers.CourseContro
 # Course
 GET     /course/:id                 com.impressory.play.controllers.CourseController.get(id)
 
+# Course Invites
+GET     /course/:id/invites         com.impressory.play.controllers.CourseController.invites(id)
+POST    /course/:id/createInvite    com.impressory.play.controllers.CourseController.createInvite(id)
+POST    /course/:id/useInvite       com.impressory.play.controllers.CourseController.useInvite(id)
+
 # Content
 GET     /course/:id/content         com.impressory.play.controllers.ContentController.contentQuery(id: String, entryId: Option[String] ?= None, adj:Option[String] ?= None, noun:Option[String] ?= None, topic:Option[String] ?= None, site:Option[String] ?= None)
 POST    /course/:id/addContent      com.impressory.play.controllers.ContentController.createContent(id: String)

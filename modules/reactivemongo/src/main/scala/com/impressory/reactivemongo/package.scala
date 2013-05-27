@@ -10,6 +10,7 @@ package object reactivemongo {
     def write(r:Ref[T]) = r.getId(HasBSONId.GetsBSONId).getOrElse(BSONNull)
   }
   
+  
   implicit class DocRefGetter(val doc: BSONDocument) extends AnyVal {
     def getRef[T](c:Class[T], key:String) = {
       val o:Option[BSONObjectID] = doc.getAs[BSONObjectID](key)

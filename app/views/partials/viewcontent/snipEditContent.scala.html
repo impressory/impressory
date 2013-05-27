@@ -13,6 +13,9 @@
         <div ng-switch-when="YouTube video">
           @views.html.partials.editcontent.kinds.youTubeVideo()
         </div>
+        <div ng-switch-when="Markdown page">
+          @views.html.partials.editcontent.kinds.markdownPage()
+        </div>
         <div ng-switch-default>      
           <div class="alert alert-error">
               Whoops, we seem to have an unrecognised kind of content

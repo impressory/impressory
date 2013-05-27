@@ -14,7 +14,7 @@
         <h4>Administer</h4>
         <ul>
             <li><a href="">Edit details</a></li>
-            <li><a href="">Manage invites</a></li>
+            <li><a href="/course/{{course.id}}/invites">Manage invites</a></li>
         </ul>
     </div>
 
@@ -31,10 +31,10 @@
         </div>
 
         <div class="inviteForm">
-            <form method="POST" action="">
-                <h5>Use invite code</h5>
-                <input type="text" name="code" placeholder="code" />
-                <button type="submit" class="btn">Use</button>
+            <h5>Use invite code</h5>
+            <form class="form-inline">
+                <input type="text" ng-model="invitePacket.code" placeholder="code" />
+                <button type="button" ng-click="useInvite(invitePacket)" class="btn">Use</button>
             </form>
         </div>
     </div>

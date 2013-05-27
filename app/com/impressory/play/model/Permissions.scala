@@ -95,6 +95,18 @@ object Permissions {
     }
   }  
 
+  /**
+   * View, edit, or create invites to a course
+   */
+  case class ManageCourseInvites(course:Ref[Course]) extends PermOnIdRef[User, Course](course)  {
+    def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Administrator)
+  }  
+  
+  case class RegisterUsingInvite(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
+    def resolve(prior:Approval[User]) = {
+      (for (u <- prior.who) yield Approved("Anyone may register using an invite")) orIfNone Refused("You are not logged in")
+    }
+  }  
 
   /*-------------------------
   * Invitation and registration methods
@@ -114,7 +126,7 @@ object Permissions {
     for (
        c <- course;
        u <- user;
-       r <- u.registrations.find(_._course == c.id)
+       r <- u.registrations.find(_.course.getId == Some(c.id))
     ) yield r.roles
   }
   

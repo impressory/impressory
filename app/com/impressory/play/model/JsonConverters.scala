@@ -94,7 +94,7 @@ object JsonConverters {
   implicit class RegistrationToJson(val r: Ref[Registration]) extends AnyVal {
     def toJson: Ref[JsValue] = {
       for (reg <- r) yield Json.obj(
-        "course" -> reg._course.stringify,
+        "course" -> reg.course.getId.map(_.stringify),
         "roles" -> reg.roles.map(_.toString), 
         "created" -> reg.created,
         "updated" -> reg.updated
@@ -132,7 +132,7 @@ object JsonConverters {
         // Registrations. Note, can produce RefNone
         val reg = for (
             u <- appr.who;
-            r <- Ref(u.registrations.find(_._course == course.id));
+            r <- Ref(u.registrations.find(_.course.getId == Some(course.id)));
             json <- r.itself.toJson
         ) yield json
         
@@ -153,6 +153,34 @@ object JsonConverters {
       }
       rr.flatten
     }
+  }
+  
+  /**
+   * Converts ContentItems to JSON format. This uses a partial function so that
+   * new ContentItems can register themselves without needing to edit and recompile
+   * this class.
+   */
+  implicit object ContentItemToJson {
+    
+    /**
+     * The partial function (which includes all registered partial functions) for
+     * converting to JSON
+     */
+    var pf:PartialFunction[ContentItem, Ref[JsValue]] = {
+      case cs:ContentSequence => cs.itself.toJson
+      case gs:GoogleSlides => OtherExternalsModel.GoogleSlidesToJson.writes(gs).itself
+      case y:YouTubeVideo => OtherExternalsModel.YouTubeVideoToJson.writes(y).itself
+      case wp:WebPage => WebPageModel.toJson(wp).itself
+      case mp:MarkdownPage => MarkdownPageModel.toJson(mp).itself
+      case _ => JsNull.itself 
+    } 
+    
+    def writes(ci:ContentItem) = pf(ci)
+    
+  }
+  
+  implicit class ContentItemToJson(val ci: ContentItem) extends AnyVal {
+    def toJson = ContentItemToJson.writes(ci)
   }
   
   
@@ -191,17 +219,10 @@ object JsonConverters {
       for (
         ce <- entry;
         cj <- ce.itself.toJsonCore;
-        item <- optionally {
-          ce.item match {
-            case Some(wp:WebPage) => wp.toJson.itself
-            case Some(cs:ContentSequence) => cs.itself.toJson
-            case Some(gs:GoogleSlides) => GoogleSlidesToJson.writes(gs).itself
-            case Some(y:YouTubeVideo) => YouTubeVideoToJson.writes(y).itself
-            case _ => RefNone
-          }
-        }
+        item <- Ref(ce.item);
+        itemj <- item.toJson
       ) yield {
-        cj ++ Json.obj("item" -> item)
+        cj ++ Json.obj("item" -> itemj)
       }
     }
     
@@ -213,13 +234,8 @@ object JsonConverters {
     def toJsonForAppr(appr:Approval[User]):Ref[JsObject] = {
       val rr = for (
         ce <- entry;
-        item <- optionally {
-          ce.item match {
-            case Some(wp:WebPage) => wp.toJson.itself
-            case Some(cs:ContentSequence) => cs.itself.toJsonForAppr(appr)
-            case _ => RefNone
-          }
-        }        
+        item <- Ref(ce.item);
+        itemj <- item.toJson
       ) yield {
         
         // Permissions.
@@ -234,7 +250,7 @@ object JsonConverters {
         // Combine the JSON responses, noting that reg or perms might be RefNone
         for (ej <- ce.itself.toJson; p <- optionally(perms)) yield ej ++ Json.obj(
           "permissions" -> p,
-          "item" -> item
+          "item" -> itemj
         )
       }
       rr.flatten
@@ -261,13 +277,6 @@ object JsonConverters {
         "entry" -> entry,
         "seqIndex" -> eis.index.orElse(Some(-1)))
     }    
-  }
-  
-  implicit class WebPageToJson(val wp: WebPage) extends AnyVal {
-    def toJson = Json.obj(
-      "url" -> wp.url,
-      "noFrame" -> wp.noFrame
-    )
   }
 
   implicit class ContentSequenceToJson(val rcs: Ref[ContentSequence]) extends AnyVal {
@@ -299,6 +308,16 @@ object JsonConverters {
         "entries" -> entries.toSeq)      
     }
   }
+  
+  implicit class CourseInviteToJson(val rci:Ref[CourseInvite]) extends AnyVal {
+    def toJson = for (ci <- rci) yield Json.obj(
+      "code" -> ci.code,
+      "used" -> ci._usedBy.length,
+      "limitedNumber" -> ci.limitedNumber,
+      "remaining" -> ci.remaining,
+      "roles" -> ci.roles.map(_.toString())
+    )
+  }
 
   implicit object WritesRecordedChatEvent extends Writes[RecordedChatEvent] {
     val ChatCommentToJson = Json.writes[ChatComment]
@@ -309,8 +328,7 @@ object JsonConverters {
     }
   }
   
-  
-  implicit val GoogleSlidesToJson = Json.format[GoogleSlides]
-  implicit val YouTubeVideoToJson = Json.format[YouTubeVideo]
+    
+
   
 }

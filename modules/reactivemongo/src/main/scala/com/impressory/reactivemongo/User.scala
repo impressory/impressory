@@ -186,22 +186,33 @@ object User extends FindById[User] {
   def register(u: Ref[User], c:Ref[Course], roles:Set[CourseRole]) = {
     import HasBSONId._
     
-    val rr = for (
-      uid <- u.getId;
-      cid <- c.getId
-    ) yield {
-      val query = BSONDocument("_id" -> uid, "registrations.course" -> BSONDocument("$ne" -> cid))
-      val reg = new Registration(_course=cid, roles=roles)
-      val update = BSONDocument("$push" -> BSONDocument("registrations" -> reg))
-      val fle = DB.coll(collName).update(query, update)
-      val rfr = fle map { _ => reg.itself } recover {
-        case l:LastError => {
-          RefFailed(l)
-        }
+    val coll = DB.coll(collName)
+    val reg = new Registration(course=c, roles=roles)
+    
+    val ffle = for (opt <- coll.find(BSONDocument("_id" -> u, "registrations.course" -> c)).one[User]) yield {
+      val fle = if (opt.isEmpty) {
+        // User is not registered for this course (or does not exist)
+        val query = BSONDocument("_id" -> u)
+        val update = BSONDocument("$push" -> BSONDocument("registrations" -> reg))
+        coll.update(query, update)
+      } else {
+        // User is registered for this course
+        import Registration._
+        
+        val query = BSONDocument("_id" -> u, "registrations.course" -> c)
+        val update = BSONDocument("$addToSet" -> BSONDocument("registrations.$.roles" -> BSONDocument("$each" -> roles)))
+        coll.update(query, update)
       }
-      new RefFutureRef(rfr)
+      fle
+    } 
+    val fle = ffle.flatMap(fle => fle)
+    
+    val rfr = fle map { _ => reg.itself } recover {
+      case l:LastError => {
+        RefFailed(l)
+      }
     }
-    rr.getOrElse(RefNone)
+    new RefFutureRef(rfr)
   }
 
 }

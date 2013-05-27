@@ -84,6 +84,8 @@ object ContentEntry extends FindById[ContentEntry] {
         case WebPage.itemType => doc.getAs[WebPage]("item")
         case GoogleSlides.itemType => doc.getAs[GoogleSlides]("item")
         case YouTubeVideo.itemType => doc.getAs[YouTubeVideo]("item")
+        case MarkdownPage.itemType => doc.getAs[MarkdownPage]("item")
+        case MultipleChoicePoll.itemType => doc.getAs[MultipleChoicePoll]("item")
         case _ => None
       }
 

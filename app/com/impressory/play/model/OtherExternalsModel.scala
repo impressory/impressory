@@ -7,7 +7,9 @@ import play.api.libs.json._
 
 object OtherExternalsModel {
   
-
+  implicit val GoogleSlidesToJson = Json.format[GoogleSlides]
+  implicit val YouTubeVideoToJson = Json.format[YouTubeVideo]
+  
   def createGoogleSlides(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
     ce.site = "google.com"
     updateGoogleSlides(new GoogleSlides(), data)

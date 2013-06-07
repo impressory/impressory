@@ -1,0 +1,33 @@
+@()
+
+<div ng-controller="Impressory.Controllers.MCPoll.View"
+  class="multiple-choice-poll container">
+  <!-- markdownService takes care of sanitization -->
+  <div ng-controller="Impressory.Controllers.Components.FillHeight">
+
+    <div class="form-inline" ng-show="showing == 'options'">
+      <div><label>Question text</label></div>
+      <textarea ng-model="entry.item.text"></textarea>
+
+      <div>
+        <label>Choose</label>
+        <input type="number" ng-model="entry.item.pick"/>
+      </div>
+      
+      <table class="table table-striped">
+        <thead><tr>
+          <th>Option</th><th>Score</th><th>Feedback</th><th></th>
+        </tr></thead>
+        <tr ng-repeat="option in entry.item.options">
+          <td><textarea ng-model="option.option"></textarea></td>
+          <td><input type="number" ng-model="option.score" /></td>
+          <td><textarea ng-model="option.feedback" placeholder="Optional"></textarea></td>
+          <td><button type="button" class="btn btn-danger"><i class="icon-delete"></i></button></td>
+        </tr>
+      </table>
+      
+    </div>
+
+
+  </div>
+</div>

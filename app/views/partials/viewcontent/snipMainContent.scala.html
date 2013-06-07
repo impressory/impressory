@@ -30,6 +30,9 @@
       <div ng-switch-when="Markdown page">
         @kinds.markdownPage()
       </div>
+      <div ng-switch-when="Multiple choice poll">
+        @kinds.multipleChoicePoll()
+      </div>
       <div ng-switch-default>      
         <div class="alert alert-error">
             Whoops, we seem to have an unrecognised kind of content

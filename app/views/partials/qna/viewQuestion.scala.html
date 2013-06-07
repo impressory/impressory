@@ -1,0 +1,130 @@
+@() 
+
+<div ng-controller="Impressory.Controllers.Course.Cover">
+  @views.html.partials.headerFront() @views.html.partials.course.subheadCourse()
+  
+  <div class="container">
+    <div class="qna-view-question" ng-controller="Impressory.Controllers.QnA.View">
+      <div class="row-fluid">
+        <div class="span2">
+          <div>
+            <h3>
+              <button class="btn-command thin" ng-click="downVote();" title="downvote">
+                <i class="icon-sort-down"></i>
+              </button> 
+              <span>{{ question.score || 0 }}</span>
+              <button class="btn-command thin" ng-click="upVote();" title="upvote">
+                <i class="icon-sort-up"></i>
+              </button>
+            </h3>          
+          </div>
+          <div>
+            <span class="badge badge-info score">{{ question.answerCount || 0 }} answers</i></span>
+          </div>
+          <div>
+            <span class="badge">{{ question.views }} views</span>
+          </div>
+          
+        </div>
+        <div class="span8">
+          <h2>{{ question.title }}</h2>
+          <div ng-bind-html-unsafe="question.madeHtml" ></div>
+          <div class="comments">
+            <div class="comment" ng-repeat="comment in question.comments">
+              <div class="text">{{ comment.text }}</div>
+              <div ng-repeat="user in [ users.cache[comment.addedBy] ]" class="who">
+                {{ user.nickname || 'Anonymous'}} at {{ comment.created | date:'h:mma d MMM yy' }} 
+              </div>
+            </div>
+            <div>
+              <btn class="btn btn-link" ng-hide="question.showAddComment" ng-click="question.showAddComment = true">add a comment</btn>
+              <div ng-show="question.showAddComment">
+                <div ng-controller="Impressory.Controllers.QnA.NewQComment">
+                  <h4>Comment</h4>
+                  <div><textarea ng-model="comment.text"></textarea></div>
+                  <btn class="btn btn-mini btn-primary" ng-click="save(comment)">Submit</btn>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="span2">
+          <div class="" ng-repeat="user in [ users.cache[question.addedBy] ]">
+            <div class="ab-label">asked by</div>
+            <div class="who">
+              <div class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></div>
+              <div class="nickname">{{ user.nickname || 'Anonymous' }}</div>
+            </div>
+            <div class="created">{{ question.created | date:'h:mma d MMM yy' }}</div>
+          </div>
+            
+          <div ng-show="{{ question.updated != question.created }}">
+            <div>last edited:</div>
+            <div class="created">{{ question.updated | date:'h:mma d MMM yy' }}</div>
+          </div>
+        </div>
+      </div>
+      
+      <hr/>
+      
+      <div ng-repeat="answer in question.answers" class="row-fluid">
+        <div class="span8 offset2">
+          <div ng-bind-html-unsafe="answer.madeHtml" ></div>
+          
+          <div class="comments">
+            <div class="comment" ng-repeat="comment in answer.comments">
+              <div class="text">{{ comment.text }}</div>
+              <div ng-repeat="user in [ users.cache[comment.addedBy] ]" class="who">
+                {{ user.nickname || 'Anonymous'}} at {{ comment.created | date:'h:mma d MMM yy' }} 
+              </div>
+            </div>
+            
+            <div ng-controller="Impressory.Controllers.QnA.NewAnsComment">
+              <btn class="btn btn-link" ng-hide="answer.showAddComment" ng-click="answer.showAddComment = true">add a comment</btn>
+              <div ng-show="answer.showAddComment">
+                <h4>Comment</h4>
+                <div><textarea ng-model="comment.text"></textarea></div>
+                <btn class="btn btn-mini btn-primary" ng-click="save(answer.id, comment)">Submit</btn>
+              </div>
+            </div>
+            
+          </div>
+          
+        </div>
+        <div class="span2">
+          <div class="" ng-repeat="user in [ users.cache[answer.addedBy] ]">
+            <div class="ab-label">answered by</div>
+            <div class="who">
+              <div class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></div>
+              <div class="nickname">{{ user.nickname || 'Anonymous' }}</div>
+            </div>
+            <div class="created">{{ answer.created | date:'h:mma d MMM yy' }}</div>
+            <div ng-show="{{ answer.updated != answer.created }}">
+              <div>last edited:</div>
+              <div class="created">{{ answer.updated | date:'h:mma d MMM yy' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="row-fluid">
+        <div class="span10 offset2">
+          <h4>Add an answer</h4>
+        </div>
+      </div>
+      <div class="row-fluid" ng-controller="Impressory.Controllers.QnA.NewAnswer">
+        <div class="span5 offset2">
+          <div>
+            <textarea ng-model="answer.text"></textarea>
+          </div>
+          <button class="btn btn-primary" ng-click="save(answer)"><i class="icon-plus"></i> Answer</button>
+        </div>
+        <div class="span5">
+          <div ng-bind-html-unsafe="answer.madeHtml" ></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

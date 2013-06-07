@@ -10,6 +10,8 @@ trait FindById[T] {
   
   val collName: String
   
+  def coll = DB.coll(collName)
+  
   implicit val bsonReader:BSONDocumentReader[T];
 
   def byId(id:BSONObjectID) = {    

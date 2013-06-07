@@ -27,6 +27,10 @@ require([
   "controllers/course/Index",
   "controllers/course/Invites",
   
+  "controllers/qna/List",
+  "controllers/qna/View",
+  "controllers/qna/Create",
+  
   "controllers/components/EditTags",
   "controllers/components/FillHeight",
 
@@ -48,7 +52,9 @@ require([
   "controllers/addContent/Sequence",
   
   "controllers/markdownPage/View",
-  "controllers/markdownPage/Edit"
+  "controllers/markdownPage/Edit",
+  
+  "controllers/mcPoll/View"
   
 ], function(l) {
 	console.log("library has loaded")

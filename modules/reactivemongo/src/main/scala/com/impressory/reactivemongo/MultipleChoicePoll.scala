@@ -3,12 +3,14 @@ package com.impressory.reactivemongo
 import reactivemongo.bson._
 import reactivemongo.api._
 
+import MultipleChoicePoll._
+
 case class MultipleChoicePoll(
-  text: String, 
-  pick:Int = 1,
-  resultsVis: PollResultsVisibility = PollResultsVisibility.secret,
-  feedbackVis: PollResultsVisibility = PollResultsVisibility.secret,
-  options: Seq[MultipleChoicePoll.MCOpt] = Seq.empty
+  var text: Option[String] = None, 
+  var pick:Int = 1,
+  var resultsVis: PollResultsVisibility = PollResultsVisibility.secret,
+  var feedbackVis: PollResultsVisibility = PollResultsVisibility.secret,
+  var options: Seq[MultipleChoicePoll.MCOpt] = Seq(MCOpt("A"), MCOpt("B"), MCOpt("C"), MCOpt("D"), MCOpt("E"))
 ) extends ContentItem {
   
   val itemType = MultipleChoicePoll.itemType
@@ -17,9 +19,9 @@ case class MultipleChoicePoll(
 
 object MultipleChoicePoll {
   
-  val itemType = "Mutliple choice poll"
+  val itemType = "Multiple choice poll"
   
-  case class MCOpt(option:String, feedback:String, score:Int)
+  case class MCOpt(option:String, feedback:Option[String]=None, score:Int=0)
   
   object MCOpt {
     implicit val format = reactivemongo.bson.Macros.handler[MCOpt]
@@ -27,7 +29,7 @@ object MultipleChoicePoll {
   
   implicit object bsonReader extends BSONDocumentReader[MultipleChoicePoll] {
     def read(doc: BSONDocument) = new MultipleChoicePoll(
-      text = doc.getAs[String]("text").get,
+      text = doc.getAs[String]("text"),
       pick = doc.getAs[Int]("pick").getOrElse(1),
       resultsVis = PollResultsVisibility.valueOf(doc.getAs[String]("resultsVis").getOrElse("secret")),
       feedbackVis = PollResultsVisibility.valueOf(doc.getAs[String]("feedbackVis").getOrElse("secret")),

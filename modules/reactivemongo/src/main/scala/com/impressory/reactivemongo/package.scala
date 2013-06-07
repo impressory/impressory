@@ -20,5 +20,14 @@ package object reactivemongo {
       }
     }
   }
+  
+  implicit object RefCourseReader extends BSONReader[BSONObjectID, Ref[Course]] {
+    def read(id:BSONObjectID) = RefById(classOf[Course], id)
+  }
 
+  implicit object RefUserReader extends BSONReader[BSONObjectID, Ref[User]] {
+    def read(id:BSONObjectID) = RefById(classOf[User], id)
+  }
+  
+  
 }

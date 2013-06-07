@@ -16,6 +16,9 @@
         <div ng-switch-when="Markdown page">
           @views.html.partials.editcontent.kinds.markdownPage()
         </div>
+        <div ng-switch-when="Multiple choice poll">
+          @views.html.partials.editcontent.kinds.multipleChoicePoll()
+        </div>
         <div ng-switch-default>      
           <div class="alert alert-error">
               Whoops, we seem to have an unrecognised kind of content

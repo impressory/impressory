@@ -1,0 +1,45 @@
+@()
+
+<div ng-controller="Impressory.Controllers.MCPoll.View" class="multiple-choice-poll container">
+  <!-- markdownService takes care of sanitization -->
+  <div ng-controller="Impressory.Controllers.Components.FillHeight" >
+
+  <ul class="nav nav-pills">
+    <li ng-class="{ active: showing == 'options' }"><a href="#" ng-click="showing = 'options'">Vote</a></li>
+    <li ng-class="{ active: showing == 'results' }"><a href="#" ng-click="showing = 'results'">Results</a></li>
+    <li ng-class="{ active: showing == 'feedback' }"><a href="#" ng-click="showing = 'feedback'">Feedback</a></li>
+  </ul>  
+  
+  <div ng-bind-html-unsafe="madeHtml" class="question"></div>
+  
+  <div class="form-inline" ng-show="showing == 'options'">
+    <ul>
+      <li ng-repeat="option in entry.item.options">
+        <label class="checkbox option">
+          <input type="checkbox" /> {{ option.option }}
+        </label>
+      </li>
+    </ul>
+    <p>
+      (You may select {{ entry.item.pick }} options)
+    </p>
+    <button type="button" class="btn btn-primary">Submit</button>
+  </div>
+  
+  <div ng-show="showing == 'results'">
+  
+  </div>
+  
+  <div ng-show="showing == 'feedback'">
+    <ul>
+      <li ng-repeat="option in entry.item.options">
+        <div>{{ option.option }}</div>
+        <div>{{ option.feedback }}</div>
+        <div>{{ option.score }}</div>
+      </li>
+    </ul>
+  
+  </div>
+
+  
+</div>

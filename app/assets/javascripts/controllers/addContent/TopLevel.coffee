@@ -31,8 +31,8 @@ define(["./base"], (l) ->
       ],
       
       "Poll": [
-        { kind : "Pick poll", text: "Tick the box" },
-        { kind : "Free text poll", text: "Free text poll" }
+        { kind : "Multiple choice poll", text: "Multiple choice" },
+        { kind : "Free text poll", text: "Free text" }
       
       ]
       

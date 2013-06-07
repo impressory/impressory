@@ -97,7 +97,9 @@ object ContentController extends Controller {
           case Some(GoogleSlides.itemType) => OtherExternalsModel.createGoogleSlides(c.itself, approval, updated, requestBody).itself
           case Some(YouTubeVideo.itemType) => OtherExternalsModel.createYouTubeVideo(c.itself, approval, updated, requestBody).itself
           case Some(MarkdownPage.itemType) => MarkdownPageModel.create(c.itself, approval, updated)
-          case _ => RefNone
+          case Some(MultipleChoicePoll.itemType) => MCPollModel.create(c.itself, approval, updated, requestBody)
+          case Some(x) => RefFailed(UserError(s"Attempted to add an unknown item: $x"))
+          case None => RefFailed(UserError("Attempted to add an item that had no kind"))
         }        
       };
       
@@ -139,13 +141,14 @@ object ContentController extends Controller {
       approval = Approval(u);
       approved <- approval ask Permissions.EditContent(e.itself);
       
-            // Add an appropriate item
+      // Edit the item
       updated <- {
         e.item match {
           case Some(wp:WebPage) => WebPageModel.updateWebPage(e, request.body)
           case Some(y:YouTubeVideo) => { e.item = Some(OtherExternalsModel.updateYouTubeVideo(y,request.body)); e.itself }
           case Some(gs:GoogleSlides) => { e.item = Some(OtherExternalsModel.updateGoogleSlides(gs,request.body)); e.itself }
           case Some(mp:MarkdownPage) => MarkdownPageModel.updateItem(e, request.body)
+          case Some(p:MultipleChoicePoll) => MCPollModel.updateMCPoll(e, request.body)
           case _ => RefNone
         }        
       };

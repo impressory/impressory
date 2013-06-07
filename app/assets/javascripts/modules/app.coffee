@@ -25,6 +25,9 @@ define(["model/base"], () ->
         when('/course/:courseId/index', { templateUrl: '/partials/course/index.html' }).
         when('/course/:courseId/chatRoom', { templateUrl: '/partials/course/chatRoom.html' }).
         when('/course/:courseId/viewContent', { templateUrl: '/partials/course/viewContent.html', reloadOnSearch: false }).
+        when('/course/:courseId/qna', { templateUrl: '/partials/qna/listQuestions.html' }).
+        when('/course/:courseId/qna/new', { templateUrl: '/partials/qna/newQuestion.html' }).
+        when('/course/:courseId/qna/:questionId', { templateUrl: '/partials/qna/viewQuestion.html' }).
         otherwise({ redirectTo: '/' })
     ])
     

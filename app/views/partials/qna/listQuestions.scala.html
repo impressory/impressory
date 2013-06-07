@@ -1,0 +1,38 @@
+@() 
+
+<div ng-controller="Impressory.Controllers.Course.Cover">
+@views.html.partials.headerFront() @views.html.partials.course.subheadCourse()
+
+<div class="container">
+  <div class="qna=list-questions" ng-controller="Impressory.Controllers.QnA.List">
+  
+    <h3>Q&amp;A</h3>
+  
+    <div ng-repeat="question in questions" class="row-fluid">
+      <div class="span2">
+        <span class="badge badge-warning score">{{ question.score || 0 }} pts</span>
+        <span class="badge badge-info score">{{ question.answerCount || 0 }} answers</i></span>
+        <span class="badge">{{ question.views }} views</span>
+      </div>
+      <div class="span8">
+        <a ng-href="qna/{{ question.id }}"><h4>{{ question.title }}</h4></a>
+        <span ng-repeat="tag in question.tags" class="label">{{ tag }}</span>  
+      </div>
+      <div class="span2">
+        <div class="" ng-repeat="user in [ users.cache[question.addedBy] ]">
+          <div class="ab-label">asked by</div>
+          <div class="who">
+            <div class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></div>
+            <div class="nickname">{{ user.nickname || 'Anonymous' }}</div>
+          </div>
+          <div class="created">{{ question.created | date:'h:mma d MMM yy' }}</div>      
+      </div>
+    
+    </div>
+  </div>
+
+  <a class="btn btn-primary" ng-href="qna/new"><i class="icon-plus"></i> Ask a question</a>
+
+</div>
+
+</div>

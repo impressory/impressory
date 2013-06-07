@@ -52,7 +52,18 @@ package object model {
   
   type RecordedChatEvent = reactivemongo.RecordedChatEvent
   
+  type QnAQuestion = reactivemongo.QnAQuestion
+  val QnAQuestion = reactivemongo.QnAQuestion
   
+  type QnAAnswer = reactivemongo.QnAAnswer
+  val QnAAnswer = reactivemongo.QnAAnswer
+  
+  type EmbeddedComment = reactivemongo.EmbeddedComment
+  val EmbeddedComment = reactivemongo.EmbeddedComment
+  
+  type UpDownVoting = reactivemongo.UpDownVoting
+  val UpDownVoting = reactivemongo.UpDownVoting
+
   type GoogleSlides = reactivemongo.GoogleSlides
   val GoogleSlides = reactivemongo.GoogleSlides
   type YouTubeVideo = reactivemongo.YouTubeVideo

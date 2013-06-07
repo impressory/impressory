@@ -36,6 +36,12 @@ object Global extends GlobalSettings with AcceptExtractors {
             case None => RefNone
           }
         }
+        case c if c == classOf[QnAQuestion] => {
+          HasBSONId.GetsBSONId.canonical(r.id) match {
+            case Some(id) => QnAQuestion.byId(id).asInstanceOf[Ref[T]]
+            case None => RefNone
+          }
+        }
         case _ => RefFailed(new IllegalArgumentException(s"I don't know how to look up class ${r.clazz.getName}"))
       }
     }

@@ -172,6 +172,7 @@ object JsonConverters {
       case y:YouTubeVideo => OtherExternalsModel.YouTubeVideoToJson.writes(y).itself
       case wp:WebPage => WebPageModel.toJson(wp).itself
       case mp:MarkdownPage => MarkdownPageModel.toJson(mp).itself
+      case p:MultipleChoicePoll => MCPollModel.MCPollToJson.writes(p).itself
       case _ => JsNull.itself 
     } 
     
@@ -328,7 +329,62 @@ object JsonConverters {
     }
   }
   
+  implicit class UpDownVotingToJson(val udv:UpDownVoting) extends AnyVal {
+    def toJsonFor(a: Approval[User]) = {
+      a.who.getId match {
+        case Some(id) => Json.obj(
+          "score" -> udv.score,
+          "voted" -> (udv._up.contains(id) || udv._down.contains(id))
+        )
+        case None => Json.obj("score" -> udv.score)
+      }
+    }
+  }
+  
+  implicit class QnAAnswerToJson(val ans:QnAAnswer) extends AnyVal {
+    def toJsonFor(a: Approval[User]) = Json.obj(
+      "id" -> ans._id.stringify,
+      "text" -> ans.text,
+      "addedBy" -> ans.addedBy,
+      "voting" -> ans.voting.toJsonFor(a),
+      "created" -> ans.created,
+      "updated" -> ans.updated,
+      "comments" -> ans.comments.map(_.toJsonFor(a))
+    )
+  }
+  
+  implicit class EmbeddedCommentToJson(val ec:EmbeddedComment) extends AnyVal {
+    def toJsonFor(a: Approval[User]) = Json.obj(
+      "id" -> ec._id.stringify,
+      "text" -> ec.text,
+      "addedBy" -> ec.addedBy,
+      "voting" -> ec.voting.toJsonFor(a),
+      "created" -> ec.created
+    )
     
+  }
+  
+  implicit class QnAQuestionToJson(val rq:Ref[QnAQuestion]) extends AnyVal {
+    def toJsonFor(a: Approval[User]) = for (
+      q <- rq
+    ) yield {
+      Json.obj(
+        "id" -> q.id,
+        "title" -> q.title,
+        "text" -> q.text,
+        "views" -> q.views,
+        "voting" -> q.voting.toJsonFor(a),
+        "answerCount" -> q.answerCount,
+        "answers" -> q.answers.map(_.toJsonFor(a)),
+        "commentCount" -> q.commentCount,
+        "comments" -> q.comments.map(_.toJsonFor(a)),
+        "addedBy" -> q.addedBy,
+        "created" -> q.created,
+        "updated" -> q.updated
+      )
+    }
+    
+  }
 
   
 }

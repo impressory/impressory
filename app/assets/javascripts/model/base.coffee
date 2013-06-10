@@ -35,9 +35,14 @@ define(["lib/eventRoom"], (er) ->
         
         EventRoom: {
         
+          # A list of events to display that have been received
           events: [
             { type: 'chat', text: 'hello there' }
           ]
+          
+          # Caches the state of various items (usually content entries)
+          states: {
+          }
         
         }
         

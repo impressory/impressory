@@ -1,5 +1,8 @@
 @()
 
+<div ng-show="viewing.Content.noContent">
+  @kinds.noContent()
+</div>
 
 <div class="main-content-surround" ng-repeat="entry in viewing.Content.displaySeq" ng-class="{ hidden: entry.id != viewing.Content.display.id }">
 
@@ -43,7 +46,4 @@
   </div>
 </div>
 
-<div ng-show="viewing.Content.noContent">
-  @kinds.noContent()
-</div>
 

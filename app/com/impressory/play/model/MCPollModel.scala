@@ -24,6 +24,10 @@ object MCPollModel {
   
   implicit val MCPollToJson = Json.format[MultipleChoicePoll]
   
+  implicit class MCPollResponseToJson(val resp:MCPollResponse) extends AnyVal {
+    def toJson = Json.obj("answer" -> resp.answer)
+  }
+  
   
   def updateMCPoll(ce:ContentEntry, data:JsValue) = {
     ce.item match {
@@ -43,6 +47,8 @@ object MCPollModel {
     RefItself(new MultipleChoicePoll(Some(defaultText)))
   } 
   
-
-  
+  def vote(poll:Ref[ContentEntry], tok:Approval[User], session:Option[String], answer:Set[Int]) = {
+    val response = new MCPollResponse(poll=poll, addedBy=tok.who, session=session, answer=answer)
+    MCPollResponse.vote(poll, tok.who, session, response)
+  }
 }

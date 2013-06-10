@@ -72,6 +72,9 @@ POST    /course/:courseId/entry/:entryId/editItem      com.impressory.play.contr
 GET     /course/:id/entriesForTopic com.impressory.play.controllers.ContentController.entriesForTopic(id: String, topic:Option[String] ?= None)
 GET     /course/:id/allEntries      com.impressory.play.controllers.ContentController.allEntries(id: String)
 
+# Multiple Choice Poll
+POST    /course/:courseId/entry/:entryId/mcPollVote com.impressory.play.controllers.PollController.vote(courseId:String, entryId:String)
+
 # EventRoom
 GET     /eventRoom/ssevents         com.impressory.play.controllers.EventController.serverSentEvents
 POST    /eventRoom/subscribe        com.impressory.play.controllers.EventController.subscribe

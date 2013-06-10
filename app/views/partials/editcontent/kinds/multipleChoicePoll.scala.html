@@ -1,28 +1,40 @@
 @()
 
-<div ng-controller="Impressory.Controllers.MCPoll.View"
+<div ng-controller="Impressory.Controllers.MCPoll.Edit"
   class="multiple-choice-poll container">
   <!-- markdownService takes care of sanitization -->
   <div ng-controller="Impressory.Controllers.Components.FillHeight">
 
-    <div class="form-inline" ng-show="showing == 'options'">
-      <div><label>Question text</label></div>
-      <textarea ng-model="entry.item.text"></textarea>
+    <div class="form-inline">
+      <h4>Question text</h4>
+      <div class="row-fluid">
+        <div class="span6">
+          <textarea style="width:95%" ng-model="entry.item.text"></textarea>
+        </div>
+        <div class="span6">
+          <div ng-bind-html-unsafe="preview"></div>
+        </div>
+      </div>
+      
 
       <div>
-        <label>Choose</label>
+        <h4>Number of options the user may choose</h4>
         <input type="number" ng-model="entry.item.pick"/>
       </div>
       
+      <h4>Options</h4>
       <table class="table table-striped">
         <thead><tr>
-          <th>Option</th><th>Score</th><th>Feedback</th><th></th>
+          <th>Text</th><th>Score</th><th>Feedback</th><th></th>
         </tr></thead>
         <tr ng-repeat="option in entry.item.options">
           <td><textarea ng-model="option.option"></textarea></td>
           <td><input type="number" ng-model="option.score" /></td>
           <td><textarea ng-model="option.feedback" placeholder="Optional"></textarea></td>
-          <td><button type="button" class="btn btn-danger"><i class="icon-delete"></i></button></td>
+          <td><button type="button" class="btn btn-danger" ng-click="remove(option)">&times;</button></td>
+        </tr>
+        <tr>
+          <td><button class="btn" ng-click="addOption()"><i class="icon-plus"></i> Add option</button>
         </tr>
       </table>
       

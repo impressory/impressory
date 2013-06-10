@@ -324,7 +324,7 @@ object JsonConverters {
     val ChatCommentToJson = Json.writes[ChatComment]
     
     def writes(rce:RecordedChatEvent) = rce match {
-      case cc:ChatComment => Json.obj("type" -> "chat") ++ ChatCommentToJson.writes(cc)
+      case cc:ChatComment => Json.obj("kind" -> "push", "type" -> "chat") ++ ChatCommentToJson.writes(cc)
       case _ => Json.obj("error" -> "unrecognised event")
     }
   }

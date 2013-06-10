@@ -72,6 +72,8 @@ package object model {
   val MarkdownPage = reactivemongo.MarkdownPage
   type MultipleChoicePoll = reactivemongo.MultipleChoicePoll
   val MultipleChoicePoll = reactivemongo.MultipleChoicePoll
+  type MCPollResponse = reactivemongo.MCPollResponse
+  val MCPollResponse = reactivemongo.MCPollResponse
   
   
   implicit object bsonWrites extends Writes[BSONObjectID] {

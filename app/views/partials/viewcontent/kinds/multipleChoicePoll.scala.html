@@ -1,6 +1,6 @@
 @()
 
-<div ng-controller="Impressory.Controllers.MCPoll.View" class="multiple-choice-poll container">
+<div ng-controller="Impressory.Controllers.MCPoll.View" class="multiple-choice-poll">
   <!-- markdownService takes care of sanitization -->
   <div ng-controller="Impressory.Controllers.Components.FillHeight" >
 
@@ -16,28 +16,41 @@
     <ul>
       <li ng-repeat="option in entry.item.options">
         <label class="checkbox option">
-          <input type="checkbox" /> {{ option.option }}
+          <input type="checkbox" ng-model="option.selected" /> {{ option.option }}
         </label>
       </li>
     </ul>
     <p>
       (You may select {{ entry.item.pick }} options)
     </p>
-    <button type="button" class="btn btn-primary">Submit</button>
+    <button type="button" class="btn btn-primary" ng-click="vote()">Submit</button>
   </div>
   
   <div ng-show="showing == 'results'">
-  
+    <div ng-controller="Impressory.Controllers.MCPoll.Results">
+      <ul>
+        <div class="row-fluid" ng-repeat="option in entry.item.options">
+          <div class="span6">{{ option.option }}</div>
+          <div class="span1">{{ option.votes }}</div>
+          <div class="span5">
+            <div class="progress">
+              <div class="bar" ng-style="{ 'width' : option.percent + '%' }"></div>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
   </div>
   
   <div ng-show="showing == 'feedback'">
-    <ul>
-      <li ng-repeat="option in entry.item.options">
-        <div>{{ option.option }}</div>
-        <div>{{ option.feedback }}</div>
-        <div>{{ option.score }}</div>
-      </li>
-    </ul>
+    <table class="table"><tbody>
+      <tr><th>Option</th><th>Score</th><th>Feedback</th></tr>
+      <tr ng-repeat="option in entry.item.options">
+        <td>{{ option.option }} </td>
+        <td>{{ option.score }} </td>
+        <td>{{ option.feedback }} </td>
+      </tr>
+    </tbody></table>
   
   </div>
 

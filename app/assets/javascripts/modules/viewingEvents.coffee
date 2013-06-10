@@ -9,10 +9,13 @@ define(["./app"], () ->
     Impressory.EventRoom.addListener({ 
       receive: (msg) -> 
         console.log("Received a message")
-        switch msg.type
-          when "chat"
+        switch msg.kind
+          when "push"
             ERData.events.push(msg)
-            $rootScope.$broadcast("chat", msg)
+            $rootScope.$broadcast(msg.type, msg)
+          when "state"
+            ERData.states[msg.id] = msg.state
+            $rootScope.$broadcast(msg.type, msg)
     })
     
    
@@ -43,7 +46,13 @@ define(["./app"], () ->
           # TODO: this needs to go into a callback 
           ERData.events = []
       
+      subscribe: (sub) ->
+        Impressory.EventRoom.connect()
+        Impressory.EventRoom.subscribe(sub)
 
+      unsubscribe: (sub) ->
+        Impressory.EventRoom.connect()
+        Impressory.EventRoom.unsubscribe(sub)
     }
   ])
 

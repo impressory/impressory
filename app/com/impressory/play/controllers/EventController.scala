@@ -41,6 +41,21 @@ object EventController extends Controller {
           Ok(Json.obj("ok" -> "ok"))        
         }
       }
+      case Some("Multiple choice poll results") => {
+        val oceId = (request.body \ "subscription" \ "id").asOpt[String]
+        for (
+          u <- optionally(user);
+          ceId <- Ref(oceId);
+          listenerName <- Ref(oListenerName);
+          c <- RefById(classOf[ContentEntry], ceId);
+          approval = Approval(u);
+          approved <- approval ask Permissions.ReadEntry(c.itself)
+        ) yield {
+          EventRoom.default ! Subscribe(listenerName, MCPollEvents.PollStream(ceId))
+          Ok(Json.obj("ok" -> "ok"))        
+        }
+        
+      }
       case _ => Ok(Json.obj("error" -> "Nothing to subscribe to")).itself 
     }
     resp

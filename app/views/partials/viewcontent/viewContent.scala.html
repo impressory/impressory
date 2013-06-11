@@ -1,11 +1,13 @@
 @()
 
-<div class="impressory-content-viewer"
+<div class="impressory-content-viewer full-height"
   ng-controller="Impressory.Controllers.ViewContent.ViewContent">
-  <div ng-controller="Impressory.Controllers.ViewContent.Layout">
-    @snipTopNav()
+  <div ng-controller="Impressory.Controllers.ViewContent.Layout" class="full-height">
 
-    <div id="middle-wrap">
+    <div id="middle-wrap" ng-class="{ 'right-open': panels.right }">
+
+      @snipTopNav()
+
       <div id="middle">
 
         <div id="left-edge" class="dont-print">
@@ -26,9 +28,9 @@
           </div>
         </div>
         
-        <div id="right-panel" ng-show="panels.right">@snipChatPane()</div>
+        
 
-        <div id="right-edge" class="dont-print" ng-class="{ 'right-open': panels.right }">
+        <div id="right-edge" class="dont-print" >
 
           <button class="command" ng-click="panels.toggleRight()"> 
             <img src='/assets/images/sq_chat.png' alt="Chat pane" />
@@ -43,10 +45,20 @@
         </div>
 
         <!-- The content -->
-        <div class="content-panel" ng-class="{ 'right-open': panels.right }">
-          @snipMainContent()</div>
+        <div class="content-panel">
+          <div >
+            @snipMainContent()
+          </div>
+        </div>
       </div>
     </div>
+    
+    <div id="right-panel" ng-show="panels.right">
+      <div class="panel-inner">
+        @snipChatPane()
+      </div>
+    </div>
+    
   </div>
 
 

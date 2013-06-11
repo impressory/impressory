@@ -3,16 +3,17 @@ define(["./app"], () ->
   Impressory.angularApp.service('viewingContent', ['$http', '$location', '$rootScope', '$window', ($http, $location, $rootScope, $window) ->
       
     viewing = Impressory.Model.Viewing
-   
+      
     $(window).on('resize', () ->
-      console.log("resize ")
-      $rootScope.wh = $window.innerHeight 
+      $rootScope.wh = $window.innerHeight
       $rootScope.$apply()
     )
 
     $rootScope.wh = $window.innerHeight    
    
     {
+      refreshHeight: () -> 
+        $rootScope.wh = $window.innerHeight
 
       # Looks through the current entry (assuming it's a sequence) to find within it
       # the entry with the specified ID.

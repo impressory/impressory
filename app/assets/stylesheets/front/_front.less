@@ -3,25 +3,41 @@
 .front-page {
 
   .about-banner {
+    background-image: url('/assets/images/sky.jpg');
+    background-size: cover;
     background-color: rgb(100, 108, 108);
     color: white;
-    
+   
     padding: 20px 0 20px 0;
     
     h1,h2,h3,h4 {
       color: white;
     }
     
+    .brand {
+      font-size: 96px;
+      line-height: 120px;
+      font-weight: 100;
+    }
+    .subbrand {
+      font-size: 26px;
+      line-height: 32px;
+    }
+    
     .infoItem {
-        margin: 0 0 0 10px;
-        max-width: 750px;
+        margin: 0 20px 0 20px;
+        width: 240px;
         padding: 10px 10px 10px 10px;
     }
     
     .news {
       .infoItem;
-        background-color: rgb(180, 120, 70);
-        .border-radius(3px);
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    a {
+      color: rgb(20,20,150);
+      font-weight: 400;
     }
 
   }

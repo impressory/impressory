@@ -1,21 +1,23 @@
+@leftPanelWidth: 200px;
+@rightPanelWidth: 20%;
+@controlWidth: 20px;
+@leftEdgeWidth: 20px;
+@rightEdgeWidth: 20px;
+
 /*
  * Middle panes structure -- left and right panels, edges, etc.
  */
 #middle-wrap {
     position: relative;
-    width: 100%;
+    height: 100%;
     top: 0px;
+    
+    border-right: 1px solid #e9e9e9;
+    
 
     #middle {
-        @leftPanelWidth: 200px;
-        @rightPanelWidth: 180px;
-        @controlWidth: 20px;
-        @leftEdgeWidth: 20px;
-        @rightEdgeWidth: 20px;
-
         position: relative;
         top:0px;
-        width: 100%;
         height: 100%;
 
         @lShadow: 2px 2px 0 0px rgba(0, 0, 0, 0.1);
@@ -23,11 +25,11 @@
         @lpTrans: left .2s linear;
 
         #left-edge {
-            position: fixed;
+            position: absolute;
             left: 0;
             top: 0;
             height: 100%;            
-            padding-top: 32px; 
+             
             background-color: white;           
               
             border-right: 1px solid #e9e9e9;
@@ -67,9 +69,7 @@
              */
             position: relative;
             left: 0px;
-        }
-        .content-panel.right-open {
-            margin-right: @rightPanelWidth + @controlWidth + 1;
+            overflow-y: auto;
         }
 
         .v-center {
@@ -79,11 +79,10 @@
         }
 
         #right-edge {
-            position: fixed;
+            position: absolute;
             right: 0px;
             top: 0;  
             height: 100%;
-            padding-top: 32px;
             background-color: white;           
             
             border-left: 1px solid #e9e9e9;
@@ -119,29 +118,33 @@
             right: @rightPanelWidth;
         }
         
-        #right-panel {
-            position: fixed;
-            height: 100%;
-            right: 0px;
 
-            background-color: white;
-            border-left: 1px solid #e9e9e9;
-
-
-            .transition(right .2s linear);
-
-            overflow-y: scroll;
-            overflow-x: hidden;
-
-            width: @rightPanelWidth;
-            height: 100%;
-            z-index: @zPanel;
-
-        }
-        #right-panel.closed {
-            right: -@rightPanelWidth;
-            display: none;
-        }
 
     }
+}
+#middle-wrap.right-open {
+    margin-right: @rightPanelWidth;
+}
+
+#right-panel {
+    position: fixed;
+    height: 100%;
+    right: 0px;
+    top: 0px;
+
+    background-color: white;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    width: @rightPanelWidth;
+    z-index: @zPanel;
+    
+    .panel-inner {
+      padding: 2px;
+    }
+}
+#right-panel.closed {
+    right: -@rightPanelWidth + 1;
+    display: none;
 }

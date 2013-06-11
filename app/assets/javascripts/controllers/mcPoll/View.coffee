@@ -15,6 +15,10 @@ define(["./base"], (l) ->
       items = (i for option, i in $scope.entry.item.options when option.selected)
       $http.post("/course/" + $scope.entry.course + "/entry/" + $scope.entry.id + "/mcPollVote", { options: items })
     
+    $scope.recountSelected = () ->
+      $scope.selected = (i for option, i in $scope.entry.item.options when option.selected) 
+      
+    $scope.recountSelected()
   
   ]
 

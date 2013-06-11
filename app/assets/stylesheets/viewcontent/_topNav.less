@@ -19,9 +19,9 @@
   /*
    * Top navigation bar
    */
-  .top-nav-fixed {
+  .top-nav {
       min-height: @topNavSize + 2 * @topNavPad;
-      position: fixed;
+      position: relative;
       width: 100%;
       top: 0px;  
   }
@@ -157,6 +157,9 @@
   
   .overlay {
     background-color: white;
+    position: absolute;
+    width: 100%;
+    box-shadow: 0px 2px 1px 0px rgba(0,0,0,0.05);
   }
   
   /*

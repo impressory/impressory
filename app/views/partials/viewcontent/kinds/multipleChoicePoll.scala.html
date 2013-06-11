@@ -10,18 +10,22 @@
     <li ng-class="{ active: showing == 'feedback' }"><a href="#" ng-click="showing = 'feedback'">Feedback</a></li>
   </ul>  
   
+  <div class="pull-right">
+    <button class="btn">Push to stream</button>
+  </div>
+  
   <div ng-bind-html-unsafe="madeHtml" class="question"></div>
   
   <div class="form-inline" ng-show="showing == 'options'">
     <ul>
       <li ng-repeat="option in entry.item.options">
         <label class="checkbox option">
-          <input type="checkbox" ng-model="option.selected" /> {{ option.option }}
+          <input type="checkbox" ng-model="option.selected" ng-change="recountSelected()" ng-disabled="!option.selected && selected.length >= entry.item.pick"/> {{ option.option }}
         </label>
       </li>
     </ul>
     <p>
-      (You may select {{ entry.item.pick }} options)
+      (You may select {{ entry.item.pick }} options. You have selected {{ selected.length }} options.)
     </p>
     <button type="button" class="btn btn-primary" ng-click="vote()">Submit</button>
   </div>

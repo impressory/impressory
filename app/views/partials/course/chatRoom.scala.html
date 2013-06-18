@@ -2,7 +2,22 @@
 
 <div ng-controller="Impressory.Controllers.Course.Cover" class="chat-room">
 
-  <div class="container">
+  <div class="sidemargin">
+    <p>&nbsp;</p>
+  
+    <div class="chat-form" ng-controller="Impressory.Controllers.EventRoom.ViewEvents">
+      <div class="form form-inline">
+        <div>
+          <textarea ng-model="message.text" name="content" placeholder="Say something"></textarea>
+        </div>
+        <label class="checkbox"><input type="checkbox" ng-model="message.anon" value="true" /><i>anonymously</i></label>
+        <button type="button" class="btn-mini require-chat"
+          ng-click="postChatMessage(message)">Chat</button>
+      </div>
+    </div>
+    
+    <p>&nbsp;</p>
+  
     @views.html.partials.components.snipViewEvents()
   </div>
 

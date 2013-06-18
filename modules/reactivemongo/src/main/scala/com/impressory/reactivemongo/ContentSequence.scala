@@ -13,28 +13,16 @@ import com.wbillingsley.handyplay.RefEnumIter
  */
 class ContentSequence( 
     
-  val _ce:Option[BSONObjectID] = None,
-
-  val _course:Option[BSONObjectID] = None,
-
   var _entries:Seq[BSONObjectID] = Seq.empty,
   
   val updated: Long = System.currentTimeMillis,
 
-  val created: Long = System.currentTimeMillis,
-
-  val _id: BSONObjectID = BSONObjectID.generate
+  val created: Long = System.currentTimeMillis
   
-) extends HasBSONId with ContentItem {
+) extends ContentItem {
 
   val itemType = ContentSequence.itemType
   
-  def id = _id
-
-  def course = Ref.fromOptionId(classOf[Course], _course)
-
-  def ce = Ref.fromOptionId(classOf[ContentEntry], _ce)
-   
   def entries = new RefManyById(classOf[ContentEntry], _entries)
 
   def entries_=(l:RefManyById[ContentEntry, _]) {
@@ -67,19 +55,19 @@ object ContentSequence {
   val itemType = "sequence"
       
   implicit object bsonWriter extends BSONDocumentWriter[ContentSequence] {
-    def write(s: ContentSequence) = BSONDocument(
-      "_id" -> s._id, "course" -> s._course, "ce" -> s._ce,
-      "entries" -> s._entries,
-      "created" -> s.created, "updated" -> s.updated
-    )
+    def write(s: ContentSequence) = {
+      val doc = BSONDocument(
+        "entries" -> s._entries,
+        "created" -> s.created, "updated" -> s.updated
+      )
+      println("I have been asked to write the entries and they are " + s._entries)
+      doc
+    }
   }
   
   implicit object bsonReader extends BSONDocumentReader[ContentSequence] {
     def read(doc: BSONDocument): ContentSequence = {
       new ContentSequence(
-        _id = doc.getAs[BSONObjectID]("_id").get,
-        _course = doc.getAs[BSONObjectID]("course"),
-        _ce = doc.getAs[BSONObjectID]("ce"),
         _entries = doc.getAs[Seq[BSONObjectID]]("entries").getOrElse(Seq.empty),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)        
@@ -88,7 +76,7 @@ object ContentSequence {
   }
   
   def unsaved(course:Ref[Course], ce:Ref[ContentEntry]) = {
-    new ContentSequence(_course = course.getId, _ce = ce.getId)
+    new ContentSequence()
   }
   
   def containing(entry:Ref[ContentEntry]) = {

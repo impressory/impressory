@@ -4,6 +4,7 @@ import com.wbillingsley.handy._
 import Ref._
 import Permissions._
 import play.api.libs.json._
+import com.impressory.api.UserError
 
 /**
  * From PresentationModel in the previous version
@@ -36,6 +37,21 @@ object SequenceModel {
     val s = new ContentSequence
     s._entries = including.getId.toSeq
     s
+  }
+  
+  /**
+   * Performs updates to a content sequence
+   */
+  def updateItem(e:ContentEntry, data:JsValue):Ref[ContentEntry] = {
+    e.item match {
+      case Some(cs: ContentSequence) => {
+        (for (ce <- Ref.fromOptionId(classOf[ContentEntry], (data \ "append").asOpt[String])) yield {
+          cs._entries = cs._entries :+ ce.id
+          e
+        }) orIfNone e.itself
+      }
+      case _ => RefFailed(new UserError("Attempted to edit something that wasn't a ContentSequence as if it was"))
+    }
   }
 
 }

@@ -304,7 +304,7 @@ object JsonConverters {
     def toJsonForAppr(appr:Approval[User]) = {
       for (
         cs <- rcs;
-        entries <- cs.entries.withFilter(_._id != cs._id).flatMap(_.itself.toJsonForAppr(appr)).toRefOne
+        entries <- cs.entries.withFilter(_.kind != ContentSequence.itemType).flatMap(_.itself.toJsonForAppr(appr)).toRefOne
       ) yield Json.obj(
         "entries" -> entries.toSeq)      
     }

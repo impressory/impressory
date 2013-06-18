@@ -12,6 +12,7 @@ define(["./app"], () ->
         switch msg.kind
           when "push"
             ERData.events.push(msg)
+            $rootScope.$broadcast(msg.kind, msg)
             $rootScope.$broadcast(msg.type, msg)
           when "state"
             ERData.states[msg.id] = msg.state

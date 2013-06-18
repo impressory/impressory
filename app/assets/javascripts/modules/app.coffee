@@ -17,7 +17,7 @@ define(["model/base"], () ->
         when('/logIn', { templateUrl: 'partials/logIn.html' }).
         when('/signUp', { templateUrl: 'partials/signUp.html' }).
         when('/self', { templateUrl: 'partials/self.html' }).
-        when('/help', { templateUrl: 'partials/help.html' }).
+        when('/about', { templateUrl: 'partials/about.html' }).
         when('/createCourse', { templateUrl: 'partials/course/create.html' }).
         when('/course/:courseId', { templateUrl: '/partials/course/cover.html' }).
         when('/course/:courseId/invites', { templateUrl: '/partials/course/invites.html' }).

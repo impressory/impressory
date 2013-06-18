@@ -144,6 +144,7 @@ object ContentController extends Controller {
       // Edit the item
       updated <- {
         e.item match {
+          case Some(cs:ContentSequence) => SequenceModel.updateItem(e, request.body)
           case Some(wp:WebPage) => WebPageModel.updateWebPage(e, request.body)
           case Some(y:YouTubeVideo) => { e.item = Some(OtherExternalsModel.updateYouTubeVideo(y,request.body)); e.itself }
           case Some(gs:GoogleSlides) => { e.item = Some(OtherExternalsModel.updateGoogleSlides(gs,request.body)); e.itself }

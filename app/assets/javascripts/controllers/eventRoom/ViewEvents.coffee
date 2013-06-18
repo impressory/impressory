@@ -14,7 +14,7 @@ define(["./base"], (l) ->
     $scope.postChatMessage = (msg) -> 
       $http.post("/course/" + $scope.courseId + "/chat", msg)
       
-    $scope.$on("chat", () -> $scope.$apply())
+    $scope.$on("push", () -> $scope.$apply())
   
   ]
 )

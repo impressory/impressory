@@ -22,6 +22,14 @@
         <div class="name">{{ entry.title || ('Untitled' )}}</div>
         <div class="kind">{{ entry.kind }}</div>
     </div>
+        
+    <div ng-show="content.entry.kind == 'sequence'">
+      <div class="form-inline" >
+        <label>Append an entry</label>
+        <input type="text" ng-model="append.entryId" placeholder="entry id" />
+        <button class="btn" ng-click="append(append.entryId)"><i class="icon-plus">Add to sequence</i></button>
+      </div>
+    </div>
 
     <div class="make-presentation" ng-hide="content.entry.kind == 'sequence'">
       <div ng-controller="Impressory.Controllers.AddContent.GenericAddForm">

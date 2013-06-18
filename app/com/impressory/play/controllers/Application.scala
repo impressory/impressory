@@ -64,6 +64,7 @@ object Application extends Controller {
       case "signUp.html" => Ok(views.html.partials.signUp())
       case "logIn.html" => Ok(views.html.partials.logIn())
       case "self.html" => Ok(views.html.partials.self())
+      case "about.html" => Ok(views.html.partials.about())
       
       case "course/create.html" => Ok(views.html.partials.course.create())
       case "course/cover.html" => Ok(views.html.partials.course.cover())

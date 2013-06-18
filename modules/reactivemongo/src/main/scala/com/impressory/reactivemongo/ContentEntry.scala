@@ -112,13 +112,13 @@ object ContentEntry extends FindById[ContentEntry] {
   }  
   
   def byTopic(course:Ref[Course], topic:String):RefMany[ContentEntry] = {
-    val res = for (cid <- course.getId) yield {
-      val query = BSONDocument("course" -> cid, "topics" -> topic)
-      val coll = DB.coll(collName)
-      val cursor = coll.find(query).cursor[ContentEntry]
-      new RefEnumIter(cursor.enumerateBulks)
-    }
-    res.getOrElse(RefNone)
+    println("topic is " + topic)
+    
+    val query = BSONDocument("course" -> course, "topics" -> topic)
+    val coll = DB.coll(collName)
+    val cursor = coll.find(query).cursor[ContentEntry]
+    val rei = new RefEnumIter(cursor.enumerateBulks)
+    rei
   }
   
   def byCourse(course:Ref[Course]):RefMany[ContentEntry] = {
@@ -156,9 +156,9 @@ object ContentEntry extends FindById[ContentEntry] {
   def saveWithItem(ce:ContentEntry) = {
     ce.updated = System.currentTimeMillis()
     val doc = bsonWriter.write(ce)
-    val docWithItem = doc ++ BSONDocument("_id" -> ce._id, "item" -> ce.item)
+    val docWithItem = doc ++ BSONDocument("item" -> ce.item)
     
-    val fle = DB.coll(collName).save(docWithItem)
+    val fle = DB.coll(collName).update(BSONDocument("_id" -> ce.id), BSONDocument("$set" -> docWithItem))
     val fut = fle.map { _ => ce.itself } recover { case x:Throwable => RefFailed(x) }
     new RefFutureRef(fut)    
   }

@@ -11,6 +11,9 @@ define(["./base"], (l) ->
       updatePreview() 
       $scope.tab = "preview"
       
+    $scope.showAddIns = () -> 
+      $scope.tab = "addIns"
+      
     $scope.showEdit()
   
   ]

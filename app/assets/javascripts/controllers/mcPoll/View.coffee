@@ -19,6 +19,11 @@ define(["./base"], (l) ->
       $scope.selected = (i for option, i in $scope.entry.item.options when option.selected) 
       
     $scope.recountSelected()
+    
+    $scope.pushToStream = () -> 
+      $http.post("/course/" + $scope.entry.course + "/entry/" + $scope.entry.id + "/pushMCPoll", { })
+    
+    
   
   ]
 

@@ -1,7 +1,9 @@
 @()
 
-<div class="web-banner">
-  <a ng-href="{{ viewing.Content.display.item.url }}" target="_blank"><i class="icon-external-link"></i></a> Web page at {{ viewing.Content.display.site }}. 
+<div class="web-banner" ng-hide="hideBanner">
+  <a ng-href="{{ viewing.Content.display.item.url }}" target="_blank"><i class="icon-external-link"></i></a> Web page at {{ viewing.Content.display.site }}.
+  
+  <btn class="close pull-right" ng-click="hideBanner = true">&times;</btn> 
 </div>
 
 @templateEmbed {

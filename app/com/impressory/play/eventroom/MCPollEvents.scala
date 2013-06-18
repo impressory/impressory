@@ -60,6 +60,7 @@ object MCPollEvents {
           import JsonConverters._
           
           for (j <- poll.itself.toJson) yield Json.obj(
+            "kind" -> "push",
             "type" -> MultipleChoicePoll.itemType,
             "poll" -> j
           )

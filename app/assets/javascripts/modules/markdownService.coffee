@@ -1,6 +1,6 @@
 define(["./app"], () ->
 
-  Impressory.angularApp.service('markdownService', [ '$sanitize', ($sanitize) ->
+  Impressory.angularApp.service('markdownService', [ '$sanitize', '$compile', ($sanitize, $compile) ->
       
     addExtraMarkup = (conv) ->
       # <<
@@ -67,9 +67,9 @@ define(["./app"], () ->
     
     converter = new Markdown.Converter()
     
+        
     postProcess = (text) ->
       text
-
 
     {
       makeHtml: (text) ->

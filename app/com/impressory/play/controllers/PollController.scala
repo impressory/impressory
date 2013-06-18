@@ -51,5 +51,29 @@ object PollController extends Controller {
     }
     resp
   }
+  
+  /**
+   * Pushes the poll to the interaction stream
+   */
+  def pushMCPollToStream(courseId:String, pid:String) = Action { implicit request =>
+    val user = RequestUtils.loggedInUser(request)
+    val ce = RefById(classOf[ContentEntry], pid)
+    
+    import MCPollModel._
+    
+    val resp = for (
+        e <- ce;
+        u <- optionally(user);
+        tok = Approval(u);
+        poll <- ce;
+        approved <- tok ask Permissions.Chat(poll.course)
+    ) yield {
+      EventRoom.default ! MCPollEvents.PushPollToChat(poll)
+      Ok("")
+    }
+    resp    
+    
+    
+  }
 
 }

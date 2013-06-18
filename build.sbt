@@ -6,17 +6,19 @@ scalaVersion := "2.10.0"
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
-resolvers += DefaultMavenRepository
+resolvers in ThisBuild  += DefaultMavenRepository
 
-resolvers += JavaNet1Repository
+resolvers in ThisBuild  += JavaNet1Repository
 
-resolvers += "repo.novus rels" at "http://repo.novus.com/releases/"
+resolvers in ThisBuild  += "repo.novus rels" at "http://repo.novus.com/releases/"
 
-resolvers += "repo.novus snaps" at "http://repo.novus.com/snapshots/"
+resolvers in ThisBuild  += "repo.novus snaps" at "http://repo.novus.com/snapshots/"
 
-resolvers += "typesafe snaps" at "http://repo.typesafe.com/typesafe/snapshots/"
+resolvers in ThisBuild += "typesafe snaps" at "http://repo.typesafe.com/typesafe/snapshots/"
 
-resolvers += "sonatype snaps" at "https://oss.sonatype.org/content/repositories/snapshots/"
+resolvers in ThisBuild += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/"
 
-resolvers += "handy" at "https://bitbucket.org/wbillingsley/mavenrepo/raw/master/snapshots/"
+resolvers in ThisBuild  += "sonatype snaps" at "https://oss.sonatype.org/content/repositories/snapshots/"
+
+resolvers in ThisBuild  += "handy" at "https://bitbucket.org/wbillingsley/mavenrepo/raw/master/snapshots/"
 

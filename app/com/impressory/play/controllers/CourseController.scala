@@ -73,7 +73,7 @@ object CourseController extends Controller {
    */
   def get(cid:String) = Angular { Action { implicit request => 
     val r = for (
-      c <- RefById(classOf[Course], cid);
+      c <- refCourse(cid);
       j <- c.itself.toJsonForAppr(request.approval)
     ) yield Ok(j)
     r
@@ -83,10 +83,9 @@ object CourseController extends Controller {
    * Invites for a specific course
    */
   def invites(cid: String) = Angular { Action { implicit request => 
-    val course = RefById(classOf[Course], cid)
     
     val invites = for (
-      c <- course;
+      c <- refCourse(cid);
       approved <- request.approval ask Permissions.ManageCourseInvites(c.itself);
       is <- CourseInvite.byCourse(c.itself);
       j <- is.itself.toJson
@@ -100,10 +99,9 @@ object CourseController extends Controller {
    * Creates an invite that will allow someone to register for a course
    */
   def createInvite(cid:String) = Action(parse.json) { implicit request => 
-    val course = RefById(classOf[Course], cid)
 
     val r = for (
-      ci <- CourseModel.createInvite(request.approval, course, request.body);
+      ci <- CourseModel.createInvite(request.approval, refCourse(cid), request.body);
       j <- ci.itself.toJson
     ) yield Ok(j)
     r
@@ -113,11 +111,10 @@ object CourseController extends Controller {
    * Registers the logged in user for the given course using the invite code.
    */
   def useInvite(cid:String) = Action(parse.json) { implicit request => 
-    val course = RefById(classOf[Course], cid)
 
     val r = for (
       code <- Ref((request.body \ "code").asOpt[String]) orIfNone UserError("No code entered");
-      c <- course;
+      c <- refCourse(cid);
       reg <- CourseModel.useInvite(request.approval, c.itself, code);
       j <- reg.itself.toJson
     ) yield Ok(j)

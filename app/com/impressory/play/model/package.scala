@@ -23,21 +23,21 @@ package object model {
    */
   type User = reactivemongo.User
   val User = reactivemongo.User
-  def user(id:String) = new LazyId(classOf[User], id)
+  def refUser(id:String) = new LazyId(classOf[User], id)
 
   type Identity = reactivemongo.Identity
   val Identity = reactivemongo.Identity
   
   type Course = reactivemongo.Course
   val Course = reactivemongo.Course
-  def course(id:String) = new LazyId(classOf[Course], id)
+  def refCourse(id:String) = new LazyId(classOf[Course], id)
   
   type Registration = reactivemongo.Registration
   val Registration = reactivemongo.Registration
 
   type ContentEntry = reactivemongo.ContentEntry
   val ContentEntry = reactivemongo.ContentEntry
-  def contentEntry(id:String) = new LazyId(classOf[ContentEntry], id)
+  def refContentEntry(id:String) = new LazyId(classOf[ContentEntry], id)
   
   type ContentItem = reactivemongo.ContentItem
   
@@ -57,7 +57,7 @@ package object model {
   
   type QnAQuestion = reactivemongo.QnAQuestion
   val QnAQuestion = reactivemongo.QnAQuestion
-  def qnaQuestion(id:String) = new LazyId(classOf[QnAQuestion], id)
+  def refQnAQuestion(id:String) = new LazyId(classOf[QnAQuestion], id)
   
   type QnAAnswer = reactivemongo.QnAAnswer
   val QnAAnswer = reactivemongo.QnAAnswer

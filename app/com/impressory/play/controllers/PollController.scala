@@ -25,14 +25,13 @@ object PollController extends Controller {
   def vote(courseId:String, pid:String) = Action(parse.json) { implicit request =>
 
     val approval = request.approval
-    val ce = RefById(classOf[ContentEntry], pid)
     val session = RequestUtils.sessionKey(request.session);
     val sk = session.getOrElse(RequestUtils.newSessionKey);
     
     import MCPollModel._
     
     val resp = for (
-        e <- ce;
+        e <- refContentEntry(pid);
         answer <- Ref((request.body \ "options").asOpt[Set[Int]]) orIfNone UserError("No options in that vote");
         previous <- optionally(MCPollResponse.byUserOrSession(e.itself, approval.who, session));
         pr <- MCPollModel.vote(e.itself, approval, Some(sk), answer);
@@ -54,13 +53,11 @@ object PollController extends Controller {
    * Pushes the poll to the interaction stream
    */
   def pushMCPollToStream(courseId:String, pid:String) = Action { implicit request =>
-    val ce = RefById(classOf[ContentEntry], pid)
     
     import MCPollModel._
     
     val resp = for (
-        e <- ce;
-        poll <- ce;
+        poll <- refContentEntry(pid);
         approved <- request.approval ask Permissions.Chat(poll.course)
     ) yield {
       EventRoom.default ! MCPollEvents.PushPollToChat(poll)

@@ -23,7 +23,7 @@ object UserController extends Controller {
    
   def user(id:String) = Action { implicit request => 
 	val r = for (
-	    user <- RefById(classOf[User], id).toJson
+	    user <- refUser(id).toJson
 	) yield {
 	  Ok(user)
 	}

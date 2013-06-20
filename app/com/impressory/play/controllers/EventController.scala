@@ -77,12 +77,11 @@ object EventController extends Controller {
   
   
   def postChatMessage(courseId:String) = Action(parse.json) { implicit request => 
-    val course = RefById(classOf[Course], courseId)
     val approval = request.approval
     val sesKey = RequestUtils.sessionKey(request.session).getOrElse(RequestUtils.newSessionKey)
         
     val res = for (
-      c <- course;
+      c <- refCourse(courseId);
       approved <- approval ask Permissions.Chat(c.itself);
       text <- Ref((request.body \ "text").asOpt[String].map(_.trim)) if (!text.isEmpty);
       anon <- Ref((request.body \ "anonymous").asOpt[Boolean].orElse(Some(false)));
@@ -96,10 +95,9 @@ object EventController extends Controller {
   }
   
   def lastFewEvents(courseId:String) = Action { implicit request => 
-    val course = RefById(classOf[Course], courseId)
         
     val comments = for (
-      c <- course;
+      c <- refCourse(courseId);
       approved <- request.approval ask Permissions.Read(c.itself);
       comment <- ChatComment.lastFew(c.itself)
     ) yield {

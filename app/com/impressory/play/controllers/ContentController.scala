@@ -26,14 +26,14 @@ object ContentController extends Controller {
     site:Option[String]
   ) = Action { implicit request =>
 
-    val course = RefById(classOf[Course], courseId)
+    val course = refCourse(courseId)
     val approval = request.approval
     
     val result = for (
       e <- entryId match {
         case Some(eid) => {
           // An entry ID has been given. Fetch it if allowed.          
-          val entry = RefById(classOf[ContentEntry], eid)
+          val entry = refContentEntry(eid)
           for (e <- entry; a <- approval ask Permissions.ReadEntry(e.itself)) yield e
         }
         case None => {
@@ -116,15 +116,12 @@ object ContentController extends Controller {
    * Request handler for creating content.
    */
   def createContent(courseId: String) = Action(parse.json) { implicit request =>
-    val course = RefById(classOf[Course], courseId)
-    val approval = request.approval
-
-    val result = newContentEntry(course, approval, request.body)
+    val result = newContentEntry(refCourse(courseId), request.approval, request.body)
     result
   }
   
   def editItem(courseId: String, entryId: String) = Action(parse.json) { implicit request => 
-    val entry = RefById(classOf[ContentEntry], entryId)
+    val entry = refContentEntry(entryId)
     val approval = request.approval
     
     val r = for (
@@ -158,11 +155,10 @@ object ContentController extends Controller {
   }
   
   def editTags(courseId: String, entryId: String) = Action(parse.json) { implicit request => 
-    val entry = RefById(classOf[ContentEntry], entryId)
     val approval = request.approval
     
     val r = for (
-      e <- entry;
+      e <- refContentEntry(entryId);
       approved <- approval ask Permissions.EditContent(e.itself);
       updated = ContentModel.update(e, request.body);
       saved <- ContentEntry.saveExisting(updated);
@@ -175,10 +171,9 @@ object ContentController extends Controller {
   }
   
   def entriesForTopic(courseId: String, topic:Option[String]) = Action { implicit request => 
-    val course = RefById(classOf[Course], courseId)
 
     val entries = for (
-      c <- course;
+      c <- refCourse(courseId);
       e <- ContentModel.entriesForTopic(c.itself, request.approval, topic);
       j <- e.itself.toJson
     ) yield j
@@ -188,10 +183,9 @@ object ContentController extends Controller {
   }
 
   def allEntries(courseId: String) = Action { implicit request => 
-    val course = RefById(classOf[Course], courseId)
 
     val entries = for (
-      c <- course;
+      c <- refCourse(courseId);
       e <- ContentModel.allEntries(c.itself, request.approval);
       j <- e.itself.toJson
     ) yield j

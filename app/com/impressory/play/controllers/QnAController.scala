@@ -19,13 +19,13 @@ object QnAController extends Controller {
    * All the questions for a course
    */
   def listQuestions(bid:String, skip:Option[Int] = None) = Angular { Action { implicit request => 
+    
+      val approval = request.approval
       val questions = for (
           course <- RefById(classOf[Course], bid);
-          user <- optionally(RequestUtils.loggedInUser(request));
-          tok = Approval(user);
-          approved <- tok ask Permissions.Read(course.itself);
+          approved <- approval ask Permissions.Read(course.itself);
           question <- QnAQuestion.byCourse(course.itself);
-          json <- question.itself.toJsonFor(tok)
+          json <- question.itself.toJsonFor(approval)
       ) yield json  
       
       val en = Enumerator("{ \"questions\": [") andThen questions.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
@@ -36,12 +36,11 @@ object QnAController extends Controller {
    * Views a Q&A Question
    */
   def question(cid:String, qid:String) = Angular { Action { implicit request => 
+    val approval = request.approval
     val r = for (
       q <- RefById(classOf[QnAQuestion], qid);
-      reader <- optionally(RequestUtils.loggedInUser(request));
-      tok = Approval(reader);
-      approved <- tok ask Permissions.Read(q.course);
-      json <- q.itself.toJsonFor(tok)
+      approved <- approval ask Permissions.Read(q.course);
+      json <- q.itself.toJsonFor(approval)
     ) yield Ok(json)
     r
   }}
@@ -52,17 +51,16 @@ object QnAController extends Controller {
   def handleNewQuestion(cid:String) = Action(parse.json) { implicit request =>
 
       val c = RefById(classOf[Course], cid)
+      val approval = request.approval
       
       val resp = for (
         course <- c;
-        user <- optionally(RequestUtils.loggedInUser(request));
-        tok = Approval(user);
-        approved <- tok ask Permissions.Read(course.itself);
+        approved <- approval ask Permissions.Read(course.itself);
         session = RequestUtils.sessionKey(request.session);
         title <- Ref((request.body \ "title").asOpt[String]) orIfNone UserError("We need a title for the question");
         body <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("We need a body for the question");
-        saved <- QnAQuestion.saveNew(QnAQuestion(title, body, addedBy=tok.who, course=course.itself, session=session));
-        json <- saved.itself.toJsonFor(tok)
+        saved <- QnAQuestion.saveNew(QnAQuestion(title, body, addedBy=approval.who, course=course.itself, session=session));
+        json <- saved.itself.toJsonFor(approval)
       ) yield {
         Ok(Json.obj("question" -> json))
       }      
@@ -75,16 +73,14 @@ object QnAController extends Controller {
   def handleAddAnswer(cid:String, qid:String) = Action(parse.json) { implicit request =>
       
       val q = RefById(classOf[QnAQuestion], qid)
-      
+      val approval = request.approval
       val resp = for (
         question <- q;
-        reader <- optionally(RequestUtils.loggedInUser(request));
-        tok = Approval(reader);
-        approved <- tok ask Permissions.Read(question.course);
+        approved <- approval ask Permissions.Read(question.course);
         session = RequestUtils.sessionKey(request.session);
         text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("We need some text in that answer");
-        updated <- QnAQuestion.addAnswer(question.itself, new QnAAnswer(text=text, addedBy=tok.who, session=session));
-        json <- updated.itself.toJsonFor(tok)
+        updated <- QnAQuestion.addAnswer(question.itself, new QnAAnswer(text=text, addedBy=approval.who, session=session));
+        json <- updated.itself.toJsonFor(approval)
       ) yield {
         Ok(Json.obj("question" -> json))
       }      
@@ -97,15 +93,13 @@ object QnAController extends Controller {
   def handleAddQuestionComment(cid:String, qid:String) = Action(parse.json) { implicit request =>
       
       val q = RefById(classOf[QnAQuestion], qid)
-      
+      val approval = request.approval
       val resp = for (
         question <- q;
-        reader <- optionally(RequestUtils.loggedInUser(request));
-        tok = Approval(reader);
-        approved <- tok ask Permissions.Read(question.course);
+        approved <- approval ask Permissions.Read(question.course);
         text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("We need some text in that comment");
-        updated <- QnAQuestion.addQComment(question.itself, new EmbeddedComment(text=text, addedBy=tok.who));
-        json <- updated.itself.toJsonFor(tok)
+        updated <- QnAQuestion.addQComment(question.itself, new EmbeddedComment(text=text, addedBy=approval.who));
+        json <- updated.itself.toJsonFor(approval)
       ) yield {
         Ok(Json.obj("question" -> json))
       }      
@@ -117,16 +111,14 @@ object QnAController extends Controller {
    */
   def handleAddAnswerComment(cid:String, qid:String, ansId:String) = Action(parse.json) { implicit request =>
       val q = RefById(classOf[QnAQuestion], qid)
-      
+      val approval = request.approval
       val resp = for (
         question <- q;
-        reader <- optionally(RequestUtils.loggedInUser(request));
-        tok = Approval(reader);
-        approved <- tok ask Permissions.Read(question.course);
+        approved <- approval ask Permissions.Read(question.course);
         answer = RefById(classOf[QnAAnswer], ansId);
         text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("We need some text in that comment");
-        updated <- QnAQuestion.addAnsComment(question.itself, answer, new EmbeddedComment(text=text, addedBy=tok.who));
-        json <- updated.itself.toJsonFor(tok)        
+        updated <- QnAQuestion.addAnsComment(question.itself, answer, new EmbeddedComment(text=text, addedBy=approval.who));
+        json <- updated.itself.toJsonFor(approval)        
       ) yield {
         Ok(Json.obj("question" -> json))
       }      

@@ -3,7 +3,6 @@ package com.impressory.play.controllers
 import com.wbillingsley.handy._
 import Ref._
 import com.wbillingsley.handyplay.RefConversions._
-
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
@@ -28,12 +27,9 @@ object ContentController extends Controller {
   ) = Action { implicit request =>
 
     val course = RefById(classOf[Course], courseId)
-    val user = RequestUtils.loggedInUser(request)
+    val approval = request.approval
     
     val result = for (
-      u <- optionally(user);
-      approval = Approval(u);
-      
       e <- entryId match {
         case Some(eid) => {
           // An entry ID has been given. Fetch it if allowed.          
@@ -63,20 +59,19 @@ object ContentController extends Controller {
    * Creates a new content entry and fills it in with the appropriate item.
    * TODO: This is a big ugly method; tidy it up.
    */
-  def newContentEntry(course:Ref[Course], user:Ref[User], requestBody:JsValue) = {
+  def newContentEntry(course:Ref[Course], approval:Approval[User], requestBody:JsValue) = {
     
     import Permissions._
     
     val kind = (requestBody \ "kind").asOpt[String]
     val protect = (requestBody \ "entry" \ "protect").asOpt[Boolean].getOrElse(false)
-        
+
+    
     for (
       // Resolve the references now, to save resolving them multiple times later
-      u <- optionally(user);
       c <- course;
       
       // Check the user is allowed to create the content (and to protect it if they've chosen to)
-      approval = Approval(u);
       approved <- {
         if (protect) {
           approval ask(AddContent(c.itself), ProtectContent(c.itself))
@@ -86,7 +81,7 @@ object ContentController extends Controller {
       };
       
       // Create a ContentEntry (without its item) from the data
-      e <- ContentEntry.unsaved(c.itself, Ref(u), kind);
+      e <- ContentEntry.unsaved(c.itself, approval.who, kind);
       updated = ContentModel.update(e, requestBody \ "entry");
       
       // Add an appropriate item
@@ -122,23 +117,21 @@ object ContentController extends Controller {
    */
   def createContent(courseId: String) = Action(parse.json) { implicit request =>
     val course = RefById(classOf[Course], courseId)
-    val user = RequestUtils.loggedInUser(request)
+    val approval = request.approval
 
-    val result = newContentEntry(course, user, request.body)
+    val result = newContentEntry(course, approval, request.body)
     result
   }
   
   def editItem(courseId: String, entryId: String) = Action(parse.json) { implicit request => 
     val entry = RefById(classOf[ContentEntry], entryId)
-    val user = RequestUtils.loggedInUser(request)
+    val approval = request.approval
     
     val r = for (
       // Resolve the references now, to save resolving them multiple times later
       e <- entry;
-      u <- optionally(user);
       
       // Check the user is allowed to create the content (and to protect it if they've chosen to)
-      approval = Approval(u);
       approved <- approval ask Permissions.EditContent(e.itself);
       
       // Edit the item
@@ -166,12 +159,10 @@ object ContentController extends Controller {
   
   def editTags(courseId: String, entryId: String) = Action(parse.json) { implicit request => 
     val entry = RefById(classOf[ContentEntry], entryId)
-    val user = RequestUtils.loggedInUser(request)
+    val approval = request.approval
     
     val r = for (
       e <- entry;
-      u <- optionally(user);
-      approval = Approval(u);
       approved <- approval ask Permissions.EditContent(e.itself);
       updated = ContentModel.update(e, request.body);
       saved <- ContentEntry.saveExisting(updated);
@@ -185,13 +176,10 @@ object ContentController extends Controller {
   
   def entriesForTopic(courseId: String, topic:Option[String]) = Action { implicit request => 
     val course = RefById(classOf[Course], courseId)
-    val user = RequestUtils.loggedInUser(request)
 
     val entries = for (
       c <- course;
-      u <- optionally(user);
-      approval = Approval(u);
-      e <- ContentModel.entriesForTopic(c.itself, approval, topic);
+      e <- ContentModel.entriesForTopic(c.itself, request.approval, topic);
       j <- e.itself.toJson
     ) yield j
       
@@ -201,13 +189,10 @@ object ContentController extends Controller {
 
   def allEntries(courseId: String) = Action { implicit request => 
     val course = RefById(classOf[Course], courseId)
-    val user = RequestUtils.loggedInUser(request)
 
     val entries = for (
       c <- course;
-      u <- optionally(user);
-      approval = Approval(u);
-      e <- ContentModel.allEntries(c.itself, approval);
+      e <- ContentModel.allEntries(c.itself, request.approval);
       j <- e.itself.toJson
     ) yield j
       

@@ -3,7 +3,6 @@ package com.impressory.play.controllers
 import com.wbillingsley.handy._
 import Ref._
 import com.wbillingsley.handyplay.RefConversions._
-
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
@@ -25,12 +24,9 @@ object CourseController extends Controller {
    * { course: { ... } }
    */
   def createCourse = Action(parse.json) { implicit request =>
-    val user = RequestUtils.loggedInUser(request)
-
-  	val resp = for (
-      u <- user orIfNone UserError("You're not logged in");
-      approval = Approval(u.itself); 
-      course <- CourseModel.createCourse(approval, request.body, ""); 
+    
+    val resp = for (
+      course <- CourseModel.createCourse(request.approval, request.body, ""); 
       j <- course.itself.toJson
     ) yield {
       Ok(Json.obj("course" -> j))
@@ -43,12 +39,10 @@ object CourseController extends Controller {
    * { courses: [ ... ] }
    */
   def listedCourses = Action { implicit request => 
-    val user = RequestUtils.loggedInUser(request)
 
     val courses = for (
         c <- Course.listedCourses;
-        u <- optionally(user);
-        j <- c.itself.toJsonForAppr(Approval(Ref(u)))
+        j <- c.itself.toJsonForAppr(request.approval)
     ) yield j
     
     val en = Enumerator("{ \"courses\": [") andThen courses.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
@@ -60,10 +54,9 @@ object CourseController extends Controller {
    * { courses: [ ... ] }
    */
   def myCourses = Action { implicit request => 
-    val user = RequestUtils.loggedInUser(request)
     
     val courses = for (
-      u <- user;
+      u <- request.user;
       courseIds = {
         for (r <- u.registrations; id <- r.course.getId) yield id
       };
@@ -79,12 +72,9 @@ object CourseController extends Controller {
    * JSON for a specific course
    */
   def get(cid:String) = Angular { Action { implicit request => 
-    val user = RequestUtils.loggedInUser(request)
-    
     val r = for (
-      u <- optionally(user);
       c <- RefById(classOf[Course], cid);
-      j <- c.itself.toJsonForAppr(Approval(u))
+      j <- c.itself.toJsonForAppr(request.approval)
     ) yield Ok(j)
     r
   }}
@@ -93,14 +83,11 @@ object CourseController extends Controller {
    * Invites for a specific course
    */
   def invites(cid: String) = Angular { Action { implicit request => 
-    val user = RequestUtils.loggedInUser(request)
     val course = RefById(classOf[Course], cid)
     
     val invites = for (
-      u <- optionally(user);
-      approval = Approval(u);
       c <- course;
-      approved <- approval ask Permissions.ManageCourseInvites(c.itself);
+      approved <- request.approval ask Permissions.ManageCourseInvites(c.itself);
       is <- CourseInvite.byCourse(c.itself);
       j <- is.itself.toJson
     ) yield j
@@ -113,11 +100,10 @@ object CourseController extends Controller {
    * Creates an invite that will allow someone to register for a course
    */
   def createInvite(cid:String) = Action(parse.json) { implicit request => 
-    val user = RequestUtils.loggedInUser(request)
     val course = RefById(classOf[Course], cid)
 
     val r = for (
-      ci <- CourseModel.createInvite(Approval(user), course, request.body);
+      ci <- CourseModel.createInvite(request.approval, course, request.body);
       j <- ci.itself.toJson
     ) yield Ok(j)
     r
@@ -127,14 +113,12 @@ object CourseController extends Controller {
    * Registers the logged in user for the given course using the invite code.
    */
   def useInvite(cid:String) = Action(parse.json) { implicit request => 
-    val user = RequestUtils.loggedInUser(request)
     val course = RefById(classOf[Course], cid)
 
     val r = for (
       code <- Ref((request.body \ "code").asOpt[String]) orIfNone UserError("No code entered");
-      u <- user;
       c <- course;
-      reg <- CourseModel.useInvite(Approval(u.itself), c.itself, code);
+      reg <- CourseModel.useInvite(request.approval, c.itself, code);
       j <- reg.itself.toJson
     ) yield Ok(j)
     r

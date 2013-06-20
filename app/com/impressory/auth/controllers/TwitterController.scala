@@ -10,7 +10,7 @@ import play.api.Play
 import Play.current
 
 import com.impressory.play.model._
-import com.impressory.play.controllers.{RequestUtils, ResultConversions}
+import com.impressory.play.controllers.{RequestUtils, RequestUser, ResultConversions}
 import com.impressory.play.controllers.ResultConversions._
 
 /**
@@ -68,7 +68,7 @@ object TwitterController extends Controller {
       TWITTER.retrieveAccessToken(tokenPair, verifier) match {
         case Right(t) => {
           ResultConversions.refResultToResult(for (
-            u <- RequestUtils.loggedInUser(request);
+            u <- request.user;
             u2 <- fillUserDetails(t, u)
           ) yield Redirect(com.impressory.play.controllers.routes.Application.viewSelf))
         }

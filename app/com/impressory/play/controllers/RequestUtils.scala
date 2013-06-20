@@ -41,16 +41,14 @@ object RequestUtils {
     }
   }
 
-  def loggedInUser[AC](request:Request[AC]):Ref[User] = {
-    loggedInUser(request.session)
-  }
-
   def loggedInUser(session:Session):Ref[User] = {
-import scala.util.Try
-    
-    val optId = session.get("userid")
-    Ref.fromOptionId(classOf[User], optId)    
+    session.get("userid") match {
+      case Some(id) => new LazyId(classOf[User], id)
+      case None => RefNone
+    }
   }  
+  
+  def approval(session:Session) = new Approval(loggedInUser(session))
   
   /*----
    * Form utilities

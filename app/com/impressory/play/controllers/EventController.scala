@@ -23,18 +23,16 @@ import JsonConverters._
 object EventController extends Controller {
   
   def subscribe = Action(parse.json) { implicit request => 
-    val user = RequestUtils.loggedInUser(request)
+    val approval = request.approval
     val oListenerName = (request.body \ "listenerName").asOpt[String]
     
     val resp = (request.body \ "subscription" \ "type").asOpt[String] match {
       case Some("course") => {
         val oCourseId = (request.body \ "subscription" \ "courseId").asOpt[String]
         for (
-          u <- optionally(user);
           courseId <- Ref(oCourseId);
           listenerName <- Ref(oListenerName);
           c <- RefById(classOf[Course], courseId);
-          approval = Approval(u);
           approved <- approval ask Permissions.Read(c.itself)
         ) yield {
           EventRoom.default ! Subscribe(listenerName, ChatEvents.ChatStream(courseId))
@@ -44,11 +42,9 @@ object EventController extends Controller {
       case Some("Multiple choice poll results") => {
         val oceId = (request.body \ "subscription" \ "id").asOpt[String]
         for (
-          u <- optionally(user);
           ceId <- Ref(oceId);
           listenerName <- Ref(oListenerName);
           c <- RefById(classOf[ContentEntry], ceId);
-          approval = Approval(u);
           approved <- approval ask Permissions.ReadEntry(c.itself)
         ) yield {
           EventRoom.default ! Subscribe(listenerName, MCPollEvents.PollStream(ceId))
@@ -62,10 +58,9 @@ object EventController extends Controller {
   }
   
   def serverSentEvents = Action { implicit request =>
-    val user = RequestUtils.loggedInUser(request)
     
     for (
-      u <- optionally(user)// orIfNone RefFailed(UserError("You must be logged in to listen for updates"))
+      u <- optionally(request.user)// orIfNone RefFailed(UserError("You must be logged in to listen for updates"))
     ) yield {
       
       val listenerName = RequestUtils.newSessionKey
@@ -83,17 +78,15 @@ object EventController extends Controller {
   
   def postChatMessage(courseId:String) = Action(parse.json) { implicit request => 
     val course = RefById(classOf[Course], courseId)
-    val user = RequestUtils.loggedInUser(request)
+    val approval = request.approval
     val sesKey = RequestUtils.sessionKey(request.session).getOrElse(RequestUtils.newSessionKey)
         
     val res = for (
       c <- course;
-      u <- optionally(user);
-      approval = Approval(u);
       approved <- approval ask Permissions.Chat(c.itself);
       text <- Ref((request.body \ "text").asOpt[String].map(_.trim)) if (!text.isEmpty);
       anon <- Ref((request.body \ "anonymous").asOpt[Boolean].orElse(Some(false)));
-      cm = new ChatComment(text=text, course=c.itself, addedBy=Ref(u), anonymous=anon);
+      cm = new ChatComment(text=text, course=c.itself, addedBy=approval.who, anonymous=anon);
       saved <- ChatComment.saveNew(cm)
     ) yield {
       EventRoom.notifyEventRoom(ChatEvents.BroadcastIt(courseId, saved))
@@ -104,13 +97,10 @@ object EventController extends Controller {
   
   def lastFewEvents(courseId:String) = Action { implicit request => 
     val course = RefById(classOf[Course], courseId)
-    val user = RequestUtils.loggedInUser(request)
         
     val comments = for (
       c <- course;
-      u <- optionally(user);
-      approval = Approval(u);
-      approved <- approval ask Permissions.Read(c.itself);
+      approved <- request.approval ask Permissions.Read(c.itself);
       comment <- ChatComment.lastFew(c.itself)
     ) yield {
       Json.toJson(comment)

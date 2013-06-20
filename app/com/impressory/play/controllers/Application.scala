@@ -45,7 +45,7 @@ object Application extends Controller {
   
   def angularMain(implicit request:Request[_]) = {
     for (
-        u <- optionally(RequestUtils.loggedInUser(request).toJsonForSelf)
+        u <- optionally(request.user.toJsonForSelf)
     ) yield {
       Ok(views.html.main(u))  
     }

@@ -113,10 +113,9 @@ object UserController extends Controller {
    * Action for editing basic details on the logged in user
    */
   def editDetails = Action(parse.json) { implicit request =>
-    val ur = RequestUtils.loggedInUser(request)
     
     val resp = (for (
-        u <- ur
+        u <- request.user
     ) yield {
       u.nickname = (request.body \ "nickname").asOpt[String]
       u.name = (request.body \ "name").asOpt[String]
@@ -132,10 +131,9 @@ object UserController extends Controller {
    * Action for editing basic details on the logged in user
    */
   def editLoginDetails = Action(parse.json) { implicit request =>
-    val ur = RequestUtils.loggedInUser(request)
     
     val resp = (for (
-        u <- ur
+        u <- request.user
     ) yield {
       u.email = (request.body \ "email").asOpt[String]
       u.username = (request.body \ "username").asOpt[String]
@@ -150,7 +148,7 @@ object UserController extends Controller {
    * A username is available if nobody has it, or the logged in user has it
    */
   def usernameAvailable(username:String) = Action { implicit request =>     
-    val loggedIn = RequestUtils.loggedInUser(request)    
+    val loggedIn = request.user    
   	val resp = (for (u <- User.byUsername(username)) yield {
   	  Ok(Json.obj("available" -> (u.itself.getId == loggedIn.getId)))
   	}).orIfNone(Ok(Json.obj("available" -> true)).itself)
@@ -161,7 +159,7 @@ object UserController extends Controller {
    * A username is "available" if nobody has it, or the logged in user has it
    */
   def emailAvailable(email:String) = Action { implicit request => 
-    val loggedIn = RequestUtils.loggedInUser(request)    
+    val loggedIn = request.user    
   	val resp = (for (u <- User.byEmail(email)) yield {
   	  Ok(Json.obj("available" -> (u.itself.getId == loggedIn.getId)))
   	}).orIfNone(Ok(Json.obj("available" -> true)).itself)
@@ -173,7 +171,7 @@ object UserController extends Controller {
    * Removes an identity from the logged in user
    */
   def removeIdentity(id: String) = Action { implicit request =>     
-    val ur = RequestUtils.loggedInUser(request)
+    val ur = request.user
   	val resp = (for (u <- ur) yield {
   	  u.identities = u.identities.filter(_._id.stringify != id)
       for (j <- u.save.toJsonForSelf) yield Ok(Json.obj("user" -> j))

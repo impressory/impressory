@@ -15,9 +15,6 @@ import play.api.libs.iteratee.Enumerator
 
 object CourseController extends Controller {
   
-
-  /** The content of a freshly created book. Updated on startup. */
-  var defaultPageOneContent = "(to be loaded)";
     
   /**
    * Handler for creating a book

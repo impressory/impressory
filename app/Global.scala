@@ -7,7 +7,23 @@ import play.api.mvc.AcceptExtractors
 
 object Global extends GlobalSettings with AcceptExtractors {
 
+  def setDefaultContent() {
+    /*
+     * Set the default content for newly created books and pages
+     */
+    val source1 = io.Source.fromInputStream(getClass.getResourceAsStream("/defaultMarkdownContent.md"))
+    com.impressory.play.model.MarkdownPageModel.defaultText = source1.mkString
+    source1.close()
+
+    val source2 = io.Source.fromInputStream(getClass.getResourceAsStream("/defaultPageOneContent.md"))
+    com.impressory.play.model.CourseModel.defaultPageOneText = source2.mkString
+    source2.close()
+  }
+  
   override def onStart(app: Application) {
+    
+    setDefaultContent()
+    
     DB.dbName = Play.configuration.getString("mongo.dbname").getOrElse("impressory")
     DB.connectionString = Play.configuration.getString("mongo.connection").getOrElse("localhost:27017")
     DB.dbUser = Play.configuration.getString("mongo.dbuser")

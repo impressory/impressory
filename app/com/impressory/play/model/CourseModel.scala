@@ -10,6 +10,9 @@ import com.impressory.api.CourseRole
  */
 object CourseModel {
   
+  /** The content of a freshly created book. Updated on startup. */
+  var defaultPageOneText = "The default content for a new course has not yet been set";  
+  
   def update(course:Course, jsVal: JsValue) = {
     for (title <- (jsVal \ "title").asOpt[String]) { course.title = Some(title) }
     for (sn <- (jsVal \ "shortName").asOpt[String]) { course.shortName = Some(sn) }
@@ -25,8 +28,11 @@ object CourseModel {
       saved <- Course.saveNew(course);
       
       p1 <- ContentEntry.unsaved(saved.itself, approval.who);
+      page <- MarkdownPageModel.create(course.itself, approval, p1, defaultPageOneText);
       p1saved <- {
         p1.topics = Set("page one")
+        p1.kind = Some(MarkdownPage.itemType)
+        p1.item = Some(page)
         ContentEntry.saveNew(p1)
       };
       

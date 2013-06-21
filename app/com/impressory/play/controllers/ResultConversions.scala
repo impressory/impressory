@@ -4,14 +4,42 @@ import com.wbillingsley.handy._
 import Ref._
 import play.api._
 import play.api.mvc._
-import play.api.mvc.Results.{Ok, NotFound, Forbidden, Async, InternalServerError}
+import play.api.mvc.Results.{Ok, NotFound, Forbidden, BadRequest, Async, InternalServerError}
 import scala.concurrent.promise
 import play.api.libs.json._
+import com.impressory.play.model.JsonConverters._
+import play.api.libs.iteratee.Enumerator
 
 object ResultConversions extends AcceptExtractors {
   
   import scala.language.implicitConversions
+  
+  /**
+   * Converts a Ref[obj] to an HTTP response, so long as there is a writer than can turn the object to a Ref[JsValue]
+   */
+  implicit def refOToResult[O : WritesRJ](r:Ref[O])(implicit request:Request[_]):play.api.mvc.AsyncResult = {
+    val writesRJ = implicitly[WritesRJ[O]]
+    refResultToResult( for (obj <- r; j <- writesRJ.writeRJ(obj)) yield Ok(j) )
+  }
+  
+  /**
+   * Converts a Ref[JsValue] to an HTTP response
+   */
+  implicit def refJToResult(r:Ref[JsValue])(implicit request:Request[_]):play.api.mvc.AsyncResult = {
+    refResultToResult(for (j <- r) yield Ok(j))
+  }
 
+  /**
+   * Streams a RefMany[JsValue] as an HTTP response. Note that errors will usually result in an empty stream.
+   */
+  implicit def refManyJToResult(r:RefMany[JsValue])(implicit request:Request[_]) = {
+    import com.wbillingsley.handyplay.RefConversions._
+    
+    val en = Enumerator("[") andThen r.enumerate.stringify andThen Enumerator("]") andThen Enumerator.eof[String]
+    Ok.stream(en).as("application/json")
+  }
+
+  
   /**
    * Converts a Ref[play.api.templates.Html] to a Result
    */
@@ -55,8 +83,8 @@ object ResultConversions extends AcceptExtractors {
           }
           case com.impressory.api.UserError(msg) => p success {
             request match {
-              case Accepts.Json() => Ok(Json.obj("error" -> msg))
-              case _ => InternalServerError("User error in non-JSON request: " + msg)
+              case Accepts.Json() => BadRequest(Json.obj("error" -> msg))
+              case _ => BadRequest("User error in non-JSON request: " + msg)
             }            
           }
           case exc:Throwable => p success {

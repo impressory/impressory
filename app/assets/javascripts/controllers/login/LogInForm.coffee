@@ -17,13 +17,9 @@ define(["./base"], (l) ->
          if (data.user?)
            Impressory.Model.Login.login(data.user)
            $location.path("/")
-         if (data.error?)
-           $scope.errors = [ data.error ]
-         else
-           console.log(data.error)
        )
        .error((data) ->
-         $scope.errors = [ "Unexpected error" ]
+         $scope.errors = [ data.error || "Unexpected error" ]
          console.log(data)
        )
   ]

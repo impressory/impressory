@@ -7,6 +7,23 @@ import play.api.libs.iteratee.Enumerator
 
 object JsonConverters {
   
+  trait WritesRJ[O] {
+    def writeRJ(obj: O):Ref[JsValue]
+  }
+  
+  implicit object UserWritesRJ extends WritesRJ[User] {
+    def writeRJ(user: User) = user.itself.toJson
+  } 
+  
+  implicit object ContentEntryWritesRJ extends WritesRJ[ContentEntry] {
+    def writeRJ(entry: ContentEntry) = entry.itself.toJson
+  }
+  
+  implicit object JsonWritesRJ extends WritesRJ[JsValue] {
+    def writeRJ(j: JsValue) = j.itself
+  }
+  
+  
   /** 
    * Useful for putting the commas in the right place when Enumerating JSON as a string
    */
@@ -40,8 +57,7 @@ object JsonConverters {
      */
     def toJson: Ref[JsObject] = {
       for (
-        user <- u;
-        identities <- user.identities.toRefMany.toJson
+        user <- u
       ) yield {
         Json.obj(
           "id" -> user.id.stringify,
@@ -59,14 +75,11 @@ object JsonConverters {
     def toJsonForSelf: Ref[JsValue] = {
       for (
         user <- u;
+        j <- user.itself.toJson;
         identities <- user.identities.toRefMany.toJson
       ) yield {
-        Json.obj(
-          "id" -> user.id.stringify,
-          "name" -> user.name, 
-          "nickname" -> user.nickname,
+        j ++ Json.obj(
           "email" -> user.email,
-          "username" -> user.username,
           "avatar" -> user.avatar,
           "passSet" -> user.pwhash.isDefined,
           "identities" -> identities.toSeq

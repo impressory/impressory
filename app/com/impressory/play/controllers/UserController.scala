@@ -21,13 +21,8 @@ object UserController extends Controller {
    */
   def valid(email:String) = email.contains("@")
    
-  def user(id:String) = Action { implicit request => 
-	val r = for (
-	    user <- refUser(id).toJson
-	) yield {
-	  Ok(user)
-	}
-	r    
+  def user(id:String) = Action { implicit request =>
+    refUser(id)
   }
   
   def findUsersById = Action(parse.json) { implicit request =>
@@ -84,7 +79,7 @@ object UserController extends Controller {
      ) yield {
       val session = RequestUtils.withLoggedInUser(request.session, u.itself)         
       Ok(Json.obj("user" -> j)).withSession(session)
-    }).orIfNone(Ok(Json.obj("error" -> "Wrong password")).itself)
+    }).orIfNone(RefFailed(UserError("Wrong password")))
     
     resp        
   }
@@ -104,7 +99,7 @@ object UserController extends Controller {
      ) yield {
       val session = RequestUtils.withLoggedInUser(request.session, u.itself)         
       Ok(Json.obj("user" -> j)).withSession(session)
-    }).orIfNone(Ok(Json.obj("error" -> "Wrong password")).itself)
+    }).orIfNone(RefFailed(UserError("Wrong password")))
     
     resp        
   }  
@@ -121,7 +116,7 @@ object UserController extends Controller {
       u.name = (request.body \ "name").asOpt[String]
       u.avatar = (request.body \ "avatar").asOpt[String]
       
-      for (j <- u.save.toJsonForSelf) yield Ok(Json.obj("user" -> j))
+      for (j <- u.save.toJsonForSelf) yield Json.obj("user" -> j)
       
     }).flatten
     resp
@@ -138,7 +133,7 @@ object UserController extends Controller {
       u.email = (request.body \ "email").asOpt[String]
       u.username = (request.body \ "username").asOpt[String]
       
-      for (j <- u.save.toJsonForSelf) yield Ok(Json.obj("user" -> j))
+      for (j <- u.save.toJsonForSelf) yield Json.obj("user" -> j)
       
     }).flatten
     resp

@@ -12,13 +12,11 @@ define(["./base"], (l) ->
        .success((data) -> 
          if (data.question?)
            $location.path("/course/" + $scope.courseId + "/qna/" + data.question.id)
-         if (data.error?)
-           $scope.errors = [ data.error ]
          else
            console.log(data)
        )
        .error((data) ->
-         $scope.errors = [ "Unexpected error" ]
+         $scope.errors = [ data.error || "Unexpected error" ]
          console.log(data)
        )
   ]

@@ -24,10 +24,7 @@ define(["./base"], (l) ->
            $scope.panels.toggleEditDetails()
       ).error((data) -> 
          console.log(data)
-         if (data.error?)
-           $scope.errors = [ data.error ]
-         else
-           $scope.errors = [ "Unexpected error " ]
+         $scope.errors = [ data.error || "Unexpected error " ]
       )
 
   ]

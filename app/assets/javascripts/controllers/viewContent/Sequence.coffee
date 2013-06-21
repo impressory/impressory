@@ -12,11 +12,12 @@ define(["./base"], (l) ->
         if data.entry?
           $scope.panels.toggleEditContent()
           viewingContent.updateEntryInPlace(data.entry)
-        else if data.error?
-          $scope.errors = [ data.error ]
         else 
           $scope.errors = [ "Unexpected result returned from server" ]
-      ).error(() -> $scope.errors = [ "Unexpected error" ])
+      ).error((data) -> 
+        $scope.errors = [ data.error || "Unexpected error" ]
+        console.log(data)
+      )
     
   ]
 

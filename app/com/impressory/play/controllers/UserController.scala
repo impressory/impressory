@@ -28,13 +28,7 @@ object UserController extends Controller {
   def findUsersById = Action(parse.json) { implicit request =>
     
     val ids = (request.body \ "ids").asOpt[Set[String]].getOrElse(Set.empty)
-	val users = for (
-	    user <- new RefManyById(classOf[User], ids.toSeq);
-	    j <- user.itself.toJson
-	) yield j
-
-	val en = Enumerator("{ \"users\": [") andThen users.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
-    Ok.stream(en).as("application/json")
+    new RefManyById(classOf[User], ids.toSeq)
   }
   
   /**

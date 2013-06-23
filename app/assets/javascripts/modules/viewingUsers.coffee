@@ -7,7 +7,7 @@ define(["./app"], () ->
     {
       request: (ids) ->
         $http.post("/users/findByIds", { ids: ids }).then((res) ->
-          for user in res.data.users
+          for user in res.data
             viewing.Users.cache[user.id] = user
         )
     }

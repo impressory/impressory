@@ -38,6 +38,16 @@ object ResultConversions extends AcceptExtractors {
     val en = Enumerator("[") andThen r.enumerate.stringify andThen Enumerator("]") andThen Enumerator.eof[String]
     Ok.stream(en).as("application/json")
   }
+  
+  /**
+   * Converts a RefMany[obj] to an HTTP response, so long as there is a writer than can turn the object to a Ref[JsValue]
+   */
+  implicit def refManyOToResult[O : WritesRJ](r:RefMany[O])(implicit request:Request[_]) = {
+    val writesRJ = implicitly[WritesRJ[O]]
+    
+    val refManyJ = for (obj <- r; j <- writesRJ.writeRJ(obj)) yield j
+    refManyJToResult(refManyJ)
+  }
 
   
   /**

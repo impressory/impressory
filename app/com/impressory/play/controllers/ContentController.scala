@@ -220,6 +220,18 @@ object ContentController extends Controller {
       j <- updated.itself.toJsonForAppr(approval)
     ) yield j
     res
-  }  
+  }
+  
+  def addComment(courseId:String, entryId:String) = Action(parse.json) { implicit request => 
+    val approval = request.approval
+    val res = for (
+      text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("The message contained no text");
+      entry <- refContentEntry(entryId);
+      approved <- approval ask Permissions.CommentOnEntry(entry.itself);
+      updated <- ContentEntry.addComment(entry, approval.who, text);
+      j <- updated.itself.toJsonForAppr(approval)
+    ) yield j
+    res    
+  }
   
 }

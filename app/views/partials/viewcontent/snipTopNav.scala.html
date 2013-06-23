@@ -26,7 +26,7 @@
             <i class="icon-edit"></i>
           </button></li>
         <li class="navli">
-          <button class="command require-add" ng-class="{ 'active': panels.top == 'addContent' }" ng-click="panels.toggleAddContent()">
+          <button class="command" ng-disabled="!viewing.Content.display.permissions.add" ng-class="{ 'active': panels.top == 'addContent' }" ng-click="panels.toggleAddContent()">
             <i class="icon-plus"></i>
           </button>
         </li>

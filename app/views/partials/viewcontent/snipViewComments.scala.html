@@ -1,15 +1,17 @@
 @()
 
-<div class="view-entry-comments">
+<div class="view-entry-comments sidemargin" ng-controller="Impressory.Controllers.ViewContent.Comments">
   <div class="comments">
+    <div ng-repeat="comment in displayedEntry.comments" class="embedded-comment">
+      <div class="text">{{ comment.text }}</div>
+      <div ng-repeat="user in [ users.cache[comment.addedBy] ]" class="who">
+        {{ user.nickname || 'Anonymous'}} at {{ comment.created | date:'h:mma d MMM yy' }} 
+      </div>
+    </div>
   </div>
   
-  <div class="pagination pagination-small">
-    <ul></ul>
-  </div>                
-  
-  <form id="submit-comment">
-    <textarea name="comment" placeholder="Comment" class="require-chat"></textarea><br />
-    <button class="btn btn-primary require-chat" type="button" onclick="javascript: CommentsViewer.submitComment()">Submit</button>                     
+  <form class="form">
+    <textarea name="comment" ng-disabled="!viewing.Content.display.permissions.comment" placeholder="Leave a comment" ng-model="newComment.text"></textarea><br />
+    <button class="btn btn-primary" type="button" ng-disabled="!viewing.Content.display.permissions.comment" ng-click="addComment(newComment)">Comment</button>
   </form>
 </div>

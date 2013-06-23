@@ -65,14 +65,15 @@ POST    /course/:cid/qna/:qid/newAnswer     com.impressory.play.controllers.QnAC
 POST    /course/:cid/qna/:qid/answer/:aid/newComment    com.impressory.play.controllers.QnAController.handleAddAnswerComment(cid, qid, aid)
 
 # Content
-GET     /course/:id/content         com.impressory.play.controllers.ContentController.contentQuery(id: String, entryId: Option[String] ?= None, adj:Option[String] ?= None, noun:Option[String] ?= None, topic:Option[String] ?= None, site:Option[String] ?= None)
-POST    /course/:id/addContent      com.impressory.play.controllers.ContentController.createContent(id: String)
-POST    /course/:courseId/entry/:entryId/editTags      com.impressory.play.controllers.ContentController.editTags(courseId: String, entryId: String)
-POST    /course/:courseId/entry/:entryId/editItem      com.impressory.play.controllers.ContentController.editItem(courseId: String, entryId: String)
-GET     /course/:id/entriesForTopic com.impressory.play.controllers.ContentController.entriesForTopic(id: String, topic:Option[String] ?= None)
-GET     /course/:id/allEntries      com.impressory.play.controllers.ContentController.allEntries(id: String)
-POST    /course/:courseId/entry/:entryId/voteUp     com.impressory.play.controllers.ContentController.voteUp(courseId, entryId)
-POST    /course/:courseId/entry/:entryId/voteDown   com.impressory.play.controllers.ContentController.voteDown(courseId, entryId)
+GET     /course/:id/content                                 com.impressory.play.controllers.ContentController.contentQuery(id: String, entryId: Option[String] ?= None, adj:Option[String] ?= None, noun:Option[String] ?= None, topic:Option[String] ?= None, site:Option[String] ?= None)
+POST    /course/:id/addContent                              com.impressory.play.controllers.ContentController.createContent(id: String)
+POST    /course/:courseId/entry/:entryId/editTags           com.impressory.play.controllers.ContentController.editTags(courseId: String, entryId: String)
+POST    /course/:courseId/entry/:entryId/editItem           com.impressory.play.controllers.ContentController.editItem(courseId: String, entryId: String)
+GET     /course/:id/entriesForTopic                         com.impressory.play.controllers.ContentController.entriesForTopic(id: String, topic:Option[String] ?= None)
+GET     /course/:id/allEntries                              com.impressory.play.controllers.ContentController.allEntries(id: String)
+POST    /course/:courseId/entry/:entryId/voteUp             com.impressory.play.controllers.ContentController.voteUp(courseId, entryId)
+POST    /course/:courseId/entry/:entryId/voteDown           com.impressory.play.controllers.ContentController.voteDown(courseId, entryId)
+POST    /course/:courseId/entry/:entryId/addComment         com.impressory.play.controllers.ContentController.addComment(courseId, entryId)
 
 # Multiple Choice Poll
 POST    /course/:courseId/entry/:entryId/mcPollVote com.impressory.play.controllers.PollController.vote(courseId:String, entryId:String)

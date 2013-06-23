@@ -30,7 +30,7 @@
           <h2>{{ question.title }}</h2>
           <div ng-bind-html-unsafe="question.madeHtml" ></div>
           <div class="comments">
-            <div class="comment" ng-repeat="comment in question.comments">
+            <div class="embedded-comment" ng-repeat="comment in question.comments">
               <div class="text">{{ comment.text }}</div>
               <div ng-repeat="user in [ users.cache[comment.addedBy] ]" class="who">
                 {{ user.nickname || 'Anonymous'}} at {{ comment.created | date:'h:mma d MMM yy' }} 

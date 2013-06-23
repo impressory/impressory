@@ -35,7 +35,8 @@ object EmbeddedComment {
         _id = doc.getAs[BSONObjectID]("_id").get,
         text = doc.getAs[String]("text").get,
         addedBy = doc.getAs[Ref[User]]("addedBy").getOrElse(RefNone),
-        voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting)
+        voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting),
+        created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
       )
     }
   }

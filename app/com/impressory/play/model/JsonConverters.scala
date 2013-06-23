@@ -225,7 +225,7 @@ object JsonConverters {
         "showFirst" -> ce.showFirst,
         "inTrash" -> ce.inTrash,
         "voting" -> ce.voting.toJson,
-//        "commentCount" -> ce.commentCount,
+        "commentCount" -> ce.commentCount,
         "title" -> ce.title,
         "note" -> ce.note,
         "kind" -> Json.toJson(ce.kind),
@@ -266,20 +266,25 @@ object JsonConverters {
         
         // Permissions.
         val perms = for (
+           add <- optionally(appr ask Permissions.AddContent(ce.course));
            read <- optionally(appr ask Permissions.ReadEntry(ce.itself));
            edit <- optionally(appr ask Permissions.EditContent(ce.itself));
-           vote <- optionally(appr ask Permissions.VoteOnEntry(ce.itself))
+           vote <- optionally(appr ask Permissions.VoteOnEntry(ce.itself));
+           comment <- optionally(appr ask Permissions.CommentOnEntry(ce.itself))
         ) yield Json.obj(
+          "add" -> add.isDefined,
           "read" -> read.isDefined,
           "edit" -> edit.isDefined,
-          "vote" -> vote.isDefined
+          "vote" -> vote.isDefined,
+          "comment" -> comment.isDefined
         )
         
         // Combine the JSON responses, noting that reg or perms might be RefNone
         for (ej <- ce.itself.toJson; p <- optionally(perms)) yield ej ++ Json.obj(
           "permissions" -> p,
           "item" -> itemj,
-          "voting" -> ce.voting.toJsonFor(appr)
+          "voting" -> ce.voting.toJsonFor(appr),
+          "comments" -> ce.comments.map(_.toJsonFor(appr))
         )
       }
       rr.flatten

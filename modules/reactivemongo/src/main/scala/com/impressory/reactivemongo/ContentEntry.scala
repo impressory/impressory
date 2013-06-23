@@ -40,9 +40,9 @@ class ContentEntry (
   
   val voting: UpDownVoting = new UpDownVoting,
   
-  var commentCount:Int = 0,
+  val commentCount:Int = 0,
 
-  var comments:Seq[EmbeddedComment] = Seq.empty,
+  val comments:Seq[EmbeddedComment] = Seq.empty,
     
   var updated: Long = System.currentTimeMillis,
 
@@ -215,6 +215,15 @@ object ContentEntry extends FindById[ContentEntry] {
     } else {
       ce.itself
     }
-  }  
+  }
+  
+  def addComment(ce:ContentEntry, who:Ref[User], text:String) = {
+    val query = BSONDocument("_id" -> ce._id)
+    val update = BSONDocument(
+        "$push" -> BSONDocument("comments" -> EmbeddedComment.bsonWriter.writeNew(new EmbeddedComment(text=text, addedBy=who))),
+        "$inc" -> BSONDocument("commentCount" -> 1)
+    )
+    updateAndFetch(query, update)
+  }
   
 }

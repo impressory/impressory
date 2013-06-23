@@ -38,6 +38,7 @@ require([
   "controllers/viewContent/ViewContent",
   "controllers/viewContent/Layout",
   "controllers/viewContent/TopNav",
+  "controllers/viewContent/Comments",
   "controllers/viewContent/Sequence",
   "controllers/viewContent/MainContent",
   "controllers/viewContent/EditDetails",

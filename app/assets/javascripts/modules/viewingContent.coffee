@@ -48,7 +48,7 @@ define(["./app"], () ->
         else
           sIndex = @slideIndex(entryId)
           if (sIndex >= 0)
-            viewing.Content.entry.item.entries(sIndex)
+            viewing.Content.entry.item.entries[sIndex]
           else 
             null
           

@@ -31,6 +31,14 @@ case class UpDownVoting(
 
 object UpDownVoting {
   
-  implicit val bsonReader = reactivemongo.bson.Macros.reader[UpDownVoting]
+  implicit object bsonReader extends BSONDocumentReader[UpDownVoting] {
+    def read(doc:BSONDocument):UpDownVoting = {
+      new UpDownVoting(
+        _up = doc.getAs[Set[BSONObjectID]]("_up").getOrElse(Set.empty),
+        _down = doc.getAs[Set[BSONObjectID]]("_down").getOrElse(Set.empty),
+        score = doc.getAs[Int]("score").getOrElse(0)
+      )
+    }
+  }
   
 }

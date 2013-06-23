@@ -1,10 +1,10 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.ViewContent.TopNav = ["$scope", ($scope) ->
+  Impressory.Controllers.ViewContent.TopNav = ["$scope", "ContentService", ($scope, ContentService) ->
+      
+    $scope.voteUp = () -> ContentService.voteUp($scope.courseId, Impressory.Model.Viewing.Content.display?.id)
     
-    $scope.downVote = () -> console.log("Voting down")
-    
-    $scope.upVote = () -> console.log("Voting up")
+    $scope.voteDown = () -> ContentService.voteDown($scope.courseId, Impressory.Model.Viewing.Content.display?.id)
   ]
 
 )

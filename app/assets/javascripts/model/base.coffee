@@ -8,6 +8,9 @@ define(["lib/eventRoom"], (er) ->
     Controllers: {
     }
     
+    Services: {
+    }
+    
     Model: {
     
       Login: { 

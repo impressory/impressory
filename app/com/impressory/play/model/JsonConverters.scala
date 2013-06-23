@@ -189,12 +189,24 @@ object JsonConverters {
       case _ => JsNull.itself 
     } 
     
+    /**
+     * Some content items can add additional information for a given user/Approval
+     */
+    var pfFor:PartialFunction[(ContentItem, Approval[User]), Ref[JsValue]] = {
+      case (cs:ContentSequence, appr) => cs.itself.toJsonForAppr(appr)
+      case (item, appr) => pf(item) 
+    }
+    
     def writes(ci:ContentItem) = pf(ci)
+    
+    def writesFor(ci:ContentItem, appr:Approval[User]) = pfFor(ci, appr)
     
   }
   
   implicit class ContentItemToJson(val ci: ContentItem) extends AnyVal {
     def toJson = ContentItemToJson.writes(ci)
+    
+    def toJsonFor(appr:Approval[User]) = ContentItemToJson.writesFor(ci, appr)
   }
   
   
@@ -212,7 +224,7 @@ object JsonConverters {
         "protect" -> ce.protect,
         "showFirst" -> ce.showFirst,
         "inTrash" -> ce.inTrash,
-//        "score" -> ce.score,
+        "voting" -> ce.voting.toJson,
 //        "commentCount" -> ce.commentCount,
         "title" -> ce.title,
         "note" -> ce.note,
@@ -249,22 +261,25 @@ object JsonConverters {
       val rr = for (
         ce <- entry;
         item <- Ref(ce.item);
-        itemj <- item.toJson
+        itemj <- item.toJsonFor(appr)
       ) yield {
         
         // Permissions.
         val perms = for (
            read <- optionally(appr ask Permissions.ReadEntry(ce.itself));
-           edit <- optionally(appr ask Permissions.EditContent(ce.itself))
+           edit <- optionally(appr ask Permissions.EditContent(ce.itself));
+           vote <- optionally(appr ask Permissions.VoteOnEntry(ce.itself))
         ) yield Json.obj(
           "read" -> read.isDefined,
-          "edit" -> edit.isDefined
+          "edit" -> edit.isDefined,
+          "vote" -> vote.isDefined
         )
         
         // Combine the JSON responses, noting that reg or perms might be RefNone
         for (ej <- ce.itself.toJson; p <- optionally(perms)) yield ej ++ Json.obj(
           "permissions" -> p,
-          "item" -> itemj
+          "item" -> itemj,
+          "voting" -> ce.voting.toJsonFor(appr)
         )
       }
       rr.flatten
@@ -343,13 +358,15 @@ object JsonConverters {
   }
   
   implicit class UpDownVotingToJson(val udv:UpDownVoting) extends AnyVal {
+    def toJson = Json.obj("score" -> udv.score)
+    
     def toJsonFor(a: Approval[User]) = {
       a.who.getId match {
         case Some(id) => Json.obj(
           "score" -> udv.score,
           "voted" -> (udv._up.contains(id) || udv._down.contains(id))
         )
-        case None => Json.obj("score" -> udv.score)
+        case None => toJson
       }
     }
   }

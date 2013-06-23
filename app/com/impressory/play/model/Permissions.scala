@@ -58,8 +58,27 @@ object Permissions {
         }
       } orIfNone Refused("Course not found")
     }
-  }  
+  }
 
+  /**
+   * Up or Down vote an entry in a course
+   * @param bookRef
+   */
+  case class VoteOnEntry(entry:Ref[ContentEntry]) extends PermOnIdRef[User, ContentEntry](entry) {
+    def resolve(prior:Approval[User]) = {
+      for (
+        e <- entry orIfNone Refused("Entry not found"); 
+        a <- { 
+          if (e.voting.hasVoted(prior.who)) {
+            RefFailed(Refused("You have already voted"))
+          } else {
+            prior ask Chat(e.course) 
+          }
+        }
+      ) yield a
+    }
+  }  
+  
   case class ReadEntry(entry:Ref[ContentEntry]) extends PermOnIdRef[User, ContentEntry](entry) {
     def resolve(prior:Approval[User]) = prior ask Read(entry flatMap(_.course))  
   }

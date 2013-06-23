@@ -71,6 +71,8 @@ POST    /course/:courseId/entry/:entryId/editTags      com.impressory.play.contr
 POST    /course/:courseId/entry/:entryId/editItem      com.impressory.play.controllers.ContentController.editItem(courseId: String, entryId: String)
 GET     /course/:id/entriesForTopic com.impressory.play.controllers.ContentController.entriesForTopic(id: String, topic:Option[String] ?= None)
 GET     /course/:id/allEntries      com.impressory.play.controllers.ContentController.allEntries(id: String)
+POST    /course/:courseId/entry/:entryId/voteUp     com.impressory.play.controllers.ContentController.voteUp(courseId, entryId)
+POST    /course/:courseId/entry/:entryId/voteDown   com.impressory.play.controllers.ContentController.voteDown(courseId, entryId)
 
 # Multiple Choice Poll
 POST    /course/:courseId/entry/:entryId/mcPollVote com.impressory.play.controllers.PollController.vote(courseId:String, entryId:String)

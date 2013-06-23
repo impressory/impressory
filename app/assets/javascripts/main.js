@@ -12,6 +12,7 @@ require([
   "modules/viewingEvents",
   "modules/viewingUsers",
   "modules/markdownService",
+  "modules/ContentService",
   
   "controllers/login/IsLoggedIn",
   "controllers/login/LogInForm",

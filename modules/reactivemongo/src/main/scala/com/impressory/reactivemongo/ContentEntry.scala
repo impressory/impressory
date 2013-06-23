@@ -37,6 +37,12 @@ class ContentEntry (
   var protect: Boolean = false,
   
   var inTrash: Boolean = false,
+  
+  val voting: UpDownVoting = new UpDownVoting,
+  
+  var commentCount:Int = 0,
+
+  var comments:Seq[EmbeddedComment] = Seq.empty,
     
   var updated: Long = System.currentTimeMillis,
 
@@ -102,6 +108,9 @@ object ContentEntry extends FindById[ContentEntry] {
         title = doc.getAs[String]("title"),
         note = doc.getAs[String]("note"),
         protect = doc.getAs[Boolean]("protect").getOrElse(false),
+        voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting),
+        commentCount = doc.getAs[Int]("commentCount").getOrElse(0),
+        comments = doc.getAs[Seq[EmbeddedComment]]("comments").getOrElse(Seq.empty),
         inTrash = doc.getAs[Boolean]("inTrash").getOrElse(false),
         showFirst = doc.getAs[Boolean]("showFirst").getOrElse(false),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
@@ -139,14 +148,10 @@ object ContentEntry extends FindById[ContentEntry] {
    * Updates the Item in a ContentEntry
    */
   def setItem(ce:Ref[ContentEntry], item:ContentItem):Ref[ContentEntry] = {
-    val res = for (cid <- ce.getId) yield {
-      val query = BSONDocument("_id" -> cid)
-      val update = BSONDocument("$set" -> BSONDocument("item" -> item, "updated" -> System.currentTimeMillis()))
-      val fle = DB.coll(collName).update(query, update)
-      val rfr = fle.map { _ => byId(cid) } recover { case x:Throwable => RefFailed(x) }
-      new RefFutureRef(rfr)
-    }
-    res.getOrElse(RefNone)
+    val query = BSONDocument("_id" -> ce)
+    val update = BSONDocument("$set" -> BSONDocument("item" -> item, "updated" -> System.currentTimeMillis()))
+
+    updateAndFetch(query, update)
   }
   
   /**
@@ -158,9 +163,7 @@ object ContentEntry extends FindById[ContentEntry] {
     val doc = bsonWriter.write(ce)
     val docWithItem = doc ++ BSONDocument("item" -> ce.item)
     
-    val fle = DB.coll(collName).update(BSONDocument("_id" -> ce.id), BSONDocument("$set" -> docWithItem))
-    val fut = fle.map { _ => ce.itself } recover { case x:Throwable => RefFailed(x) }
-    new RefFutureRef(fut)    
+    updateSafe(BSONDocument("_id" -> ce.id), BSONDocument("$set" -> docWithItem), ce)
   }
   
   /**
@@ -179,9 +182,39 @@ object ContentEntry extends FindById[ContentEntry] {
    * Saves a content entry. Note this doesn't write the item, comments, or other componentns that are independently altered
    */
   def saveExisting(ce:ContentEntry) = {
-    val fle = DB.coll(collName).update(BSONDocument("_id" -> ce.id), BSONDocument("$set" -> ce))
-    val fut = fle.map { _ => ce.itself } recover { case x:Throwable => RefFailed(x) }
-    new RefFutureRef(fut)    
+    updateSafe(BSONDocument("_id" -> ce.id), BSONDocument("$set" -> ce), ce)
+  }
+  
+  /**
+   * Votes up
+   */
+  def voteUp(ce:ContentEntry, who:Ref[User]) = {
+    if (!ce.voting.hasVoted(who)) {
+      val query = BSONDocument("_id" -> ce._id)
+      val update = BSONDocument(
+          "$addToSet" -> BSONDocument("voting._up" -> who),
+          "$inc" -> BSONDocument("voting.score" -> 1)
+      )
+      updateAndFetch(query, update)
+    } else {
+      ce.itself
+    }
+  }
+
+  /**
+   * Votes down
+   */
+  def voteDown(ce:ContentEntry, who:Ref[User]) = {
+    if (!ce.voting.hasVoted(who)) {
+      val query = BSONDocument("_id" -> ce._id)
+      val update = BSONDocument(
+          "$addToSet" -> BSONDocument("voting._down" -> who),
+          "$inc" -> BSONDocument("voting.score" -> -1)
+      )
+      updateAndFetch(query, update)
+    } else {
+      ce.itself
+    }
   }  
   
 }

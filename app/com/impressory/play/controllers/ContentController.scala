@@ -194,4 +194,32 @@ object ContentController extends Controller {
     Ok.stream(en).as("application/json")    
   }  
   
+  /**
+   * Votes an entry up. Returns JSON for the updated content entry
+   */
+  def voteUp(courseId:String, entryId:String) = Action { implicit request =>
+    val approval = request.approval
+    val res = for (
+      entry <- refContentEntry(entryId);
+      approved <- approval ask Permissions.VoteOnEntry(entry.itself);
+      updated <- ContentEntry.voteUp(entry, approval.who);
+      j <- updated.itself.toJsonForAppr(approval)
+    ) yield j
+    res
+  }
+  
+  /**
+   * Votes an entry down. Returns JSON for the updated content entry
+   */
+  def voteDown(courseId:String, entryId:String) = Action { implicit request =>
+    val approval = request.approval
+    val res = for (
+      entry <- refContentEntry(entryId);
+      approved <- approval ask Permissions.VoteOnEntry(entry.itself);
+      updated <- ContentEntry.voteDown(entry, approval.who);
+      j <- updated.itself.toJsonForAppr(approval)
+    ) yield j
+    res
+  }  
+  
 }

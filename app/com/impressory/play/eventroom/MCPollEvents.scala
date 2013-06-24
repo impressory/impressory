@@ -62,6 +62,7 @@ object MCPollEvents {
           for (j <- poll.itself.toJson) yield Json.obj(
             "kind" -> "push",
             "type" -> MultipleChoicePoll.itemType,
+            "created" -> System.currentTimeMillis(),
             "poll" -> j
           )
         }

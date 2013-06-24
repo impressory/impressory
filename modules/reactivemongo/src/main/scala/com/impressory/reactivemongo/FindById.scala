@@ -45,6 +45,13 @@ trait FindById[T] {
     new RefFutureRef(fut)
   }
   
+  def saveSafe(doc:BSONDocument, item:T):Ref[T] = {
+    val c = coll
+    val fle = c.save(doc, GetLastError(true)) 
+    val fut = fle.map { _ => RefItself(item) } recover { case x:Throwable => RefFailed(x) }
+    new RefFutureRef(fut)    
+  }
+  
   def findMany(query:BSONDocument):RefMany[T] = {
     new RefEnumIter(coll.find(query).cursor[T].enumerateBulks)
   }

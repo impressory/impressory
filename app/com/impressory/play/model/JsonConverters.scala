@@ -128,6 +128,8 @@ object JsonConverters {
           "shortName" -> course.shortName,
           "shortDescription" -> course.shortDescription,
           "longDescription" -> course.longDescription,
+          "coverImageURL" -> course.coverImageURL,
+          "listed" -> course.listed,
           "edition" -> course.edition
         )
       }

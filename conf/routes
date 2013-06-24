@@ -48,8 +48,10 @@ GET     /courses/listed             com.impressory.play.controllers.CourseContro
 GET     /courses/my                 com.impressory.play.controllers.CourseController.myCourses
 POST    /courses/create             com.impressory.play.controllers.CourseController.createCourse
 
+
 # Course
 GET     /course/:id                 com.impressory.play.controllers.CourseController.get(id)
+POST    /course/:id/update          com.impressory.play.controllers.CourseController.update(id)
 
 # Course Invites
 GET     /course/:id/invites         com.impressory.play.controllers.CourseController.invites(id)

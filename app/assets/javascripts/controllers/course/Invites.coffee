@@ -2,28 +2,26 @@
 
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.Course.Invites = ["$scope", "$http", "$location", ($scope, $http, $location) ->
+  Impressory.Controllers.Course.Invites = ["$scope", "CourseService", "course", "invites", ($scope, CourseService, course, invites) ->
   
-    fetchInvites = () ->
-      $http.get("/course/" + $scope.courseId + "/invites").success((data) -> 
-        if data.invites?
-          $scope.invites = data.invites
-        else if data.error?
-          $scope.errors = [ data.error ]
-        else
-          $scope.errors = [ "Unexpected error" ]
-      ).error((err) -> 
-        console.log(err)
-        $scope.errors = [ "Unexpected error: " + err ]
-      ) 
-  
-    fetchInvites()
+    $scope.course = course
     
-    $scope.create = (newInvite) ->
-      $http.post("/course/" + $scope.courseId + "/createInvite", newInvite).success((data) ->
-        fetchInvites()
-      )
+    $scope.invites = invites
+  
+    $scope.create = (newInvite) -> CourseService.createInvite(course.id, newInvite).then((invite) -> 
+      $scope.invites = CourseService.fetchInvites(course.id)
+    )
      
   ]
+
+  Impressory.Controllers.Course.Invites.resolve = {
+    course: ['$route', 'CourseService', ($route, CourseService) -> 
+      CourseService.get($route.current.params.courseId)
+    ]
+    invites: ['$route', 'CourseService', ($route, CourseService) -> 
+      CourseService.fetchInvites($route.current.params.courseId)
+    ] 
+  }
+
 
 )

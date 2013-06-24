@@ -42,6 +42,8 @@ class Course (
   
   val created: Long = System.currentTimeMillis,
   
+  val updated: Long = System.currentTimeMillis,
+  
   val _id:BSONObjectID = BSONObjectID.generate
 ) extends HasBSONId {
   
@@ -69,20 +71,25 @@ object Course extends FindById[Course] {
     def read(s:BSONString) = CourseChatPolicy.valueOf(s.value)
   }  
 
-  implicit object bsonWriter extends BSONDocumentWriter[Course] {        
+  implicit object bsonWriter extends BSONDocumentWriter[Course] {
     def write(course:Course) = BSONDocument(
-    	"_id" -> course._id,
-    	"title" -> course.title,
-    	"shortName" -> course.shortName,
-    	"shortDesc" -> course.shortDescription,
-    	"longDesc" -> course.longDescription,
-    	"edition" -> course.edition,
-    	"coverImage" -> course.coverImageURL,
-    	"expired" -> course.expired,
-    	"signUpPolicy" -> course.signupPolicy,
-    	"chatPolicy" -> course.chatPolicy,
-    	"listed" -> course.listed,
-    	"created" -> course.created
+      "title" -> course.title,
+      "shortName" -> course.shortName,
+      "shortDesc" -> course.shortDescription,
+      "longDesc" -> course.longDescription,
+      "edition" -> course.edition,
+      "coverImage" -> course.coverImageURL,
+      "expired" -> course.expired,
+      "signUpPolicy" -> course.signupPolicy,
+      "chatPolicy" -> course.chatPolicy,
+      "listed" -> course.listed,
+      "updated" -> System.currentTimeMillis
+    )
+    
+    
+    def writeNew(course:Course) = write(course) ++ BSONDocument(
+      "_id" -> course._id,
+      "created" -> System.currentTimeMillis
     )
   }
 
@@ -100,25 +107,25 @@ object Course extends FindById[Course] {
           signupPolicy = doc.getAs[CourseSignupPolicy]("signUpPolicy").getOrElse(CourseSignupPolicy.open),
           chatPolicy = doc.getAs[CourseChatPolicy]("chatPolicy").getOrElse(CourseChatPolicy.allReaders),
           listed = doc.getAs[Boolean]("listed").getOrElse(false),
-          created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
+          created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis),
+          updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis)
       )
       course
     }    
   }  
   
   def listedCourses = {
-    val cursor = DB.coll(collName).find(BSONDocument("listed" -> true)).cursor[Course]
-    new RefEnumIter(cursor.enumerateBulks)
+    findMany(BSONDocument("listed" -> true))
   }  
   
   def saveNew(course:Course) = {
-    val fle = DB.coll(collName).save(course)
-    val fut = fle.map { _ => course.itself } recover {
-      case l:LastError => {
-        if (l.code == Some(11000)) { RefFailed(UserError("Whoops, there's already a group with exactly that hastag and joincode")) } else RefFailed(l)
-      }
-    }
-    new RefFutureRef(fut)    
+    saveSafe(bsonWriter.writeNew(course), course)
+  }
+  
+  def saveExisting(course:Course) = {
+    val query = BSONDocument("_id" -> course.id)
+    val update = BSONDocument("$set" -> course)
+    updateSafe(query, update, course)
   }
   
 }

@@ -18,6 +18,8 @@ object CourseModel {
     for (sn <- (jsVal \ "shortName").asOpt[String]) { course.shortName = Some(sn) }
     for (sd <- (jsVal \ "shortDescription").asOpt[String]) { course.shortDescription = Some(sd) }
     for (ld <- (jsVal \ "longDescription").asOpt[String]) { course.longDescription = Some(ld) }
+    for (ld <- (jsVal \ "coverImageURL").asOpt[String]) { course.coverImageURL = Some(ld) }
+    for (ld <- (jsVal \ "listed").asOpt[Boolean]) { course.listed = ld }
     course
   }  
   
@@ -37,6 +39,15 @@ object CourseModel {
       };
       
       reg <- User.register(approval.who, saved.itself, CourseRole.values.toSet)
+    ) yield saved
+  }
+  
+  def updateCourse(course:Ref[Course], approval:Approval[User], config:JsValue):Ref[Course] = {
+    for (
+      c <- course;
+      a <- approval ask Permissions.EditCourse(c.itself);
+      updated = update(c, config);
+      saved <- Course.saveExisting(updated)
     ) yield saved
   }
   

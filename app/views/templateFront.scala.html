@@ -8,8 +8,15 @@
     <link href="@routes.Assets.at("stylesheets/main.css")" rel="stylesheet">
     
     <title>@title</title>
-    <div ng-app="impressory" class="full-height">
-      @content
+    <div ng-app="impressory" class="full-height" ng-controller="ErrorController">
+      <div ng-show="false">
+        This site requires Javascript.
+      </div>
+      
+      <div ng-show="error">
+        <ng-include src="'client-error-template'"></ng-include>
+      </div>
+      <div ng-hide="error" class="full-height">@content</div>
     </div>
     
     <!-- JQuery, required for Bootstrap -->
@@ -34,5 +41,20 @@
     <!-- Impressory, via require.js -->
     @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/main").url)
     
+    
+    <!-- The client-side custom error pages -->
+    <script type="text/ng-template" id="client-error-template">
+      <div ng-switch="error.status">
+        <div ng-switch-when="404">
+          @views.html.partials.xErrorNotFound()
+        </div>
+        <div ng-switch-when="403">
+          @views.html.partials.xErrorNotFound()
+        </div>
+        <div ng-switch-default>
+          @views.html.partials.xErrorInternalError()
+        </div>
+      </div>
+    </script>
     
 </html>

@@ -1,0 +1,40 @@
+@() @views.html.partials.headerFront() @subheadCourse()
+
+<div class="course-cover-page" >
+  <div class="topHalf" >
+    @snipFrontControls()
+  
+    <div class="coverImage">
+      <img ng-src="{{ course.coverImageURL || 'http://placehold.it/200x300' }}" alt="cover image" />
+    </div>
+  
+    <div class="bookDetails">
+    
+      <div class="form" style="float: left">
+        <label>Title</label>
+        <input type="text" ng-model="course.title" required />
+
+        <label>Short name</label>
+        <input type="text" ng-model="course.shortName" placeholder="Optional" />
+        
+        <label>Cover image</label>
+        <input type="text" ng-model="course.coverImageURL" placeholder="Optional" />
+
+        <label>Short description</label>
+        <textarea ng-model="course.shortDescription" placeholder="Optional"></textarea>
+      
+        <label>Long description</label>
+        <textarea ng-model="course.longDescription" placeholder="Optional"></textarea>
+      
+        <label class="checkbox"><input type="checkbox" ng-model="course.listed" /> List publicly</label>
+        
+        <div>
+          <a class="btn" ng-href="/course/{{course.id}}">Cancel</a>
+          <button class="btn btn-primary" ng-click="saveCourse(course)" >Save</button>
+        </div>
+    </div>
+  
+  </div>
+  
+  <div class="contentTypes"></div>
+</div>

@@ -7,12 +7,6 @@ require([
          
   "model/base",
   "modules/app",
-  "modules/viewingCourse",
-  "modules/viewingContent",
-  "modules/viewingEvents",
-  "modules/viewingUsers",
-  "modules/markdownService",
-  "modules/ContentService",
   
   "controllers/login/IsLoggedIn",
   "controllers/login/LogInForm",
@@ -24,6 +18,7 @@ require([
   "controllers/front/MyCourses",
   
   "controllers/course/Create",
+  "controllers/course/Edit",
   "controllers/course/Cover",
   "controllers/course/Index",
   "controllers/course/Invites",

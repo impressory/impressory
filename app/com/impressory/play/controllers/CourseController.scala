@@ -75,6 +75,18 @@ object CourseController extends Controller {
     ) yield Ok(j)
     r
   }}
+  
+  /**
+   * Updates the details of a course
+   */
+  def update(cid:String) = Action(parse.json) { implicit request =>
+    val approval = request.approval
+    val r = for (
+      updated <- CourseModel.updateCourse(refCourse(cid), request.approval, request.body);
+      j <- updated.itself.toJsonForAppr(approval)
+    ) yield j
+    r
+  }
 
   /**
    * Invites for a specific course
@@ -87,9 +99,7 @@ object CourseController extends Controller {
       is <- CourseInvite.byCourse(c.itself);
       j <- is.itself.toJson
     ) yield j
-      
-    val en = Enumerator("{ \"invites\": [") andThen invites.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
-    Ok.stream(en).as("application/json")
+    invites
   }}
   
   /**

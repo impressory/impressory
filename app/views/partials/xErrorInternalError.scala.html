@@ -1,0 +1,9 @@
+@() @headerFront() 
+
+<img src=@routes.Assets.at("/images/error.png") style="float: left; margin: 20px; margin-left: 120px; height: 300px;"/>
+  
+  <h1><small>{{ error.status }} Internal Error</small> Bother!</h1>
+  <p>We fouled that one up good and proper.  Here's the error details:</p>
+
+<pre>{{ error.data.error }}</pre>
+

@@ -1,0 +1,10 @@
+@() @headerFront()
+
+<img src=@routes.Assets.at("/images/forbidden.png") style="float: left; margin: 20px; margin-left: 120px; height: 300px;"/>
+  
+<h1><small style="color: rgb(240,180,90); display: block; margin-top: 20px;">{{ error.status }} Forbidden</small> Sorry, no.</h1>
+<p>It seems you're not allowed to come this way. Here's the error message with why:</p>
+
+<pre>{{ error.data.error }}</pre>
+
+

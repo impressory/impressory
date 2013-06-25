@@ -1,38 +1,23 @@
 @()
 
+<div class="impressory-content-viewer full-height" ng-controller="Impressory.Controllers.ViewContent.ViewContent">
+  <div ng-controller="Impressory.Controllers.ViewContent.Layout" class="full-height">
+
+    <div id="middle-wrap" ng-class="{ 'right-open': panels.right }">
+
 <div class="viewer-top-nav" ng-controller="Impressory.Controllers.ViewContent.TopNav">
 
   <div class="dont-print">
     <div class="top-nav-menu">
     
-      <ul class="bookNav">
-        <li class="navli">
-          <button title="Menu" class="command" ng-class="{ 'active': panels.top == 'menu' }" ng-click="panels.toggleTopMenu()">
-            <b>|||</b>
-          </button>
-        </li>
-      </ul>
+      <div id="ceInfo" class="ceInfo" >
   
-      <ul class="ceTools">
-        <li class="navli">
-          <button class="command require-edit" ng-class="{ 'active': panels.top == 'editDetails' }"
-            title="Edit details and tags" ng-click="panels.toggleEditDetails()">
-            <i class="icon-tags"></i>
-          </button>
-        </li>
-        <li class="navli">
-          <button class="command require-edit" ng-disabled="!viewing.Content.display.permissions.edit" ng-class="{ 'active': panels.top == 'editContent' }" ng-click="panels.toggleEditContent()"
-            id="edit-button" title="Edit content">
-            <i class="icon-edit"></i>
-          </button></li>
-        <li class="navli">
-          <button class="command" ng-disabled="!viewing.Content.display.permissions.add" ng-class="{ 'active': panels.top == 'addContent' }" ng-click="panels.toggleAddContent()">
-            <i class="icon-plus"></i>
-          </button>
-        </li>
-      </ul>
-  
-      <div id="ceInfo" class="ceInfo">
+        <span class="pull-right">
+          <a class="command" target="_top" ng-href="/">
+            view on Impressory.com
+          </a>
+        </span>
+
   
         <span>
           <button class="command thin" ng-disabled="!viewing.Content.display.permissions.vote" ng-click="voteDown();" title="downvote">
@@ -64,8 +49,11 @@
             <button ng-repeat="topic in viewing.Content.display.topics" ng-class="{ 'active': (panels.top == 'contentForTopic') && (searchTopic == topic) }" ng-click="panels.toggleContentForTopic(topic)" class="topic command">{{ topic }}</button> 
           </span>
         </span>
+
   
       </div>
+      
+      
     </div>
 
     <!-- Stop the fixed content from overflowing the screen. Note that the switch still works off the TopNav controller -->
@@ -104,3 +92,48 @@
  
 
 </div>
+
+
+
+      <div id="middle">
+
+        <div id="left-edge" class="dont-print">
+        
+          <div class="v-center">
+            <button class="command" type="button" ng-click="goToPrevEntry()" ng-disabled="{{ viewing.Content.seqIndex < 0 }}"
+              ng-class="{ disabled : viewing.Content.seqIndex < 0 }">
+              <i class="icon-angle-left"></i>
+            </button>
+  
+            <button class="command" type="button" ng-click="goToStart()" ng-disabled="{{ viewing.Content.seqIndex < 0 }}"
+              ng-class="{ disabled: viewing.Content.seqIndex < 0  }">
+              <i class="icon-double-angle-left"></i>
+            </button>
+          </div>
+        </div>
+        
+        
+
+        <div id="right-edge" class="dont-print" >
+
+          <div class="v-center">
+            <button id="next-button" type="button"  ng-disabled="{{ viewing.Content.seqIndex >= viewing.Content.displaySeq.length - 2}}"
+              ng-click="goToNextEntry()" ng-class="{ disabled: viewing.Content.seqIndex >= viewing.Content.displaySeq.length - 2 }">
+              <i class="icon-angle-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- The content -->
+        <div class="content-panel">
+          <div >
+            @snipMainContent()
+          </div>
+        </div>
+      </div>
+    </div>
+        
+  </div>
+
+</div>
+

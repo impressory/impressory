@@ -34,6 +34,7 @@ define(["./base", "./ContentService", "./CourseService", "./QnAService", "./mark
           when('/course/:courseId/index', { templateUrl: '/partials/course/index.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).
           when('/course/:courseId/chatRoom', { templateUrl: '/partials/course/chatRoom.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover  }).
           when('/course/:courseId/viewContent', { templateUrl: '/partials/course/viewContent.html', reloadOnSearch: false, resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover  }).
+          when('/course/:courseId/embedContent', { templateUrl: '/partials/course/embedContent.html', reloadOnSearch: false, resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover  }).
           when('/course/:courseId/qna', { templateUrl: '/partials/qna/listQuestions.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).
           when('/course/:courseId/qna/new', { templateUrl: '/partials/qna/newQuestion.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).
           when('/course/:courseId/qna/:questionId', { templateUrl: '/partials/qna/viewQuestion.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).

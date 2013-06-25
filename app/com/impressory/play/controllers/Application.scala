@@ -74,6 +74,7 @@ object Application extends Controller {
       case "course/index.html" => Ok(views.html.partials.course.index())
       case "course/chatRoom.html" => Ok(views.html.partials.course.chatRoom())
       case "course/viewContent.html" => Ok(views.html.partials.viewcontent.viewContent())
+      case "course/embedContent.html" => Ok(views.html.partials.viewcontent.embedContent())
       
       case "qna/listQuestions.html" => Ok(views.html.partials.qna.listQuestions())
       case "qna/newQuestion.html" => Ok(views.html.partials.qna.newQuestion())

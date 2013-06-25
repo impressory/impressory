@@ -23,6 +23,7 @@ define(["./app"], () ->
       createInvite: (courseId, data) -> $http.post("/course/#{courseId}/createInvite", data).then((res) -> res.data)
       
       useInvite: (courseId, codePacket) -> $http.post("/course/#{courseId}/useInvite", codePacket).then((res) -> res.data)
+       
     }
   ])
 

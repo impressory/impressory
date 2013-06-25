@@ -14,7 +14,7 @@
           <div class="control-group" ng-show="showEmbedCode">
               <label class="control-label">Embed code</label>
               <div class="controls">
-                <textarea readonly><iframe width="600" height="480" style="borders:none; scrolling: no;" ng-src="/course/{{entry.course}}/embedContent?entryId={{entry.id}}"></iframe></textarea>
+                <textarea readonly>{{ embedCode }}</textarea>
               </div>
           </div>
           <div class="control-group">

@@ -5,11 +5,15 @@
 
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.ViewContent.EditDetails = ["$scope", "$http", ($scope, $http) ->
+  Impressory.Controllers.ViewContent.EditDetails = ["$scope", "$http", "ContentService", ($scope, $http, ContentService) ->
     
     $scope.entry = angular.copy(Impressory.Model.Viewing.Content.display)
         
     $scope.errors = []
+    
+    embedUrl = ContentService.embedUrl($scope.entry.course, $scope.entry.id)
+    
+    $scope.embedCode = "<iframe width='800' height=600' style='border:none; scrolling: no;' src='#{embedUrl}'></iframe>"
     
     $scope.submit = () ->
     

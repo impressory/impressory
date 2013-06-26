@@ -94,8 +94,15 @@ object ContentModel {
       val all = ContentEntry.byCourse(course)
       all
     }).flatten 
-  }  
+  }
 
+  def recentEntries(course:Ref[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
+    (for (approved <- tok ask Read(course)) yield {
+      val all = ContentEntry.recentByCourse(course)
+      all
+    }).flatten 
+  }  
+  
   /**
    * Pairs a ContentEntry wth a containing sequence
    */

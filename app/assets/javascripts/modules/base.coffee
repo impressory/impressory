@@ -3,6 +3,7 @@ define(["model/base"], () ->
  
   Impressory.angularApp = angular.module('impressory', ['ngSanitize'])
   
+  
   # A directive that will put the content of the sandbox into an iframe
   Impressory.angularApp.directive('imSandbox', ['$compile', ($compile) -> 
     testTemplate = $compile("""
@@ -66,14 +67,6 @@ define(["model/base"], () ->
     template: '<link />'
     replace: true
   })
-
   
-  Impressory.angularApp.directive('imViewingContent', () ->
-  
-    switch Impressory.Model.Viewing.Content.display?.kind?
-      when 'sequence' then { templateUrl: 'foo' }
-      else { templateUrl: 'nada' }
-  
-  )
 
 )

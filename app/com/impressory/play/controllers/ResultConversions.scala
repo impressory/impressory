@@ -40,6 +40,16 @@ object ResultConversions extends AcceptExtractors {
   }
   
   /**
+   * Streams a RefMany[JsValue] as an HTTP response. Note that errors will usually result in an empty stream.
+   */
+  implicit def enumJToResult[J <: JsValue](e:Enumerator[J])(implicit request:Request[_]) = {
+    import com.wbillingsley.handyplay.RefConversions._
+    
+    val en = Enumerator("[") andThen e.stringify andThen Enumerator("]") andThen Enumerator.eof[String]
+    Ok.stream(en).as("application/json")
+  }  
+  
+  /**
    * Converts a RefMany[obj] to an HTTP response, so long as there is a writer than can turn the object to a Ref[JsValue]
    */
   implicit def refManyOToResult[O : WritesRJ](r:RefMany[O])(implicit request:Request[_]) = {

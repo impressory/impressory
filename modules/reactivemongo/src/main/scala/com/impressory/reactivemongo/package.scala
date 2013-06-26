@@ -3,6 +3,7 @@ package com.impressory
 import _root_.reactivemongo.api._
 import _root_.reactivemongo.bson._
 import _root_.com.wbillingsley.handy._
+import _root_.com.wbillingsley.handyplay._
 
 package object reactivemongo {
   
@@ -28,6 +29,12 @@ package object reactivemongo {
   implicit object RefUserReader extends BSONReader[BSONObjectID, Ref[User]] {
     def read(id:BSONObjectID) = RefById(classOf[User], id)
   }
+  
+  implicit class OurCursor[T] (val c:_root_.reactivemongo.api.Cursor[T]) extends AnyVal {
+    import play.api.libs.concurrent.Execution.Implicits._
+    def refMany = new RefEnumIter[T](c.enumerateBulks)
+    
+  } 
   
   
 }

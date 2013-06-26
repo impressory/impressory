@@ -1,0 +1,45 @@
+@() @views.html.partials.headerFront() @subheadCourse()
+
+<div class="sidemargin activity-stream">
+
+  <h2>Recently, on this course...</h2>
+
+  <div ng-repeat="entry in entries | orderBy:'created':true">
+  
+    <div class="activity-stream-entry">
+      
+      <div class="" ng-repeat="user in [ users.cache[question.addedBy] ]">
+        <div class="who">
+          <span class="pull-right created">{{ entry.created | date:'h:mma d MMM yy' }}</span>
+          <span class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></span>
+          <span class="nickname">{{ user.nickname || 'Anonymous' }}</span>
+          added a {{ entry.kind }}
+        </div>
+        <hr />
+        
+      </div>
+      
+      <div class="who">
+        
+      </div>
+    
+      <h3><a ng-href="{{viewPath(entry)}}">{{ entry.title || 'Untitled' }}</a></h3>
+      <p>{{ entry.note }}</p>
+      
+    
+      <div class="pull-right">
+        @views.html.partials.components.snipShowTags()
+      </div>
+      
+      <div class="comments">
+        <button class="btn-link" ng-click="showComments=!showComments">{{ entry.commentCount }} comments</button>
+        <div ng-show="showComments">
+        
+        </div>
+      </div>
+    
+    </div>
+  
+    
+  </div>
+</div>

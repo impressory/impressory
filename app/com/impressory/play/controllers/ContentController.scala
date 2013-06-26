@@ -11,6 +11,7 @@ import com.impressory.play.model._
 import ResultConversions._
 import JsonConverters._
 import play.api.libs.iteratee.Enumerator
+import play.api.libs.iteratee.Enumeratee
 
 object ContentController extends Controller {
   
@@ -193,6 +194,19 @@ object ContentController extends Controller {
     val en = Enumerator("{ \"entries\": [") andThen entries.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
     Ok.stream(en).as("application/json")    
   }  
+  
+  
+  def recentEntries(courseId: String) = Angular { Action { implicit request => 
+    val entries = for (
+      c <- refCourse(courseId);
+      e <- ContentModel.recentEntries(c.itself, request.approval);
+      j <- e.itself.toJson
+    ) yield j
+      
+    val r = entries.enumerate &> Enumeratee.take(100)
+    enumJToResult(r)
+  }}
+  
   
   /**
    * Votes an entry up. Returns JSON for the updated content entry

@@ -131,15 +131,17 @@ object ContentEntry extends FindById[ContentEntry] {
   }
   
   def byCourse(course:Ref[Course]):RefMany[ContentEntry] = {
-    val res = for (cid <- course.getId) yield {
-      val query = BSONDocument("course" -> cid)
-      val coll = DB.coll(collName)
-      val cursor = coll.find(query).cursor[ContentEntry]
-      new RefEnumIter(cursor.enumerateBulks)
-    }
-    res.getOrElse(RefNone)
+    val query = BSONDocument("course" -> course)
+    coll.find(query).cursor[ContentEntry].refMany
   }
 
+  def recentByCourse(course:Ref[Course]):RefMany[ContentEntry] = {
+    val query = BSONDocument("course" -> course)
+    val sort = BSONDocument("created" -> 1)
+    coll.find(query).sort(sort).cursor[ContentEntry].refMany
+  }
+
+  
   def unsaved(course: Ref[Course], addedBy: Ref[User], kind:Option[String] = None) = {
     new ContentEntry(course=course, addedBy=addedBy, kind=kind).itself
   }

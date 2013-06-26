@@ -16,34 +16,10 @@
   <!-- Content is placed here by Javascript -->
   <div ng-controller="Impressory.Controllers.ViewContent.MainContent" class="content-container">
   
-  <!--  <div im-viewing-content></div> -->
-    <div ng-switch="entry.kind" >
-      <div ng-switch-when="web page" >
-        @kinds.webPage()
-      </div>
-      <div ng-switch-when="sequence">
-        @kinds.contentSequence()
-      </div>
-      <div ng-switch-when="Google Slides">
-        @kinds.googleSlides()
-      </div>
-      <div ng-switch-when="YouTube video">
-        @kinds.youTubeVideo()
-      </div>
-      <div ng-switch-when="Markdown page">
-        @kinds.markdownPage()
-      </div>
-      <div ng-switch-when="Multiple choice poll">
-        @kinds.multipleChoicePoll()
-      </div>
-      <div ng-switch-default>      
-        <div class="alert alert-error">
-            Whoops, we seem to have an unrecognised kind of content
-        </div>
-      </div>
-    </div>
-
+    <div ng-include="viewerPartialUrl"></div>
+  
   </div>
+
 </div>
 
 

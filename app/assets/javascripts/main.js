@@ -22,6 +22,7 @@ require([
   "controllers/course/Cover",
   "controllers/course/Index",
   "controllers/course/Invites",
+  "controllers/course/ActivityStream",
   
   "controllers/qna/List",
   "controllers/qna/View",

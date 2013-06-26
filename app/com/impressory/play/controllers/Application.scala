@@ -70,7 +70,7 @@ object Application extends Controller {
       case "course/editDetails.html" => Ok(views.html.partials.course.editDetails())
       case "course/cover.html" => Ok(views.html.partials.course.cover())
       case "course/invites.html" => Ok(views.html.partials.course.invites())
-      case "course/listContent.html" => Ok(views.html.partials.course.listContent())
+      case "course/activityStream.html" => Ok(views.html.partials.course.activityStream())
       case "course/index.html" => Ok(views.html.partials.course.index())
       case "course/chatRoom.html" => Ok(views.html.partials.course.chatRoom())
       case "course/viewContent.html" => Ok(views.html.partials.viewcontent.viewContent())
@@ -79,6 +79,14 @@ object Application extends Controller {
       case "qna/listQuestions.html" => Ok(views.html.partials.qna.listQuestions())
       case "qna/newQuestion.html" => Ok(views.html.partials.qna.newQuestion())
       case "qna/viewQuestion.html" => Ok(views.html.partials.qna.viewQuestion())
+      
+      case "viewcontent/kinds/contentSequence.html" => Ok(views.html.partials.viewcontent.kinds.contentSequence())
+      case "viewcontent/kinds/googleSlides.html" => Ok(views.html.partials.viewcontent.kinds.googleSlides())
+      case "viewcontent/kinds/markdownPage.html" => Ok(views.html.partials.viewcontent.kinds.markdownPage())
+      case "viewcontent/kinds/multipleChoicePoll.html" => Ok(views.html.partials.viewcontent.kinds.multipleChoicePoll())
+      case "viewcontent/kinds/webPage.html" => Ok(views.html.partials.viewcontent.kinds.webPage())
+      case "viewcontent/kinds/youTubeVideo.html" => Ok(views.html.partials.viewcontent.kinds.youTubeVideo())
+      case "viewcontent/kinds/noContent.html" => Ok(views.html.partials.viewcontent.kinds.noContent())
       
       case _ => NotFound(s"No such partial template: $templ")
     }

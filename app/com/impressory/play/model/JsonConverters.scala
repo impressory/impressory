@@ -38,7 +38,7 @@ object JsonConverters {
     }
   }  
 
-  implicit class StringifyJsValue(val en: Enumerator[JsValue]) extends AnyVal {
+  implicit class StringifyJsValue[J <: JsValue](val en: Enumerator[J]) extends AnyVal {
     def stringify = {
       var sep = ""
       for (j <- en) yield {

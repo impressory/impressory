@@ -1,7 +1,7 @@
 @()
 
 <div class="viewer-top-nav" ng-controller="Impressory.Controllers.ViewContent.TopNav">
-
+  
   <div class="dont-print">
     <div class="top-nav-menu">
     
@@ -86,7 +86,7 @@
           @snipEditDetails()
         </div>
         <div ng-switch-when="comments" >
-          @snipViewComments()
+          @views.html.partials.components.snipEntryComments()
         </div>
         <div ng-switch-when="contentForTopic" >
           @snipContentForTopic()

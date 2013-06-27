@@ -20,9 +20,9 @@ define(["./app"], () ->
           viewingContent.updateEntryInPlace(res.data)
         )
         
-      addComment: (courseId, entryId, text) ->  
-        $http.post("/course/#{courseId}/entry/#{entryId}/addComment", { text: text }).then((res) ->
-          viewingContent.updateEntryInPlace(res.data)
+      addComment: (entry, text) ->  
+        $http.post("/course/#{entry.course}/entry/#{entry.id}/addComment", { text: text }).then((res) ->
+          angular.copy(res.data, entry)
         )
         
       allEntries: (courseId) -> $http.get("/course/#{courseId}/allEntries").then((res) -> res.data.entries)

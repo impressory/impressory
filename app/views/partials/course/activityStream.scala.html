@@ -31,10 +31,18 @@
         @views.html.partials.components.snipShowTags()
       </div>
       
+      
+      <span style="border: 1px solid #eee; padding-bottom: 5px;">
+          @views.html.partials.components.snipVoteOnEntry()
+      </span>
+      
+      <button class="btn-link" ng-click="showComments=!showComments">{{ entry.commentCount }} <i class="icon-comments"></i></button>
+      
       <div class="comments">
-        <button class="btn-link" ng-click="showComments=!showComments">{{ entry.commentCount }} comments</button>
-        <div ng-show="showComments">
         
+        <div ng-show="showComments">
+          <hr />
+          @views.html.partials.components.snipEntryComments()        
         </div>
       </div>
     

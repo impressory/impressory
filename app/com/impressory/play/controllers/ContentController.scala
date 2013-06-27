@@ -197,10 +197,11 @@ object ContentController extends Controller {
   
   
   def recentEntries(courseId: String) = Angular { Action { implicit request => 
+    val approval = request.approval
     val entries = for (
       c <- refCourse(courseId);
-      e <- ContentModel.recentEntries(c.itself, request.approval);
-      j <- e.itself.toJson
+      e <- ContentModel.recentEntries(c.itself, approval);
+      j <- e.itself.toJsonForAppr(approval)
     ) yield j
       
     val r = entries.enumerate &> Enumeratee.take(100)

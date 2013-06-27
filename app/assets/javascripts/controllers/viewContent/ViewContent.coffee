@@ -14,13 +14,18 @@ define(["./base"], (l) ->
         site: $routeParams.site
       }
       
-      viewingContent.lookUp($scope.entryQuery)
+      viewingContent.lookUp($scope.entryQuery).then((data) -> $scope.entry = data)
+      
+      
       
     updateView()
       
     $scope.$on('$routeUpdate', updateView)
     
     $scope.viewing = Impressory.Model.Viewing
+    
+    
+    $scope.watch('viewing.Content.diplay', (nv, ov) -> $scope.entry = nv)
     
     # Used by ng-click in slide-sorter, amongst others
     $scope.lookUp = (params) -> viewingContent.lookUp(params)
@@ -32,5 +37,25 @@ define(["./base"], (l) ->
     $scope.goToStart = () -> viewingContent.goToStart()
   
   ]
+  
+  Impressory.Controllers.ViewContent.ViewContent.resolve = {
+    course: ['$route', 'CourseService', ($route, CourseService) -> 
+      CourseService.get($route.current.params.courseId)
+    ]
+    entry: ['$route', 'viewingContent', ($route, viewingContent) ->
+    
+      $scope.entryQuery = {
+        courseId: $route.current.params.courseId
+        entryId: $route.current.params.entryId
+        adj: $route.current.params.adj
+        noun: $route.current.params.noun
+        topic: $route.current.params.topic
+        site: $route.current.params.site
+      }
+      
+      viewingContent.lookUp($scope.entryQuery)
+    ]
+  }
+  
 
 )

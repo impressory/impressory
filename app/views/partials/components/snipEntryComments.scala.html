@@ -1,0 +1,14 @@
+@()
+
+<div class="view-entry-comments sidemargin" ng-controller="Impressory.Controllers.ViewContent.Comments">
+  <div class="comments">
+    <div ng-repeat="comment in entry.comments" class="embedded-comment">
+      @views.html.partials.components.snipEmbeddedComment()
+    </div>
+  </div>
+  
+  <form class="form">
+    <textarea name="comment" ng-disabled="!entry.permissions.comment" placeholder="Leave a comment" ng-model="newComment.text"></textarea><br />
+    <button class="btn btn-primary" type="button" ng-show="newComment.text" ng-disabled="!entry.permissions.comment" ng-click="addComment(newComment)">Comment</button>
+  </form>
+</div>

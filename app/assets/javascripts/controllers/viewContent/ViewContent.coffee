@@ -1,7 +1,20 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.ViewContent.ViewContent = ["$scope", "$routeParams", "$location", "viewingContent", ($scope, $routeParams, $location, viewingContent) ->
+  Impressory.Controllers.ViewContent.ViewContent = ["$scope", "$routeParams", "viewingContent", "course", "entry", ($scope, $routeParams, viewingContent, course, entry) ->
 
+    $scope.course = course
+    $scope.courseId = course.id
+
+    $scope.entry = entry
+    
+    $scope.viewing = Impressory.Model.Viewing
+    $scope.$watch('viewing.Content.display', (newVal, oldVal) -> $scope.entry = newVal)
+    
+    # ViewContent does not completely refresh when the location's search (parameters) change.
+    # Instead we handle changes to the search (parameters) from within the controller by listening to the route.
+    # The reason for this is to avoid reloading every iframe in a content sequence as you
+    # advance through it
+    #
     updateView = (path) ->
       $scope.courseId = $routeParams.courseId
 
@@ -14,18 +27,10 @@ define(["./base"], (l) ->
         site: $routeParams.site
       }
       
-      viewingContent.lookUp($scope.entryQuery).then((data) -> $scope.entry = data)
-      
-      
-      
-    updateView()
-      
+      viewingContent.lookUp($scope.entryQuery)
     $scope.$on('$routeUpdate', updateView)
     
-    $scope.viewing = Impressory.Model.Viewing
     
-    
-    $scope.watch('viewing.Content.diplay', (nv, ov) -> $scope.entry = nv)
     
     # Used by ng-click in slide-sorter, amongst others
     $scope.lookUp = (params) -> viewingContent.lookUp(params)
@@ -35,7 +40,10 @@ define(["./base"], (l) ->
     $scope.goToNextEntry = () -> viewingContent.goToNextEntry()
     
     $scope.goToStart = () -> viewingContent.goToStart()
+    
+    $scope.hasNextEntry = () -> viewingContent.hasNextEntry()
   
+    $scope.hasPrevEntry = () -> viewingContent.hasPrevEntry()
   ]
   
   Impressory.Controllers.ViewContent.ViewContent.resolve = {
@@ -44,7 +52,7 @@ define(["./base"], (l) ->
     ]
     entry: ['$route', 'viewingContent', ($route, viewingContent) ->
     
-      $scope.entryQuery = {
+      entryQuery = {
         courseId: $route.current.params.courseId
         entryId: $route.current.params.entryId
         adj: $route.current.params.adj
@@ -53,7 +61,7 @@ define(["./base"], (l) ->
         site: $route.current.params.site
       }
       
-      viewingContent.lookUp($scope.entryQuery)
+      viewingContent.lookUp(entryQuery)
     ]
   }
   

@@ -1,6 +1,6 @@
 @()
 
-<div class="impressory-content-viewer full-height" ng-controller="Impressory.Controllers.ViewContent.ViewContent">
+<div class="impressory-content-viewer full-height">
   <div ng-controller="Impressory.Controllers.ViewContent.Layout" class="full-height">
 
     <div id="middle-wrap" ng-class="{ 'right-open': panels.right }">
@@ -100,13 +100,11 @@
         <div id="left-edge" class="dont-print">
         
           <div class="v-center">
-            <button class="command" type="button" ng-click="goToPrevEntry()" ng-disabled="{{ viewing.Content.seqIndex < 0 }}"
-              ng-class="{ disabled : viewing.Content.seqIndex < 0 }">
+            <button class="command" type="button" ng-click="goToPrevEntry()" ng-disabled="!hasPrevEntry()">
               <i class="icon-angle-left"></i>
             </button>
   
-            <button class="command" type="button" ng-click="goToStart()" ng-disabled="{{ viewing.Content.seqIndex < 0 }}"
-              ng-class="{ disabled: viewing.Content.seqIndex < 0  }">
+            <button class="command" type="button" ng-click="goToStart()" ng-disabled="!hasPrevEntry()">
               <i class="icon-double-angle-left"></i>
             </button>
           </div>
@@ -117,8 +115,7 @@
         <div id="right-edge" class="dont-print" >
 
           <div class="v-center">
-            <button id="next-button" type="button"  ng-disabled="{{ viewing.Content.seqIndex >= viewing.Content.displaySeq.length - 2}}"
-              ng-click="goToNextEntry()" ng-class="{ disabled: viewing.Content.seqIndex >= viewing.Content.displaySeq.length - 2 }">
+            <button id="next-button" type="button"  ng-disabled="!hasNextEntry()" ng-click="goToNextEntry()" >
               <i class="icon-angle-right"></i>
             </button>
           </div>

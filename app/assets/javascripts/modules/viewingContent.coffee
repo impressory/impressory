@@ -1,5 +1,10 @@
 define(["./app"], () ->
 
+
+  # viewingContent is responsible for maintaining what is shown in the content viewer
+  # In other words, it maintains Impressory.Model.Viewing.Content
+  #
+  #
   Impressory.angularApp.service('viewingContent', ['$http', '$location', '$rootScope', '$window', ($http, $location, $rootScope, $window) ->
       
     viewing = Impressory.Model.Viewing
@@ -119,15 +124,24 @@ define(["./app"], () ->
         viewing.Content.seqIndex = -1
         @updateDisplayedEntry()
         
+      # Whether there is a 'previous' entry to show in a content sequence
+      hasPrevEntry: () ->
+        viewing.Content.seqIndex >= 0
+
+      # Whether there is a 'next' entry to show in a content sequence
+      hasNextEntry: () ->
+        viewing.Content.seqIndex < viewing.Content.displaySeq.length - 2
+
       goToNextEntry: () ->
-        if viewing.Content.seqIndex < viewing.Content.displaySeq.length - 2
+        if @hasNextEntry()
           viewing.Content.seqIndex = viewing.Content.seqIndex + 1
           @updateDisplayedEntry()
           
       goToPrevEntry: () ->
-        if viewing.Content.seqIndex >= 0
+        if @hasPrevEntry()
           viewing.Content.seqIndex = viewing.Content.seqIndex - 1
           @updateDisplayedEntry()
+          
 
       # Gets content, from JSON or requesting it
       lookUp: (params) ->

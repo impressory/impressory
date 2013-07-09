@@ -1,0 +1,48 @@
+@()
+
+<div class="list-entries columns">
+
+  <div ng-repeat="entry in entries | orderBy:'created':true" ">
+  
+    <div class="entry">
+      
+      <div class="header">
+        <div class="" ng-repeat="user in [ users.cache[entry.addedBy] ]">
+          <div class="who">
+            <span class="pull-right created">{{ entry.created | date:'h:mma d MMM yy' }}</span>
+            <span class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></span>
+            <span class="nickname">{{ user.nickname || 'Anonymous' }}</span>
+            added a {{ entry.kind }}
+          </div>
+        </div>
+      </div>
+
+      <div class="body">    
+        <h3><a ng-href="{{viewPath(entry)}}">{{ entry.title || 'Untitled' }}</a></h3>
+        <p>{{ entry.note }}</p>
+        
+      
+        <div class="pull-right">
+          @views.html.partials.components.snipShowTags()
+        </div>
+        
+        
+        <span style="border: 1px solid #eee; padding-bottom: 5px;">
+        @views.html.partials.components.snipVoteOnEntry()
+        </span>
+    
+        <button class="btn-link" ng-click="showComments=!showComments">{{ entry.commentCount }} <i class="icon-comments"></i></button>
+      </div>
+    
+      <div class="footer" ng-show="showComments">
+        <div class="comments">
+          <div >
+            @views.html.partials.components.snipEntryComments()        
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+</div>
+</div>

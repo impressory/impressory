@@ -1,53 +1,29 @@
 @() @views.html.partials.headerFront() @subheadCourse()
 
-<div class="sidemargin activity-stream">
+<div class="activity-stream">
 
   <h2>Recently, on this course...</h2>
 
-  <div ng-repeat="entry in entries | orderBy:'created':true">
+  <!--  div class="post-content">
+    <ul class="nav nav-pills">
+      <li ng-class="{ active: postMode=='post' }"><a href="#" ng-click="postMode='post'">News post</a></li>
+      <li ng-class="{ active: postMode=='share' }"><a href="#" ng-click="postMode='share'">Share something</a></li>
+    </ul>
   
-    <div class="activity-stream-entry">
-      
-      <div class="" ng-repeat="user in [ users.cache[question.addedBy] ]">
-        <div class="who">
-          <span class="pull-right created">{{ entry.created | date:'h:mma d MMM yy' }}</span>
-          <span class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></span>
-          <span class="nickname">{{ user.nickname || 'Anonymous' }}</span>
-          added a {{ entry.kind }}
-        </div>
-        <hr />
-        
+    <div ng-switch="postMode">
+      <div ng-switch-when="post">
+        <textarea ng-model="post.text" placeholder="Write something"></textarea>
       </div>
-      
-      <div class="who">
-        
+      <div ng-switch-when="share">
+        <input ng-model="share.url" type="text" placeholder="Paste the URL.">
+        <input ng-model="share.title" type="text" placeholder="Title">
+        <textarea ng-model="share.note" placeholder="Optional note"></textarea>
       </div>
-    
-      <h3><a ng-href="{{viewPath(entry)}}">{{ entry.title || 'Untitled' }}</a></h3>
-      <p>{{ entry.note }}</p>
-      
-    
-      <div class="pull-right">
-        @views.html.partials.components.snipShowTags()
-      </div>
-      
-      
-      <span style="border: 1px solid #eee; padding-bottom: 5px;">
-          @views.html.partials.components.snipVoteOnEntry()
-      </span>
-      
-      <button class="btn-link" ng-click="showComments=!showComments">{{ entry.commentCount }} <i class="icon-comments"></i></button>
-      
-      <div class="comments">
-        
-        <div ng-show="showComments">
-          <hr />
-          @views.html.partials.components.snipEntryComments()        
-        </div>
-      </div>
-    
     </div>
-  
     
-  </div>
+  
+  </div>  -->
+
+  <list-entries entries="entries" view-mode="columns" />
+
 </div>

@@ -30,6 +30,7 @@ require([
   
   "controllers/components/EditTags",
   "controllers/components/FillHeight",
+  "controllers/components/ListEntries",
 
   "controllers/viewContent/ViewContent",
   "controllers/viewContent/Layout",

@@ -1,7 +1,4 @@
-.list-entries {
-
-  max-height: 50%;
-  overflow-y: auto;
+.list-entries .rows {
 
   .updated, .ab-label, .kind, .site {
     color: #aaa;
@@ -28,4 +25,46 @@
     background-color: #fbfbfb;
   }
   
+}
+
+.list-entries .columns {
+  columns: 1;
+  -moz-columns: 1;
+  -webkit-columns: 1;
+  
+  max-width: 800px;
+  min-width: 400px;
+  
+  .entry {
+  
+    border: 1px solid #eee;
+    margin: 20px;
+
+    .header {
+      background-color: #fafafa;
+      font-size: 12px;
+      .who .avatar img {
+        height: 24px;
+        width: 24px;
+      }
+      padding: 5px;
+    }
+  
+    .body {
+      padding: 10px;
+      
+      .tags {
+        font-size: 12px;
+      }
+    }
+    .footer {
+      background-color: #fafafa;
+      font-size: 12px;
+      padding: 5px;    
+    }
+  
+  
+  }
+  
+
 }

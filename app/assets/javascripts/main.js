@@ -14,9 +14,11 @@ require([
   
   "controllers/self/Self",
   
+  "controllers/front/Header",
   "controllers/front/ListedCourses",
   "controllers/front/MyCourses",
   
+  "controllers/course/Subheader",
   "controllers/course/Create",
   "controllers/course/Edit",
   "controllers/course/Cover",

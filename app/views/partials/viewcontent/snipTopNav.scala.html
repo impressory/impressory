@@ -3,12 +3,19 @@
 <div class="viewer-top-nav" ng-controller="Impressory.Controllers.ViewContent.TopNav">
   
   <div class="dont-print">
+    <div ng-hide="panels.minimiseHeader">
+      <header-front ></header-front>
+      <subheader-course course="course" />
+    </div>
     <div class="top-nav-menu">
     
       <ul class="bookNav">
         <li class="navli">
-          <button title="Menu" class="command" ng-class="{ 'active': panels.top == 'menu' }" ng-click="panels.toggleTopMenu()">
+          <button title="Menu" class="command" ng-show="panels.minimiseHeader" ng-class="{ 'active': panels.top == 'menu' }" ng-click="panels.toggleTopMenu()">
             <b>|||</b>
+          </button>
+          <button title="Hide menu" class="command" ng-hide="panels.minimiseHeader" ng-click="panels.minimiseHeader = true">
+            <i class="icon-resize-full"></i>
           </button>
         </li>
       </ul>
@@ -73,8 +80,8 @@
       <div ng-switch="panels.top" ng-style="{ 'max-height': fillHeight, 'overflow-y': 'auto' }">
       
         <div ng-switch-when="menu" >
-          @views.html.partials.headerFront()
-          @views.html.partials.course.subheadCourse()
+          <header-front ></header-front>
+          <subheader-course course="course" />
         </div>
         <div ng-switch-when="addContent" >
           @views.html.partials.addcontent.addContent()

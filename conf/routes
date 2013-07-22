@@ -23,6 +23,12 @@ POST    /logInEP                    com.impressory.play.controllers.UserControll
 POST    /signUp                     com.impressory.play.controllers.UserController.signUp
 POST    /logOut                     com.impressory.play.controllers.UserController.logOut
 
+# LTI
+POST    /course/:id/lti/launch       com.impressory.auth.controllers.LTIAuthController.ltiLaunch(id)
+GET     /course/:id/lti/register     com.impressory.auth.controllers.LTIAuthController.viewRegisterUser(id)
+POST     /course/:id/lti/registerNew com.impressory.auth.controllers.LTIAuthController.registerNewUser(id)
+POST     /course/:id/lti/registerExisting com.impressory.auth.controllers.LTIAuthController.registerNewUser(id)
+
 # Non-API routes
 GET     /logIn                      com.impressory.play.controllers.Application.viewLogIn
 GET     /self                       com.impressory.play.controllers.Application.viewSelf

@@ -10,8 +10,15 @@ import com.impressory.api.CourseChatPolicy
 import com.impressory.api.CourseSignupPolicy
 import com.impressory.api.UserError
 import com.wbillingsley.handyplay.RefEnumIter
+import com.wbillingsley.encrypt.Encrypt
 
 case class TitleAndTag(title:String, tag:String)
+
+case class LTIData(key:String = Encrypt.genSaltB64, secret:String = Encrypt.genSaltB64)
+
+object LTIData {
+  implicit val format = reactivemongo.bson.Macros.handler[LTIData]
+}
 
 /**
  * Translated from "Book" in the previous version
@@ -40,16 +47,20 @@ class Course (
   
   var listed:Boolean = false, 
   
+  var lti:LTIData = LTIData(),
+  
   val created: Long = System.currentTimeMillis,
   
   val updated: Long = System.currentTimeMillis,
   
   val _id:BSONObjectID = BSONObjectID.generate
+  
 ) extends HasBSONId {
   
   def id = _id
   
 }
+
 
 object Course extends FindById[Course] {
     
@@ -83,6 +94,7 @@ object Course extends FindById[Course] {
       "signUpPolicy" -> course.signupPolicy,
       "chatPolicy" -> course.chatPolicy,
       "listed" -> course.listed,
+      "lti" -> course.lti,
       "updated" -> System.currentTimeMillis
     )
     
@@ -107,6 +119,7 @@ object Course extends FindById[Course] {
           signupPolicy = doc.getAs[CourseSignupPolicy]("signUpPolicy").getOrElse(CourseSignupPolicy.open),
           chatPolicy = doc.getAs[CourseChatPolicy]("chatPolicy").getOrElse(CourseChatPolicy.allReaders),
           listed = doc.getAs[Boolean]("listed").getOrElse(false),
+          lti = doc.getAs[LTIData]("lti").getOrElse(LTIData()),
           created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis),
           updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis)
       )

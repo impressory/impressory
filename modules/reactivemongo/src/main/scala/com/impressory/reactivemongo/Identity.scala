@@ -13,6 +13,8 @@ class Identity(
     
     val avatar:Option[String] = None,
     
+    val username:Option[String] = None,
+    
     val since:Long = System.currentTimeMillis,
   
     val _id:BSONObjectID = BSONObjectID.generate
@@ -28,6 +30,7 @@ object Identity {
   implicit object bsonWriter extends BSONDocumentWriter[Identity] {    
     def write(identity:Identity) = BSONDocument(
     	"_id" -> identity._id,
+    	"username" -> identity.username,
     	"key" -> BSONDocument(
     	  "service" -> identity.service,
     	  "value" -> identity.value
@@ -43,6 +46,7 @@ object Identity {
       val key = doc.getAs[BSONDocument]("key").get
       new Identity(
           _id = doc.getAs[BSONObjectID]("_id").get,
+          username = doc.getAs[String]("username"),
           service = key.getAs[String]("service").get,
           value = key.getAs[String]("value").get,
           since = doc.getAs[Long]("since").get,
@@ -53,7 +57,7 @@ object Identity {
   
   def unsaved(
       service:String, value:String,
-      avatar:Option[String]=None
-  ) = new Identity(service=service, value=value, avatar=avatar)
+      avatar:Option[String]=None, username:Option[String]=None
+  ) = new Identity(service=service, value=value, avatar=avatar, username=username)
   
 }

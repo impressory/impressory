@@ -1,7 +1,10 @@
 <header-front></header-front>
 
 <div class="container">
-<h1>Sign up here!</h1>
+<div class="row-fluid">
+
+<div class="span6">
+  <h1>Sign up here!</h1>
   <div class="well" ng-controller="Impressory.Controllers.LogIn.SignUp">
     <form name="signup">
       <label>Email address</label>
@@ -17,4 +20,15 @@
       </div>
     </form>
   </div>
+</div>
+  
+<div class="span6">
+  <h1>or</h1>
+  
+  <div>
+  <p><a href="/auth/twitter" target="_self"><img src="https://dev.twitter.com/sites/default/files/images_documentation/sign-in-with-twitter-gray.png" alt="Sign in with Twitter"/></a></p>
+  <p><a class="btn" href="/auth/github" target="_self"><i class="icon-github"></i> Sign in with <b>GitHub</b></a></p>
+  </div>
+</div>
+  
 </div>

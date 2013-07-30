@@ -18,6 +18,12 @@ GET     /auth/twitter/register      com.impressory.auth.controllers.TwitterContr
 POST    /auth/twitter/register      com.impressory.auth.controllers.TwitterController.registerUser
 GET     /auth/addTwitter            com.impressory.auth.controllers.TwitterController.addTwitter
 
+GET     /auth/github                com.impressory.auth.controllers.GitHubController.requestAuth
+GET     /auth/github/callback       com.impressory.auth.controllers.GitHubController.callback
+
+GET     /auth/interstitial/register com.impressory.auth.controllers.InterstitialController.viewRegisterUser(service:Option[String] ?= None)
+POST    /auth/interstitial/register com.impressory.auth.controllers.InterstitialController.registerUser
+
 POST    /logInUP                    com.impressory.play.controllers.UserController.logInUP
 POST    /logInEP                    com.impressory.play.controllers.UserController.logInEP
 POST    /signUp                     com.impressory.play.controllers.UserController.signUp

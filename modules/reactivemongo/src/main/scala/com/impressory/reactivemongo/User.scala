@@ -152,9 +152,9 @@ object User extends FindById[User] {
   def unsaved(
     username: Option[String] = None, password: Option[String] = None,
     name: Option[String] = None, email: Option[String] = None,
-    nickname: Option[String] = None) = {
+    nickname: Option[String] = None, avatar: Option[String] = None) = {
 
-    val u = new User(username = username, name = name, nickname = nickname, email = email)
+    val u = new User(username = username, name = name, nickname = nickname, email = email, avatar=avatar)
     u.pwhash = password.flatMap(p => u.hash(p))
     u
   }
@@ -182,6 +182,8 @@ object User extends FindById[User] {
     }
     new RefFutureRef(fut)
   }
+  
+  def saveNew(user: User) = saveSafe(bsonWriter.write(user), user)
   
   def register(u: Ref[User], c:Ref[Course], roles:Set[CourseRole]) = {
     import HasBSONId._

@@ -13,16 +13,14 @@ POST    /printit                    com.impressory.play.controllers.Application.
 
 
 # Auth
-GET     /auth/twitter               com.impressory.auth.controllers.TwitterController.authenticate
-GET     /auth/twitter/register      com.impressory.auth.controllers.TwitterController.viewRegisterUser
-POST    /auth/twitter/register      com.impressory.auth.controllers.TwitterController.registerUser
-GET     /auth/addTwitter            com.impressory.auth.controllers.TwitterController.addTwitter
-
+GET     /auth/twitter               com.impressory.auth.controllers.TwitterController.requestAuth
+GET     /auth/twitter/callback      com.impressory.auth.controllers.TwitterController.callback
 GET     /auth/github                com.impressory.auth.controllers.GitHubController.requestAuth
 GET     /auth/github/callback       com.impressory.auth.controllers.GitHubController.callback
 
 GET     /auth/interstitial/register com.impressory.auth.controllers.InterstitialController.viewRegisterUser(service:Option[String] ?= None)
 POST    /auth/interstitial/register com.impressory.auth.controllers.InterstitialController.registerUser
+POST    /auth/interstitial/add      com.impressory.auth.controllers.InterstitialController.addIdentity
 
 POST    /logInUP                    com.impressory.play.controllers.UserController.logInUP
 POST    /logInEP                    com.impressory.play.controllers.UserController.logInEP

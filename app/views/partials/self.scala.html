@@ -17,7 +17,7 @@
 		        <div ng-switch-default>
 		
 		          <h3>Details          
-		            <span class="btn-group pull-right"><button class="btn-mini btn-primary" ng-click="editDetails()">Edit</button></span>
+		            <span class="btn-group pull-right"><button class="btn-mini btn-primary" ng-click="editDetails()" disabled>Edit</button></span>
 		          </h3>
 				                    
               <div class="media">
@@ -126,7 +126,8 @@
 	          Add <span class="caret"></span>
 	          </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dlabel">
-              <li><a href="/auth/addTwitter" target="_self">Twitter</a></li>
+              <li><a href="/auth/addTwitter" target="_self"><i class="icon-twitter"></i> Twitter</a></li>
+              <li><a href="/auth/github" target="_self"><i class="icon-github"></i> GitHub</a></li>
             </ul>
 	        </div>
 	      

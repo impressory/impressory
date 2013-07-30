@@ -67,7 +67,9 @@ object GitHubController extends Controller {
     }
     
     /**
-     * Given an authentication token, goes and looks up that user's details on GitHub
+     * Given an authentication token, goes and looks up that user's details on GitHub.
+     * These are filled into an "Interstitial Memory" -- details to remember during the display
+     * of the confirmation page.
      */
     def userFromAuth(authToken:String) = {
       val ws = WS.url("https://api.github.com/user").
@@ -76,23 +78,33 @@ object GitHubController extends Controller {
     		  		  "Authorization" -> ("token " + authToken)
     		  		).get()
       
-      for (resp <- new RefFuture(ws)) println(resp.json)
-      for (resp <- new RefFuture(ws)) println((resp.json \ "id").asOpt[Int].isDefined)
-      for (resp <- new RefFuture(ws) if (resp.json \ "id").asOpt[Int].isDefined) yield resp.json
+      for (
+        resp <- new RefFuture(ws);
+        json = resp.json;
+        id <- (resp.json \ "id").asOpt[Int].map(_.toString)
+      ) yield {
+        InterstitialMemory(
+            service = "github",
+            id = id,
+            name = (json \ "name").asOpt[String],
+            nickname = (json \ "login").asOpt[String],
+            username = (json \ "login").asOpt[String],
+            avatar = (json \ "avatar_url").asOpt[String]
+          )
+      }
     }    
     
-    val refJson = for (
+    val refMem = for (
       sfs <- Ref(stateFromSession) orIfNone Refused("OAuth authorization failed -- state mismatch");
       sfr <- Ref(stateFromRequest.filter(_ == sfs)) orIfNone Refused("OAuth authorization failed -- state mismatch");
       code <- Ref(request.getQueryString("code")) orIfNone Refused("GitHub provided no code");
       authToken <- authTokenFromCode(code) orIfNone Refused("GitHub did not provide an authorization token");
-      json <- userFromAuth(authToken) orIfNone Refused("GitHub did not provide any user data for that login")
-    ) yield json
+      mem <- userFromAuth(authToken) orIfNone Refused("GitHub did not provide any user data for that login")
+    ) yield mem
     
     val res = for (
-      json <- refJson;
-      githubId = (json \ "id").as[Int].toString;
-      user <- optionally(User.byIdentity("github", githubId))
+      mem <- refMem;
+      user <- optionally(User.byIdentity("github", mem.id))
     ) yield {
       user match {
         case Some(u) => {
@@ -100,15 +112,6 @@ object GitHubController extends Controller {
           Redirect(com.impressory.play.controllers.routes.Application.index).withSession(session)
         } 
         case None => {
-          val mem = InterstitialMemory(
-            service = "github",
-            id = githubId,
-            name = (json \ "name").asOpt[String],
-            nickname = (json \ "login").asOpt[String],
-            username = (json \ "login").asOpt[String],
-            avatar = (json \ "avatar_url").asOpt[String]
-          )
-          
           val session = request.session + (InterstitialController.sessionVar -> mem.toJsonString)
           Redirect(routes.InterstitialController.viewRegisterUser(Some("GitHub"))).withSession(session)
         }

@@ -1,4 +1,4 @@
-@(serviceName:Option[String])
+@(serviceName:Option[String], mem:com.impressory.auth.controllers.InterstitialMemory)
 
 @templateFront("Awarinator") {
 
@@ -8,17 +8,33 @@
 
   <h1>New around here?</h1>
   
-  <div class="well">
-		<form method="POST" action="register">
-		<p>
-		That account on @serviceName.getOrElse("this service") isn't connected to an account here. 
-		Would you like to create a new account here?
-		</p>
-		<a class="btn" href="/">Cancel</a>
-		<button type="submit" class="btn btn-primary">Create account</button>
-		
-		</form>
+  <div>
+	<p>
+	That account on @serviceName.getOrElse("this service") isn't connected to an account here. 
+	Would you like to create a <strong>new account</strong> using that identity here?
+
+	(If you'd rather add this identity to an existing account, cancel and log in to that account first)
+	</p>
+	
+	<div class="row-fluid">
+	  <div class="pull-left" style="margin-right: 30px;">
+	    <h4>@serviceName</h4>
+		<img class="media-object" src='@mem.avatar.getOrElse("")' />
+		<label>@mem.username</label>
+	  </div>
+	  
+	  <div class="pull-left" >
+	    <h4>Impressory</h4>
+	    <label>New account</label>
+	  </div>
 	</div>
+	
+	<hr />
+	<form method="POST" action="register">
+      <a class="btn" href="/" target="_self">Cancel</a>
+      <button type="submit" class="btn btn-primary">Create account using this login</button>		
+	</form>
+  </div>
 </div>	
 </div>
 }

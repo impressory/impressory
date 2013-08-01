@@ -56,4 +56,14 @@ object WebPageModel {
     WebPage.unsaved(course, ce.itself, url)
   }  
 
+  /**
+   * Determines whether a piece of text is a URL or not
+   */
+  def urlMatcher(code:String) = {    
+    val isUrl = code.startsWith("http://") || code.startsWith("https://")
+    if (isUrl) {
+      new WebPage(url=Some(code)).itself
+    } else RefNone
+  }  
+
 }

@@ -88,6 +88,8 @@ POST    /course/:courseId/entry/:entryId/voteUp             com.impressory.play.
 POST    /course/:courseId/entry/:entryId/voteDown           com.impressory.play.controllers.ContentController.voteDown(courseId, entryId)
 POST    /course/:courseId/entry/:entryId/addComment         com.impressory.play.controllers.ContentController.addComment(courseId, entryId)
 
+GET     /whatIsIt                                           com.impressory.play.controllers.ContentController.whatIsIt(code)
+
 # Multiple Choice Poll
 POST    /course/:courseId/entry/:entryId/mcPollVote com.impressory.play.controllers.PollController.vote(courseId:String, entryId:String)
 POST    /course/:courseId/entry/:entryId/pushMCPoll com.impressory.play.controllers.PollController.pushMCPollToStream(courseId:String, entryId:String)

@@ -249,4 +249,15 @@ object ContentController extends Controller {
     res    
   }
   
+  /**
+   * Given a URL or Embed code, works out what kind of content item it is
+   */
+  def whatIsIt(code:String) = Action { implicit request => 
+    val res = for (
+        ci <- ContentTypeListing.whatIsIt(code) orIfNone UserError("Sorry, I don't recognise that content");
+        j <- JsonConverters.ContentItemToJson.writes(ci)
+    ) yield Json.obj("kind" -> ci.itemType, "item" -> j)
+    res
+  }
+  
 }

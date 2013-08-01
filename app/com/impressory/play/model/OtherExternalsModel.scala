@@ -31,6 +31,22 @@ object OtherExternalsModel {
     gs
   }
   
+  /**
+   * Extracts the id from Google Slides URLs and embed codes
+   */
+  def extractGoogleSlidesId(url:String) = {
+    "//docs.google.com/presentation/d/([^ \"?&/]+)".r.findFirstMatchIn(url).map(_.group(1))
+  }
+  
+  /**
+   * Determines whether a URL or embed code is a Google Slides presentation
+   */
+  def googleSlidesMatcher(code:String) = {
+    val presId = extractGoogleSlidesId(code)
+    for (pid <- presId) yield GoogleSlides(embedCode=Some(code), presId=Some(pid))
+  }
+  
+  
   def createYouTubeVideo(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
     ce.site = "google.com"
     updateYouTubeVideo(new YouTubeVideo(), data)
@@ -52,5 +68,22 @@ object OtherExternalsModel {
     y.videoId = presId
     y
   }  
+    
+  /**
+   * Extracts the id from YouTube URLs and embed codes
+   */
+  def extractYouTubeId(url:String) = {
+    "//www.youtube.com/watch\\?v=([^ \"?&]+)".r.findFirstMatchIn(url).map(_.group(1)) orElse
+    "//youtu.be/([^ \"?&]+)".r.findFirstMatchIn(url).map(_.group(1)) orElse
+    "//www.youtube.com/embed/([^ \"?&]+)".r.findFirstMatchIn(url).map(_.group(1))       
+  }
+  
+  /**
+   * Determines whether a URL or embed code is a YouTube video
+   */
+  def youTubeMatcher(code:String) = {
+    val videoId = extractYouTubeId(code)
+    for (vid <- videoId) yield YouTubeVideo(embedCode=Some(code), videoId=Some(vid))    
+  }
 
 }

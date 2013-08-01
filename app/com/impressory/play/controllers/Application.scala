@@ -8,7 +8,7 @@ import ResultConversions._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-import com.impressory.play.model.JsonConverters._
+import com.impressory.play.json.JsonConverters._
 
 object Application extends Controller {  
   

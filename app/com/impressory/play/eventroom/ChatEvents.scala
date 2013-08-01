@@ -13,7 +13,7 @@ object ChatEvents {
   
   case class BroadcastIt(courseId:String, re:RecordedChatEvent) extends EREvent {
     override def toJson = {
-      import JsonConverters._
+      import com.impressory.play.json.JsonConverters._
       
       Json.toJson(re).itself
     }

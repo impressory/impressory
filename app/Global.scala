@@ -89,7 +89,7 @@ object Global extends GlobalSettings with AcceptExtractors {
       case Accepts.Html() => {
         import Ref._
         import com.impressory.play.controllers.RequestUtils
-        import com.impressory.play.model.JsonConverters._
+        import com.impressory.play.json.JsonConverters._
         import play.api.mvc.Results.{Async, Ok, NotFound, InternalServerError}
         
         val p = scala.concurrent.promise[play.api.mvc.Result]

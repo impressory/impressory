@@ -7,7 +7,7 @@ import play.api.mvc._
 import play.api.mvc.Results.{Ok, NotFound, Forbidden, BadRequest, Async, InternalServerError}
 import scala.concurrent.promise
 import play.api.libs.json._
-import com.impressory.play.model.JsonConverters._
+import com.impressory.play.json.JsonConverters._
 import play.api.libs.iteratee.Enumerator
 
 object ResultConversions extends AcceptExtractors {

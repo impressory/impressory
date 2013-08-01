@@ -15,7 +15,7 @@ import com.impressory.play.model._
 import com.impressory.play.eventroom._
 import com.impressory.api._
 import ResultConversions._
-import JsonConverters._
+import com.impressory.play.json.JsonConverters._
 
 /**
  * Controller handling subscriptions and connections to the EventRoom

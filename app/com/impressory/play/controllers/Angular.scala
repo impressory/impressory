@@ -3,7 +3,7 @@ package com.impressory.play.controllers
 import play.api.mvc.{Result, Request, RequestHeader, Action, AcceptExtractors, AnyContent}
 import com.wbillingsley.handy._
 import Ref._
-import com.impressory.play.model.JsonConverters._
+import com.impressory.play.json.JsonConverters._
 
 case class Angular[A](val action:Action[A]) extends Action[A] with AcceptExtractors {
   

@@ -10,7 +10,7 @@ import scala.concurrent.Future
 import reactivemongo.bson._
 
 import com.impressory.play.model._
-import JsonConverters._
+import com.impressory.play.json.JsonConverters._
 
 
 object RequestUtils {

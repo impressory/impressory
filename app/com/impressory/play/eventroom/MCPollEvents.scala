@@ -57,7 +57,7 @@ object MCPollEvents {
       val id = poll.id.stringify
       poll.item match {
         case Some(mc:MultipleChoicePoll) => {
-          import JsonConverters._
+          import com.impressory.play.json.JsonConverters._
           
           for (j <- poll.itself.toJson) yield Json.obj(
             "kind" -> "push",

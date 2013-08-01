@@ -9,9 +9,10 @@ import play.api.libs.json._
 import com.impressory.api._
 import com.impressory.play.model._
 import ResultConversions._
-import JsonConverters._
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.Enumeratee
+import com.impressory.play.json.JsonConverters
+import JsonConverters._
 
 object ContentController extends Controller {
   

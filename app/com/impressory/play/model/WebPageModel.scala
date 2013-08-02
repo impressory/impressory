@@ -61,12 +61,25 @@ object WebPageModel {
    */
   def urlMatcher(code:String) = {    
     val isUrl = code.startsWith("http://") || code.startsWith("https://")
+    
+    println(s"Checking to see if ${code} is a url")
+    
     if (isUrl) {
+      import play.api.libs.ws.WS
+      import play.api.libs.concurrent.Execution.Implicits._
       
-      new ContentEntry(
+      val a = for (
+        res <- WS.url(code).withHeaders("Accept" -> "text/*").get();
+        title = "<title>([^<]+)</title>".r.findFirstMatchIn(res.body).map(_.group(1))
+      ) yield {
+        new ContentEntry(
+          title = title,
           site = site(code),
           item = Some(new WebPage(url=Some(code)))  
-        ).itself
+        )
+      }
+      
+      new RefFuture(a)
     } else RefNone
   }  
 

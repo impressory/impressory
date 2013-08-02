@@ -5,27 +5,40 @@
 
 <div class="activity-stream">
 
-  <h2>Recently, on this course...</h2>
+  <h2>Newsfeed</h2>
+  
+  <div class="post-content" ng-controller="Impressory.Controllers.AddContent.Share">
+    <textarea ng-model="share.text" placeholder="Write something"></textarea>
 
-  <!--  div class="post-content">
     <ul class="nav nav-pills">
-      <li ng-class="{ active: postMode=='post' }"><a href="#" ng-click="postMode='post'">News post</a></li>
-      <li ng-class="{ active: postMode=='share' }"><a href="#" ng-click="postMode='share'">Share something</a></li>
+      <li ng-class="{ active: postMode=='post' }"><a href="#" ng-click="showPostMode()">News post</a></li>
+      <li ng-class="{ active: postMode=='share' }"><a href="#" ng-click="showShareMode()">Share something</a></li>
     </ul>
   
     <div ng-switch="postMode">
-      <div ng-switch-when="post">
-        <textarea ng-model="post.text" placeholder="Write something"></textarea>
-      </div>
-      <div ng-switch-when="share">
-        <input ng-model="share.url" type="text" placeholder="Paste the URL.">
-        <input ng-model="share.title" type="text" placeholder="Title">
-        <textarea ng-model="share.note" placeholder="Optional note"></textarea>
+      <div ng-switch-when="share" >
+        <div class="form-inline" ng-hide="toAdd.item">
+          <input ng-model="share.url" type="text" placeholder="Paste the URL or embed code" >
+          <button class="btn btn-small" ng-click="whatIsIt(share.url)">Add</button>
+        </div>
+        <div ng-show="toAdd.item" class="thumbnail">
+          <h4>{{ toAdd.title || "Untitled" }}</h4>
+          <label>{{toAdd.kind}}</label>
+          <button class="btn btn-small btn-danger" ng-click="remove()">Remove</button>
+        </div>
       </div>
     </div>
+
+    <p class="text-error" ng-repeat="error in errors">
+      {{ error }}  
+    </p>
     
+    <div ng-show="okToSubmit()" class="footer">
+      <button ng-click="reset()" class="btn" >Cancel</button>
+      <button ng-click="submit()" class="btn btn-primary" >Share</button>
+    </div>
   
-  </div>  -->
+  </div>  
 
   <list-entries entries="entries" view-mode="columns" />
 

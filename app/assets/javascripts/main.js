@@ -51,6 +51,7 @@ require([
   "controllers/addContent/GenericAddForm",
   "controllers/addContent/WebPage",
   "controllers/addContent/Sequence",
+  "controllers/addContent/Share",
   
   "controllers/markdownPage/View",
   "controllers/markdownPage/Edit",

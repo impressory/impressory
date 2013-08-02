@@ -28,8 +28,12 @@ define(["./app"], () ->
       allEntries: (courseId) -> $http.get("/course/#{courseId}/allEntries").then((res) -> res.data.entries)
         
       activity: (courseId) -> $http.get("/course/#{courseId}/activity").then((res) -> res.data)
+      
+      whatIsIt: (code) -> $http.get("/whatIsIt", { params: { code : code } })
         
       viewPath: (entry) -> "/course/#{entry.course}/viewContent?entryId=#{entry.id}"
+      
+      addContent: (courseId, entry) -> $http.post("/course/#{courseId}/addContent", entry )
         
       # Identifies the viewer component to include, depending on the type of content.
       # The returned string is the path to the Angular.js partial template.

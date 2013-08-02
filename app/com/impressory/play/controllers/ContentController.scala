@@ -254,13 +254,23 @@ object ContentController extends Controller {
    * Given a URL or Embed code, works out what kind of content item it is
    */
   def whatIsIt(code:String) = Action { implicit request => 
-    import com.impressory.play.json.ContentEntryToJson
     
-    val res = for (
-        ce <- ContentTypeListing.whatIsIt(code) orIfNone UserError("Sorry, I don't recognise that content");
-        j <- ContentEntryToJson.toJsonForInput(ce)
-    ) yield j
-    res
+    // This prevents the URL from being used to look up itself recursively
+    request match {
+      case Accepts.Json() => {
+        import com.impressory.play.json.ContentEntryToJson
+        
+        val res = for (
+          ce <- ContentTypeListing.whatIsIt(code) orIfNone UserError("Sorry, I don't recognise that content");
+          j <- ContentEntryToJson.toJsonForInput(ce)
+        ) yield j
+        res
+      }
+      case _ => NotAcceptable
+    }
+    
+    
+    
   }
   
 }

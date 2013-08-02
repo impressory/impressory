@@ -84,7 +84,7 @@ object ContentController extends Controller {
       
       // Create a ContentEntry (without its item) from the data
       e <- ContentEntry.unsaved(c.itself, approval.who);
-      updated = ContentModel.update(e, requestBody \ "entry");
+      updated = ContentModel.update(e, requestBody);
       
       // Add an appropriate item
       item <- {

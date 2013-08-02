@@ -18,14 +18,7 @@ object OtherExternalsModel {
   def updateGoogleSlides(gs:GoogleSlides, data:JsValue) = {
     val ec = (data \ "item" \ "embedCode").asOpt[String]
     
-    val presId = for (str <- ec) yield {
-      val codeMatcher = "presentation/d/([^ \"]+)/embed".r
-      
-      codeMatcher.findFirstMatchIn(str) match {
-        case Some(regex) => regex.group(1)
-        case None => str
-      }
-    }
+    val presId = for (str <- ec; id <- extractGoogleSlidesId(str)) yield id
     gs.embedCode = ec
     gs.presId = presId
     gs
@@ -59,15 +52,7 @@ object OtherExternalsModel {
   def updateYouTubeVideo(y:YouTubeVideo, data:JsValue) = {
     val ec = (data \ "item" \ "embedCode").asOpt[String]
     
-    val presId = for (str <- ec) yield {
-      // TODO: Embed code matcher for YouTube
-      val codeMatcher = "presentation/d/([^ \"]+)/embed".r
-      
-      codeMatcher.findFirstMatchIn(str) match {
-        case Some(regex) => regex.group(1)
-        case None => str
-      }
-    }
+    val presId = for (str <- ec; id <- extractYouTubeId(str)) yield id
     y.embedCode = ec
     y.videoId = presId
     y

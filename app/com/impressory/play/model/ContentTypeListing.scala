@@ -9,14 +9,14 @@ import play.api.libs.json.JsValue
  */
 object ContentTypeListing {
   
-  type CodeCheck = (String) => Ref[ContentItem]
+  type CodeCheck = (String) => Ref[ContentEntry]
   
   var checkers:Seq[CodeCheck] = Seq(OtherExternalsModel.youTubeMatcher, OtherExternalsModel.googleSlidesMatcher, WebPageModel.urlMatcher)
   
   def addChecker(c:CodeCheck) { checkers :+= c }
   
   def whatIsIt(url:String) = {
-    checkers.foldLeft[Ref[ContentItem]](RefNone)(_ orIfNone _(url))
+    checkers.foldLeft[Ref[ContentEntry]](RefNone)(_ orIfNone _(url))
   }
 
 }

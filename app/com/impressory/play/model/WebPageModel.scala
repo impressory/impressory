@@ -5,7 +5,7 @@ import com.wbillingsley.handy._
 import Ref._
 import Permissions._
 import play.api.libs.json._
-
+import play.api.libs.ws.WS
 
 /**
  *  
@@ -62,7 +62,11 @@ object WebPageModel {
   def urlMatcher(code:String) = {    
     val isUrl = code.startsWith("http://") || code.startsWith("https://")
     if (isUrl) {
-      new WebPage(url=Some(code)).itself
+      
+      new ContentEntry(
+          site = site(code),
+          item = Some(new WebPage(url=Some(code)))  
+        ).itself
     } else RefNone
   }  
 

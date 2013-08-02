@@ -43,7 +43,11 @@ object OtherExternalsModel {
    */
   def googleSlidesMatcher(code:String) = {
     val presId = extractGoogleSlidesId(code)
-    for (pid <- presId) yield GoogleSlides(embedCode=Some(code), presId=Some(pid))
+    for (pid <- presId) yield {
+      new ContentEntry(
+        item = Some(GoogleSlides(embedCode=Some(code), presId=Some(pid)))
+      )
+    }
   }
   
   
@@ -83,7 +87,11 @@ object OtherExternalsModel {
    */
   def youTubeMatcher(code:String) = {
     val videoId = extractYouTubeId(code)
-    for (vid <- videoId) yield YouTubeVideo(embedCode=Some(code), videoId=Some(vid))    
+    for (vid <- videoId) yield {
+      new ContentEntry(
+        item = Some(YouTubeVideo(embedCode=Some(code), videoId=Some(vid)))
+      )
+    }
   }
 
 }

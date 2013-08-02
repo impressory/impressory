@@ -83,7 +83,7 @@ object ContentController extends Controller {
       };
       
       // Create a ContentEntry (without its item) from the data
-      e <- ContentEntry.unsaved(c.itself, approval.who, kind);
+      e <- ContentEntry.unsaved(c.itself, approval.who);
       updated = ContentModel.update(e, requestBody \ "entry");
       
       // Add an appropriate item
@@ -254,10 +254,12 @@ object ContentController extends Controller {
    * Given a URL or Embed code, works out what kind of content item it is
    */
   def whatIsIt(code:String) = Action { implicit request => 
+    import com.impressory.play.json.ContentEntryToJson
+    
     val res = for (
-        ci <- ContentTypeListing.whatIsIt(code) orIfNone UserError("Sorry, I don't recognise that content");
-        j <- ci.toJson
-    ) yield Json.obj("kind" -> ci.itemType, "item" -> j)
+        ce <- ContentTypeListing.whatIsIt(code) orIfNone UserError("Sorry, I don't recognise that content");
+        j <- ContentEntryToJson.toJsonForInput(ce)
+    ) yield j
     res
   }
   

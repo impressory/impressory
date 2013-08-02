@@ -85,6 +85,28 @@ object ContentEntryToJson {
           "voting" -> voting,
           "comments" -> comments
       )
-    }      
+    }  
+    
+    /**
+     * Cut-down JSON, that would be acceptable being received from the client.
+     * Used by ContentController.whatIsIt
+     */
+    def toJsonForInput(ce:ContentEntry) = {      
+      for (
+        item <- Ref(ce.item);
+        itemj <- item.toJson
+      ) yield {
+        Json.obj(
+          "title" -> ce.title,
+          "note" -> ce.note,
+          "kind" -> Json.toJson(ce.kind),
+          "adjectives" -> ce.adjectives,
+          "nouns" -> ce.nouns,
+          "topics" -> ce.topics,
+          "site" -> ce.site,
+          "item" -> itemj
+        )      
+      }
+    }
 
 }

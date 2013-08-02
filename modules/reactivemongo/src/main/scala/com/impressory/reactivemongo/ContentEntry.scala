@@ -12,11 +12,9 @@ import com.impressory.api.{UserError, CanSendToClient}
 
 class ContentEntry (
     
-  val course: Ref[Course],
+  val course: Ref[Course] = RefNone,
   
-  val addedBy: Ref[User],
-  
-  var kind: Option[String] = None,
+  val addedBy: Ref[User] = RefNone,
   
   var item: Option[ContentItem] = None,
   
@@ -53,6 +51,8 @@ class ContentEntry (
   val _id: BSONObjectID = BSONObjectID.generate
     
 ) extends HasBSONId with CanSendToClient {
+  
+  def kind = item.map(_.itemType)
   
   /**
    * Two entries are equal if they have the same ID
@@ -101,7 +101,6 @@ object ContentEntry extends FindById[ContentEntry] {
         _id = doc.getAs[BSONObjectID]("_id").get,
         course = doc.getRef(classOf[Course], "course"),
         addedBy = doc.getRef(classOf[User], "addedBy"),
-        kind = doc.getAs[String]("kind"),
         item = item,
         adjectives = doc.getAs[Set[String]]("adjs").getOrElse(Set.empty),
         nouns = doc.getAs[Set[String]]("nouns").getOrElse(Set.empty),
@@ -145,8 +144,8 @@ object ContentEntry extends FindById[ContentEntry] {
   }
 
   
-  def unsaved(course: Ref[Course], addedBy: Ref[User], kind:Option[String] = None) = {
-    new ContentEntry(course=course, addedBy=addedBy, kind=kind).itself
+  def unsaved(course: Ref[Course], addedBy: Ref[User]) = {
+    new ContentEntry(course=course, addedBy=addedBy).itself
   }
   
   /**

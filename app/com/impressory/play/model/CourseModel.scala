@@ -33,7 +33,6 @@ object CourseModel {
       page <- MarkdownPageModel.create(course.itself, approval, p1, defaultPageOneText);
       p1saved <- {
         p1.topics = Set("page one")
-        p1.kind = Some(MarkdownPage.itemType)
         p1.item = Some(page)
         ContentEntry.saveNew(p1)
       };

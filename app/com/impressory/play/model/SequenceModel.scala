@@ -17,7 +17,7 @@ object SequenceModel {
   def create(course:Ref[Course], approval:Approval[User], including:Ref[ContentEntry]) = {
     for (
       a <- approval ask AddContent(course);
-      ce <- ContentEntry.unsaved(course, approval.who, kind=Some(ContentSequence.itemType))
+      ce <- ContentEntry.unsaved(course, approval.who)
     ) yield {            
       val s = new ContentSequence
       s._entries = including.getId.toSeq

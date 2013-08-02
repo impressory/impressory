@@ -38,7 +38,7 @@ define(["./app"], () ->
           # Load the last few events
           $http.get("/course/" + courseId + "/chat/lastFew").success((data) -> 
             if data.events?
-              users = (event.addedBy for event in data.events)
+              users = (event.addedBy for event in data.events when event.addedBy?)
               viewingUsers.request(users)
 
               ERData.events = data.events

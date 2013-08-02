@@ -43,6 +43,8 @@ object JsonConverters {
         case mp:MarkdownPage => MarkdownPageModel.toJson(mp).itself
         case p:MultipleChoicePoll => MCPollModel.MCPollToJson.writes(p).itself
         
+        case cc:ChatComment => ChatCommentToJson.toJson(cc).itself
+        
         case _ => RefFailed(new IllegalArgumentException(s"The ${obj.getClass.getName} could not be written out in JSON format"))
       }
     }  
@@ -54,6 +56,8 @@ object JsonConverters {
         case eis:EntryInSequence => EntryInSequenceToJson.toJson(eis)        
         case u:User => UserToJson.toJson(u).itself
         case c:Course => CourseToJson.toJson(c).itself
+        
+        case cc:ChatComment => ChatCommentToJson.toJson(cc).itself
         
         case _ => toJsonFor(Approval(RefNone))
       }
@@ -131,15 +135,5 @@ object JsonConverters {
       }
     }
   }  
-  
-
-  implicit object WritesRecordedChatEvent extends Writes[RecordedChatEvent] {
-    val ChatCommentToJson = Json.writes[ChatComment]
-    
-    def writes(rce:RecordedChatEvent) = rce match {
-      case cc:ChatComment => Json.obj("kind" -> "push", "type" -> "chat") ++ ChatCommentToJson.writes(cc)
-      case _ => Json.obj("error" -> "unrecognised event")
-    }
-  }
   
 }

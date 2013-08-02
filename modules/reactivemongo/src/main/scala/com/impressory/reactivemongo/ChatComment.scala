@@ -8,9 +8,12 @@ import reactivemongo.core.commands.LastError
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.iteratee.Enumeratee
 import com.wbillingsley.handyplay.RefEnumIter
-import com.impressory.api.UserError
+import com.impressory.api.{UserError, CanSendToClient}
 
-trait RecordedChatEvent {
+trait RecordedChatEvent extends CanSendToClient {
+  /**
+   * When we store more than one kind of chat event, this will be needed to determine how to deserialise an event
+   */
   val eventType: String
 }
 

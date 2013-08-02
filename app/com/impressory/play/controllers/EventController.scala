@@ -99,10 +99,10 @@ object EventController extends Controller {
     val comments = for (
       c <- refCourse(courseId);
       approved <- request.approval ask Permissions.Read(c.itself);
-      comment <- ChatComment.lastFew(c.itself)
-    ) yield {
-      Json.toJson(comment)
-    }
+      comment <- ChatComment.lastFew(c.itself);
+      j <- comment.toJson
+    ) yield j
+    
     val en = Enumerator("{ \"events\": [") andThen comments.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
     Ok.stream(en).as("application/json")
   }

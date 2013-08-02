@@ -1,0 +1,11 @@
+
+<div class="chat-form" ng-controller="Impressory.Controllers.EventRoom.ViewEvents">
+  <div class="form form-inline">
+    <div>
+      <textarea ng-model="message.text" name="content" placeholder="Say something"></textarea>
+    </div>
+    <label class="checkbox"><input type="checkbox" ng-model="message.anonymous" value="true" /><i>anonymously</i></label>
+    <button type="button" class="btn-mini require-chat"
+      ng-click="postChatMessage(message)">Chat</button>
+  </div>
+</div>

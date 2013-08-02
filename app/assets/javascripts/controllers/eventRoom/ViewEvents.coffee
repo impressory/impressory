@@ -17,4 +17,20 @@ define(["./base"], (l) ->
     $scope.$on("push", () -> $scope.$apply())
   
   ]
+  
+  Impressory.angularApp.directive("chatViewEvents", () -> 
+    {
+      restrict: 'E'
+      scope: { courseId: '=courseId', viewMode: '@' }
+      templateUrl: "directive_chat_view_events.html"
+    }
+  )
+  
+  Impressory.angularApp.directive("chatForm", () -> 
+    {
+      restrict: 'E'
+      scope: { courseId: '=courseId', viewMode: '@' }
+      templateUrl: "directive_chat_form.html"
+    }
+  )
 )

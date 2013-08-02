@@ -8,20 +8,11 @@
   <div class="sidemargin">
     <p>&nbsp;</p>
   
-    <div class="chat-form" ng-controller="Impressory.Controllers.EventRoom.ViewEvents">
-      <div class="form form-inline">
-        <div>
-          <textarea ng-model="message.text" name="content" placeholder="Say something"></textarea>
-        </div>
-        <label class="checkbox"><input type="checkbox" ng-model="message.anonymous" value="true" /><i>anonymously</i></label>
-        <button type="button" class="btn-mini require-chat"
-          ng-click="postChatMessage(message)">Chat</button>
-      </div>
-    </div>
+  	<chat-form course-id="courseId"></chat-form>
     
     <p>&nbsp;</p>
   
-    @views.html.partials.components.snipViewEvents()
+    <chat-view-events course-id="courseId" ></chat-view-events>
   </div>
 
 </div>

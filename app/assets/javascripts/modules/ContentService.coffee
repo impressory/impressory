@@ -10,14 +10,14 @@ define(["./app"], () ->
         else
           "#{$location.protocol()}://#{$location.host()}:#{$location.port()}/course/#{courseId}/embedContent?entryId=#{entryId}"
     
-      voteDown: (courseId, entryId) ->
-        $http.post("/course/#{courseId}/entry/#{entryId}/voteDown").then((res) ->
-          viewingContent.updateEntryInPlace(res.data)
+      voteDown: (entry) ->
+        $http.post("/course/#{entry.course}/entry/#{entry.id}/voteDown").then((res) ->          
+          angular.copy(res.data, entry)
         )
 
-      voteUp: (courseId, entryId) ->
-        $http.post("/course/#{courseId}/entry/#{entryId}/voteUp").then((res) ->
-          viewingContent.updateEntryInPlace(res.data)
+      voteUp: (entry) ->
+        $http.post("/course/#{entry.course}/entry/#{entry.id}/voteUp").then((res) ->
+          angular.copy(res.data, entry)
         )
         
       addComment: (entry, text) ->  

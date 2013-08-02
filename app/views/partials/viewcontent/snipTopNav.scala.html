@@ -41,15 +41,7 @@
   
       <div id="ceInfo" class="ceInfo">
   
-        <span>
-          <button class="command thin" ng-disabled="!viewing.Content.display.permissions.vote" ng-click="voteDown();" title="downvote">
-            <i class="icon-sort-down"></i>
-          </button> 
-          <span>{{ viewing.Content.display.voting.score || 0 }}</span>
-          <button class="command thin"  ng-disabled="!viewing.Content.display.permissions.vote" ng-click="voteUp();" title="upvote">
-            <i class="icon-sort-up"></i>
-          </button>
-        </span> 
+        <entry-vote entry="viewing.Content.display"></entry-vote> 
         <span class="title">{{ viewing.Content.display.title || '(Untitled)' }}</span>
         <span class="spacer"></span> 
         <span>

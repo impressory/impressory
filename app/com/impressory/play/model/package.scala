@@ -79,16 +79,4 @@ package object model {
   type MCPollResponse = reactivemongo.MCPollResponse
   val MCPollResponse = reactivemongo.MCPollResponse
   
-  
-  implicit object bsonWrites extends Writes[BSONObjectID] {
-    def writes(id:BSONObjectID) = JsString(id.stringify)
-  }
-  
-  implicit def RefBSONWrites[T <: HasBSONId] = new Writes[Ref[T]] {
-    def writes(r:Ref[T]) = {
-      val str = r.getId(HasBSONId.GetsBSONId).map(_.stringify)
-      str.map(JsString(_)).getOrElse(JsNull)
-    }
-  }
-  
 }

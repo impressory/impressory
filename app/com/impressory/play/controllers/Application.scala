@@ -44,6 +44,8 @@ object Application extends Controller {
   
   
   def angularMain(implicit request:Request[_]) = {
+    import com.impressory.play.json.UserToJson._
+    
     for (
         u <- optionally(request.user.toJsonForSelf)
     ) yield {

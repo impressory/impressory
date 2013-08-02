@@ -10,7 +10,9 @@ import play.api.libs.json._
 import com.impressory.api._
 import com.impressory.play.model._
 import ResultConversions._
-import com.impressory.play.json.JsonConverters._
+
+import com.impressory.play.json.UserToJson._
+
 import play.api.libs.iteratee.Enumerator
 
 object UserController extends Controller {

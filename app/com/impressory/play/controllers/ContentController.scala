@@ -50,7 +50,7 @@ object ContentController extends Controller {
       
       // Find whether to display this entry as part of a ContentSequence
       eis <- ContentModel.entryInSequence(e.itself, RefNone);
-      j <- eis.itself.toJsonForAppr(approval)
+      j <- eis.itself.toJsonFor(approval)
     ) yield Ok(j)
       
     result
@@ -110,7 +110,7 @@ object ContentController extends Controller {
       eis <- ContentModel.entryInSequence(saved.itself, RefNone);
       
       // Convert to JSON
-      j <- eis.itself.toJsonForAppr(approval)
+      j <- eis.itself.toJsonFor(approval)
     ) yield Ok(j)    
   }
 
@@ -149,7 +149,7 @@ object ContentController extends Controller {
       saved <- ContentEntry.saveWithItem(updated);
       
       // Convert to JSON
-      j <- saved.itself.toJsonForAppr(approval)
+      j <- saved.toJsonFor(approval)
     ) yield {
       Ok(Json.obj("entry" -> j))
     }
@@ -164,7 +164,7 @@ object ContentController extends Controller {
       approved <- approval ask Permissions.EditContent(e.itself);
       updated = ContentModel.update(e, request.body);
       saved <- ContentEntry.saveExisting(updated);
-      json <- saved.itself.toJsonForAppr(approval)
+      json <- saved.toJsonFor(approval)
     ) yield {
       Ok(Json.obj("course" -> json))
     }
@@ -177,7 +177,7 @@ object ContentController extends Controller {
     val entries = for (
       c <- refCourse(courseId);
       e <- ContentModel.entriesForTopic(c.itself, request.approval, topic);
-      j <- e.itself.toJson
+      j <- e.toJson
     ) yield j
       
     val en = Enumerator("{ \"entries\": [") andThen entries.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
@@ -189,7 +189,7 @@ object ContentController extends Controller {
     val entries = for (
       c <- refCourse(courseId);
       e <- ContentModel.allEntries(c.itself, request.approval);
-      j <- e.itself.toJson
+      j <- e.toJson
     ) yield j
       
     val en = Enumerator("{ \"entries\": [") andThen entries.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
@@ -202,7 +202,7 @@ object ContentController extends Controller {
     val entries = for (
       c <- refCourse(courseId);
       e <- ContentModel.recentEntries(c.itself, approval);
-      j <- e.itself.toJsonForAppr(approval)
+      j <- e.toJsonFor(approval)
     ) yield j
       
     val r = entries.enumerate &> Enumeratee.take(100)
@@ -219,7 +219,7 @@ object ContentController extends Controller {
       entry <- refContentEntry(entryId);
       approved <- approval ask Permissions.VoteOnEntry(entry.itself);
       updated <- ContentEntry.voteUp(entry, approval.who);
-      j <- updated.itself.toJsonForAppr(approval)
+      j <- updated.toJsonFor(approval)
     ) yield j
     res
   }
@@ -233,7 +233,7 @@ object ContentController extends Controller {
       entry <- refContentEntry(entryId);
       approved <- approval ask Permissions.VoteOnEntry(entry.itself);
       updated <- ContentEntry.voteDown(entry, approval.who);
-      j <- updated.itself.toJsonForAppr(approval)
+      j <- updated.toJsonFor(approval)
     ) yield j
     res
   }
@@ -245,7 +245,7 @@ object ContentController extends Controller {
       entry <- refContentEntry(entryId);
       approved <- approval ask Permissions.CommentOnEntry(entry.itself);
       updated <- ContentEntry.addComment(entry, approval.who, text);
-      j <- updated.itself.toJsonForAppr(approval)
+      j <- updated.toJsonFor(approval)
     ) yield j
     res    
   }
@@ -256,7 +256,7 @@ object ContentController extends Controller {
   def whatIsIt(code:String) = Action { implicit request => 
     val res = for (
         ci <- ContentTypeListing.whatIsIt(code) orIfNone UserError("Sorry, I don't recognise that content");
-        j <- JsonConverters.ContentItemToJson.writes(ci)
+        j <- ci.toJson
     ) yield Json.obj("kind" -> ci.itemType, "item" -> j)
     res
   }

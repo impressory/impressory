@@ -7,11 +7,11 @@ import _root_.scala.collection.mutable
 
 import java.net.{URISyntaxException, URI}
 import Permissions._
-
+import com.impressory.api.CanSendToClient
 import play.api.libs.json.JsValue
 
 
-case class EntryInSequence(entry: ContentEntry, index:Option[Int])
+case class EntryInSequence(entry: ContentEntry, index:Option[Int]) extends CanSendToClient
 
 /**
  * Point of entry for making changes to ContentEntries.

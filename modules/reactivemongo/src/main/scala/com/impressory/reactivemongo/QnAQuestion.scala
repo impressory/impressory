@@ -7,7 +7,7 @@ import reactivemongo.bson._
 import reactivemongo.core.commands.LastError
 import play.api.libs.concurrent.Execution.Implicits._
 import com.wbillingsley.handyplay.RefEnumIter
-import com.impressory.api.UserError
+import com.impressory.api.{UserError, CanSendToClient}
 
 /**
  * A votable question in a Q&A forum
@@ -46,7 +46,7 @@ case class QnAQuestion(
   
   val _id:BSONObjectID = BSONObjectID.generate  
 
-) extends HasBSONId {
+) extends HasBSONId with CanSendToClient {
   
   def id = _id
    

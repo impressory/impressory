@@ -7,7 +7,7 @@ import reactivemongo.bson._
 import reactivemongo.core.commands.LastError
 import play.api.libs.concurrent.Execution.Implicits._
 import com.wbillingsley.handyplay.RefEnumIter
-import com.impressory.api.UserError
+import com.impressory.api.{UserError, CanSendToClient}
 
 case class UpDownVoting(
     
@@ -17,7 +17,7 @@ case class UpDownVoting(
   
   score: Int = 0
     
-) {
+) extends CanSendToClient {
   
   def up = new RefManyById(classOf[User], _up.toSeq)
   

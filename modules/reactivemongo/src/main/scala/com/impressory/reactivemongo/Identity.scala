@@ -4,6 +4,7 @@ import com.wbillingsley.handy._
 import reactivemongo.api._
 import reactivemongo.bson._
 import play.api.libs.concurrent.Execution.Implicits._
+import com.impressory.api.CanSendToClient
 
 class Identity(    
   
@@ -19,7 +20,7 @@ class Identity(
   
     val _id:BSONObjectID = BSONObjectID.generate
     
-) extends HasBSONId {
+) extends HasBSONId with CanSendToClient {
   
   def id = _id
 

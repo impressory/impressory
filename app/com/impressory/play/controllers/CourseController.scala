@@ -39,7 +39,7 @@ object CourseController extends Controller {
 
     val courses = for (
         c <- Course.listedCourses;
-        j <- c.itself.toJsonForAppr(request.approval)
+        j <- c.itself.toJsonFor(request.approval)
     ) yield j
     
     val en = Enumerator("{ \"courses\": [") andThen courses.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
@@ -71,7 +71,7 @@ object CourseController extends Controller {
   def get(cid:String) = Angular { Action { implicit request => 
     val r = for (
       c <- refCourse(cid);
-      j <- c.itself.toJsonForAppr(request.approval)
+      j <- c.itself.toJsonFor(request.approval)
     ) yield Ok(j)
     r
   }}
@@ -83,7 +83,7 @@ object CourseController extends Controller {
     val approval = request.approval
     val r = for (
       updated <- CourseModel.updateCourse(refCourse(cid), request.approval, request.body);
-      j <- updated.itself.toJsonForAppr(approval)
+      j <- updated.itself.toJsonFor(approval)
     ) yield j
     r
   }

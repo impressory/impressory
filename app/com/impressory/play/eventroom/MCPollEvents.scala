@@ -59,7 +59,7 @@ object MCPollEvents {
         case Some(mc:MultipleChoicePoll) => {
           import com.impressory.play.json.JsonConverters._
           
-          for (j <- poll.itself.toJson) yield Json.obj(
+          for (j <- poll.toJson) yield Json.obj(
             "kind" -> "push",
             "type" -> MultipleChoicePoll.itemType,
             "created" -> System.currentTimeMillis(),

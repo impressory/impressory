@@ -1,8 +1,9 @@
 package com.impressory.reactivemongo
 
 import reactivemongo.bson.{BSONDocumentWriter, BSONDocument, BSONDocumentReader}
+import com.impressory.api.CanSendToClient
 
-trait ContentItem {
+trait ContentItem extends CanSendToClient {
   val itemType:String
 }
 

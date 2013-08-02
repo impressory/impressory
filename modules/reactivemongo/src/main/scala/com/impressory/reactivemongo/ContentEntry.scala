@@ -7,7 +7,7 @@ import reactivemongo.bson._
 import reactivemongo.core.commands.LastError
 import play.api.libs.concurrent.Execution.Implicits._
 import com.wbillingsley.handyplay.RefEnumIter
-import com.impressory.api.UserError
+import com.impressory.api.{UserError, CanSendToClient}
 
 
 class ContentEntry (
@@ -45,12 +45,14 @@ class ContentEntry (
   val comments:Seq[EmbeddedComment] = Seq.empty,
     
   var updated: Long = System.currentTimeMillis,
+  
+  var published: Option[Long] = None,
 
   val created: Long = System.currentTimeMillis,
 
   val _id: BSONObjectID = BSONObjectID.generate
     
-) extends HasBSONId {
+) extends HasBSONId with CanSendToClient {
   
   /**
    * Two entries are equal if they have the same ID
@@ -76,7 +78,7 @@ object ContentEntry extends FindById[ContentEntry] {
       "adjs" -> ce.adjectives, "nouns" -> ce.nouns, "topics" -> ce.topics,
       "site" -> ce.site, "title" -> ce.title, "note" -> ce.note, 
       "showFirst" -> ce.showFirst, "protect" -> ce.protect, "inTrash" -> ce.inTrash,
-      "updated" -> ce.updated, "created" -> ce.created
+      "published" -> ce.published, "updated" -> ce.updated, "created" -> ce.created
     )
   }
   
@@ -113,6 +115,7 @@ object ContentEntry extends FindById[ContentEntry] {
         comments = doc.getAs[Seq[EmbeddedComment]]("comments").getOrElse(Seq.empty),
         inTrash = doc.getAs[Boolean]("inTrash").getOrElse(false),
         showFirst = doc.getAs[Boolean]("showFirst").getOrElse(false),
+        published = doc.getAs[Long]("created"),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
       )

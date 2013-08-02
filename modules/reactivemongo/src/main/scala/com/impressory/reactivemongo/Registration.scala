@@ -19,7 +19,7 @@ class Registration(
 
   val _id: BSONObjectID = BSONObjectID.generate
   
-) extends HasBSONId {
+) extends HasBSONId with CanSendToClient {
 
   def id = _id
   

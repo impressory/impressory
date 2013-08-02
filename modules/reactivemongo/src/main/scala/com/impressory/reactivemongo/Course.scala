@@ -6,9 +6,7 @@ import reactivemongo.api._
 import reactivemongo.bson._
 import play.api.libs.concurrent.Execution.Implicits._
 import reactivemongo.core.commands.LastError
-import com.impressory.api.CourseChatPolicy
-import com.impressory.api.CourseSignupPolicy
-import com.impressory.api.UserError
+import com.impressory.api.{CourseChatPolicy, CourseSignupPolicy, UserError, CanSendToClient}
 import com.wbillingsley.handyplay.RefEnumIter
 import com.wbillingsley.encrypt.Encrypt
 
@@ -55,7 +53,7 @@ class Course (
   
   val _id:BSONObjectID = BSONObjectID.generate
   
-) extends HasBSONId {
+) extends HasBSONId with CanSendToClient {
   
   def id = _id
   

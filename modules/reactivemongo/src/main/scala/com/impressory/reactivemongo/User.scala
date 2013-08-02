@@ -38,7 +38,7 @@ class User(
 
   val created: Long = System.currentTimeMillis,
 
-  val _id: BSONObjectID = BSONObjectID.generate) extends HasBSONId {
+  val _id: BSONObjectID = BSONObjectID.generate) extends HasBSONId with CanSendToClient {
 
   /**
    * Two users are equal if they have the same ID

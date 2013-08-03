@@ -14,23 +14,39 @@ define(["./base"], (l) ->
     $scope.toAdd = ""    
     
     $scope.addAdj = (adj) -> 
-      if (adj and not (adj in $scope.entry.adjectives)) then $scope.entry.adjectives.push(adj)
+      if (adj and not (adj in $scope.entry.tags.adjectives)) then $scope.entry.tags.adjectives.push(adj)
       $scope.toAdd = ""
 
     $scope.addNoun = (noun) -> 
-      if (noun and not (noun in $scope.entry.nouns)) then $scope.entry.nouns.push(noun)
+      if (noun and not (noun in $scope.entry.tags.nouns)) then $scope.entry.tags.nouns.push(noun)
       $scope.toAdd = ""
 
     $scope.addTopic = (topic) -> 
-      if (topic and not (topic in $scope.entry.topics)) then $scope.entry.topics.push(topic)
+      if (topic and not (topic in $scope.entry.tags.topics)) then $scope.entry.tags.topics.push(topic)
       $scope.toAdd = ""
 
-    $scope.deleteAdj = (a) -> $scope.entry.adjectives = $scope.entry.adjectives.filter((adj) -> adj != a)
+    $scope.deleteAdj = (a) -> $scope.entry.tags.adjectives = $scope.entry.tags.adjectives.filter((adj) -> adj != a)
 
-    $scope.deleteNoun = (n) ->  $scope.entry.nouns = $scope.entry.nouns.filter((noun) -> noun != n)
+    $scope.deleteNoun = (n) ->  $scope.entry.tags.nouns = $scope.entry.tags.nouns.filter((noun) -> noun != n)
 
-    $scope.deleteTopic = (t) ->  $scope.entry.topics = $scope.entry.topics.filter((top) -> top != t)
+    $scope.deleteTopic = (t) ->  $scope.entry.tags.topics = $scope.entry.tags.topics.filter((top) -> top != t)
     
   ]
+  
+  
+  Impressory.angularApp.directive("ceShowTags", () -> 
+    {
+      restrict: 'E'
+      scope: { entry: '=entry', viewMode: '@' }
+      templateUrl: "directive_ce_show_tags.html"
+    }
+  )  
 
+  Impressory.angularApp.directive("ceEditTags", () -> 
+    {
+      restrict: 'E'
+      scope: { entry: '=entry', viewMode: '@' }
+      templateUrl: "directive_ce_edit_tags.html"
+    }
+  )  
 )

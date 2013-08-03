@@ -11,7 +11,7 @@ object OtherExternalsModel {
   implicit val YouTubeVideoToJson = Json.format[YouTubeVideo]
   
   def createGoogleSlides(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
-    ce.site = "google.com"
+    ce.tags.site = Some("google.com")
     updateGoogleSlides(new GoogleSlides(), data)
   } 
   
@@ -45,7 +45,7 @@ object OtherExternalsModel {
   
   
   def createYouTubeVideo(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
-    ce.site = "google.com"
+    ce.tags.site = Some("google.com")
     updateYouTubeVideo(new YouTubeVideo(), data)
   } 
   

@@ -2,10 +2,10 @@
 
 <div ng-controller="Impressory.Controllers.Components.EditTags" class="component-edit-tags">
   <div class="tags">
-    <span class="adj" ng-repeat="adj in entry.adjectives">{{ adj }}<button ng-show="entry.permissions.edit" ng-click="deleteAdj(adj)" class="delete">&times;</button></span>
-    <span class="noun" ng-repeat="noun in entry.nouns">{{ noun }}<button ng-show="entry.permissions.edit" ng-click="deleteNoun(noun)" class="delete">&times;</button></span>
+    <span class="adj" ng-repeat="adj in entry.tags.adjectives">{{ adj }}<button ng-show="entry.permissions.edit" ng-click="deleteAdj(adj)" class="delete">&times;</button></span>
+    <span class="noun" ng-repeat="noun in entry.tags.nouns">{{ noun }}<button ng-show="entry.permissions.edit" ng-click="deleteNoun(noun)" class="delete">&times;</button></span>
     <span class="preposition">about</span>
-    <span class="topic" ng-repeat="topic in entry.topics">{{ topic }}<button ng-show="entry.permissions.edit" ng-click="deleteTopic(topic)" class="delete">&times;</button></span>
+    <span class="topic" ng-repeat="topic in entry.tags.topics">{{ topic }}<button ng-show="entry.permissions.edit" ng-click="deleteTopic(topic)" class="delete">&times;</button></span>
   </div>
   <div ng-show="entry.permissions.edit" >
     <div >

@@ -43,7 +43,7 @@ object MCPollModel {
    * Creates but does not save a ContentSequence, wrapped in a ContentEntry
    */
   def create(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
-    ce.site = "local"
+    ce.tags.site = None
     RefItself(new MultipleChoicePoll(Some(defaultText)))
   } 
   

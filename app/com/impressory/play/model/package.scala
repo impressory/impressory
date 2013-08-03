@@ -37,6 +37,11 @@ package object model {
 
   type ContentEntry = reactivemongo.ContentEntry
   val ContentEntry = reactivemongo.ContentEntry
+  type CESettings = reactivemongo.CESettings
+  val CESettings = reactivemongo.CESettings
+  type CETags = reactivemongo.CETags
+  val CETags = reactivemongo.CETags
+
   def refContentEntry(id:String) = new LazyId(classOf[ContentEntry], id)
   
   type ContentItem = reactivemongo.ContentItem

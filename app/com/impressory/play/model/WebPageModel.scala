@@ -17,7 +17,7 @@ object WebPageModel {
       "noFrame" -> wp.noFrame
   )
   
-  def site(url: String) = {
+  def site(url: String):Option[String] = {
     import java.net.{ URI, URISyntaxException }
 
     try {
@@ -25,14 +25,14 @@ object WebPageModel {
       if (uri.isAbsolute) {
         val host = uri.getHost
         if (host.startsWith("www.")) {
-          host.substring(4)
-        } else host
+          Some(host.substring(4))
+        } else Some(host)
       } else {
-        "local"
+        None
       }
     } catch {
       case ex: URISyntaxException =>
-        "(malformed url)"
+        Some("(malformed url)")
     }
   }
   
@@ -40,7 +40,7 @@ object WebPageModel {
     ce.item match {
       case Some(wp:WebPage) => {
         wp.url = (data \ "item" \ "url").asOpt[String]
-        ce.site = wp.url map { s => site(s) } getOrElse("(none)")
+        ce.tags.site = wp.url flatMap { s => site(s) } 
       } 
       case _ => { /* ignore */ }
     }
@@ -52,7 +52,7 @@ object WebPageModel {
    */
   def create(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
     val url = (data \ "item" \ "url").asOpt[String]
-    ce.site = url map { s => site(s) } getOrElse("(none)")
+    ce.tags.site = url flatMap { s => site(s) } 
     WebPage.unsaved(course, ce.itself, url)
   }  
 
@@ -74,7 +74,7 @@ object WebPageModel {
       ) yield {
         new ContentEntry(
           title = title,
-          site = site(code),
+          tags = CETags(site=site(code)),
           item = Some(new WebPage(url=Some(code)))  
         )
       }

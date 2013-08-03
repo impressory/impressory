@@ -119,7 +119,7 @@ object Permissions {
   case class EditContent(entry:Ref[ContentEntry]) extends PermOnIdRef[User, ContentEntry](entry) {
     def resolve(prior:Approval[User]) = {
       entry flatMap { e =>
-        if (e.protect) {
+        if (e.settings.protect) {
           hasRole(e.course, prior.who, CourseRole.Moderator)
         } else {
           hasRole(e.course, prior.who, CourseRole.Author)

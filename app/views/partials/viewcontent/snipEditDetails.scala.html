@@ -34,16 +34,16 @@
           <div class="control-group">
               <label class="control-label">Tags</label>
               <div class="controls">
-                @views.html.partials.components.snipEditTags()
+                <ce-edit-tags entry="entry"></ce-edit-tags>
               </div>
           </div>
           <div class="control-group">
             <label class="control-label">Flags</label>
             <div class="controls">
               <div class="flags">
-                <label class="checkbox"><input type="checkbox" ng-model="entry.inTrash" class="in-trash" ng-disabled="!viewing.Content.display.permissions.edit" /> In trash</label>
-                <label class="checkbox"><input type="checkbox" ng-model="entry.showFirst" class="show-first" ng-disabled="!viewing.Content.display.permissions.edit" /> Show first</label>
-                <label class="checkbox"><input type="checkbox" ng-model="entry.protect" class="protect" ng-disabled="!viewing.Content.display.permissions.edit" /> Protect</label>
+                <label class="checkbox"><input type="checkbox" ng-model="entry.settings.inTrash" class="in-trash" ng-disabled="!viewing.Content.display.permissions.edit" /> In trash</label>
+                <label class="checkbox"><input type="checkbox" ng-model="entry.settings.showFirst" class="show-first" ng-disabled="!viewing.Content.display.permissions.edit" /> Show first</label>
+                <label class="checkbox"><input type="checkbox" ng-model="entry.settings.protect" class="protect" ng-disabled="!viewing.Content.display.permissions.edit" /> Protect</label>
               </div>
             </div>          
           </div>

@@ -6,9 +6,11 @@ define(["./base"], (l) ->
   
     $scope.toAdd = { 
       entry: {
-        adjectives: []
-        nouns: []
-        topics: Impressory.Model.Viewing.Content.display?.topics || [ "nothing" ]
+        tags: {
+          adjectives: []
+          nouns: []
+          topics: Impressory.Model.Viewing.Content.display?.tags.topics || [ "nothing" ]
+        }
         item: {}
       }      
     }

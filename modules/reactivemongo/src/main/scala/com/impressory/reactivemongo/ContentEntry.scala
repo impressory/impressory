@@ -10,6 +10,28 @@ import com.wbillingsley.handyplay.RefEnumIter
 import com.impressory.api.{UserError, CanSendToClient}
 
 
+case class CESettings(
+  var showFirst: Boolean = false,
+  
+  var protect: Boolean = false,
+  
+  var inTrash: Boolean = false,
+  
+  var inNews: Boolean = true,
+  
+  var inIndex: Boolean = true
+)
+
+case class CETags(
+  var adjectives: Set[String] = Set.empty,
+  
+  var nouns: Set[String] = Set.empty,
+  
+  var topics: Set[String] = Set.empty,
+  
+  var site: Option[String] = None    
+)
+
 class ContentEntry (
     
   val course: Ref[Course] = RefNone,
@@ -18,23 +40,13 @@ class ContentEntry (
   
   var item: Option[ContentItem] = None,
   
-  var adjectives: Set[String] = Set.empty,
-  
-  var nouns: Set[String] = Set.empty,
-  
-  var topics: Set[String] = Set.empty,
-  
-  var site:String = "local",
+  var tags: CETags = CETags(),
   
   var title:Option[String] = None,
   
   var note:Option[String] = None,
   
-  var showFirst: Boolean = false,
-  
-  var protect: Boolean = false,
-  
-  var inTrash: Boolean = false,
+  var settings: CESettings = CESettings(),
   
   val voting: UpDownVoting = new UpDownVoting,
   
@@ -70,14 +82,18 @@ object ContentEntry extends FindById[ContentEntry] {
   
   val collName = "contentEntry"
     
+  implicit val CETagsFormat = Macros.handler[CETags]
+  
+  implicit val CESettingsFormat = Macros.handler[CESettings]
+  
   /* Note that when we write a content entry we do not write the votes or comments */
   implicit object bsonWriter extends BSONDocumentWriter[ContentEntry] {
     def write(ce: ContentEntry) = BSONDocument(
       "course" -> ce.course, "addedBy" -> ce.addedBy,
       "kind" -> ce.kind,
-      "adjs" -> ce.adjectives, "nouns" -> ce.nouns, "topics" -> ce.topics,
-      "site" -> ce.site, "title" -> ce.title, "note" -> ce.note, 
-      "showFirst" -> ce.showFirst, "protect" -> ce.protect, "inTrash" -> ce.inTrash,
+      "tags" -> ce.tags,
+      "title" -> ce.title, "note" -> ce.note, 
+      "settings" -> ce.settings,
       "published" -> ce.published, "updated" -> ce.updated, "created" -> ce.created
     )
   }
@@ -102,18 +118,13 @@ object ContentEntry extends FindById[ContentEntry] {
         course = doc.getRef(classOf[Course], "course"),
         addedBy = doc.getRef(classOf[User], "addedBy"),
         item = item,
-        adjectives = doc.getAs[Set[String]]("adjs").getOrElse(Set.empty),
-        nouns = doc.getAs[Set[String]]("nouns").getOrElse(Set.empty),
-        topics = doc.getAs[Set[String]]("topics").getOrElse(Set.empty),
-        site = doc.getAs[String]("site").getOrElse("local"),
+        tags = doc.getAs[CETags]("tags").getOrElse(CETags()),
         title = doc.getAs[String]("title"),
         note = doc.getAs[String]("note"),
-        protect = doc.getAs[Boolean]("protect").getOrElse(false),
+        settings = doc.getAs[CESettings]("settings").getOrElse(CESettings()),
         voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting),
         commentCount = doc.getAs[Int]("commentCount").getOrElse(0),
         comments = doc.getAs[Seq[EmbeddedComment]]("comments").getOrElse(Seq.empty),
-        inTrash = doc.getAs[Boolean]("inTrash").getOrElse(false),
-        showFirst = doc.getAs[Boolean]("showFirst").getOrElse(false),
         published = doc.getAs[Long]("created"),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
@@ -125,7 +136,7 @@ object ContentEntry extends FindById[ContentEntry] {
   def byTopic(course:Ref[Course], topic:String):RefMany[ContentEntry] = {
     println("topic is " + topic)
     
-    val query = BSONDocument("course" -> course, "topics" -> topic)
+    val query = BSONDocument("course" -> course, "tags.topics" -> topic)
     val coll = DB.coll(collName)
     val cursor = coll.find(query).cursor[ContentEntry]
     val rei = new RefEnumIter(cursor.enumerateBulks)

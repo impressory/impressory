@@ -53,14 +53,14 @@
         <span class="spacer"></span> 
         <span class="tags"> 
           <span class="adjs">
-            <span ng-repeat="adj in viewing.Content.display.adjectives" class="adj">{{ adj }}</span> 
+            <span ng-repeat="adj in viewing.Content.display.tags.adjectives" class="adj">{{ adj }}</span> 
           </span> 
           <span class="nouns">
-            <span ng-repeat="noun in viewing.Content.display.nouns" class="noun">{{ noun }}</span>           
+            <span ng-repeat="noun in viewing.Content.display.tags.nouns" class="noun">{{ noun }}</span>           
           </span> 
           <span class="preposition">about</span> 
           <span class="topics"> 
-            <button ng-repeat="topic in viewing.Content.display.topics" ng-class="{ 'active': (panels.top == 'contentForTopic') && (searchTopic == topic) }" ng-click="panels.toggleContentForTopic(topic)" class="topic command">{{ topic }}</button> 
+            <button ng-repeat="topic in viewing.Content.display.tags.topics" ng-class="{ 'active': (panels.top == 'contentForTopic') && (searchTopic == topic) }" ng-click="panels.toggleContentForTopic(topic)" class="topic command">{{ topic }}</button> 
           </span>
         </span>
   

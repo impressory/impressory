@@ -32,7 +32,7 @@ object CourseModel {
       p1 <- ContentEntry.unsaved(saved.itself, approval.who);
       page <- MarkdownPageModel.create(course.itself, approval, p1, defaultPageOneText);
       p1saved <- {
-        p1.topics = Set("page one")
+        p1.tags.topics = Set("page one")
         p1.item = Some(page)
         ContentEntry.saveNew(p1)
       };

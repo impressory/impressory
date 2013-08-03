@@ -9,12 +9,7 @@
         <span class="badge badge-error" ng-show="entry.protect"><i class="icon-key"></i></span>
       </div>
       <div class="span2">
-        <div class="tags">
-          <span class="adjs"><span class="adj" ng-repeat="adj in entry.adjectives"> {{ adj }}</span></span>
-          <span class="nouns"><span class="noun" ng-repeat="noun in entry.nouns"> {{ noun }}</span></span>
-          <span class="preposition">about</span>
-          <span class="topics"><span class="topic" ng-repeat="topic in entry.topics"> {{ topic }}</span></span>
-        </div>
+        <ce-show-tags entry="entry"></ce-show-tags>
       </div>
       <div class="span5">
         <div class="title"><a ng-href="viewContent?entryId={{entry.id}}">{{ entry.title || 'Untitled' }}</a></div>

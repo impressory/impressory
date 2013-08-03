@@ -10,6 +10,10 @@ import JsonConverters._
 
 object ContentEntryToJson {
   
+  implicit val settingsFormat = Json.format[CESettings]
+  
+  implicit val tagsFormat = Json.format[CETags]
+  
     /**
      * Basic core JSON other methods add to
      */
@@ -18,18 +22,13 @@ object ContentEntryToJson {
       Json.obj(
         "id" -> ce.id.stringify,
         "course" -> ce.course,
-        "protect" -> ce.protect,
-        "showFirst" -> ce.showFirst,
-        "inTrash" -> ce.inTrash,
+        "settings" -> ce.settings,
         "voting" -> UpDownVotingToJson.toJson(ce.voting),
         "commentCount" -> ce.commentCount,
         "title" -> ce.title,
         "note" -> ce.note,
         "kind" -> Json.toJson(ce.kind),
-        "adjectives" -> ce.adjectives,
-        "nouns" -> ce.nouns,
-        "topics" -> ce.topics,
-        "site" -> ce.site,
+        "tags" -> ce.tags,
         "updated" -> ce.updated,
         "created" -> ce.created,
         "addedBy" -> ce.addedBy
@@ -100,10 +99,7 @@ object ContentEntryToJson {
           "title" -> ce.title,
           "note" -> ce.note,
           "kind" -> Json.toJson(ce.kind),
-          "adjectives" -> ce.adjectives,
-          "nouns" -> ce.nouns,
-          "topics" -> ce.topics,
-          "site" -> ce.site,
+          "tags" -> ce.tags,
           "item" -> itemj
         )      
       }

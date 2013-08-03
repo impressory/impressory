@@ -22,14 +22,12 @@ object ContentModel {
   
   def update(ce:ContentEntry, jsVal: JsValue) = {
     
+    import com.impressory.play.json.ContentEntryToJson._
+    
     ce.title = (jsVal \ "title").asOpt[String]
     ce.note = (jsVal \ "note").asOpt[String]
-    ce.adjectives = (jsVal \ "adjectives").asOpt[Set[String]].getOrElse(Set.empty)
-    ce.nouns = (jsVal \ "nouns").asOpt[Set[String]].getOrElse(Set.empty)
-    ce.topics = (jsVal \ "topics").asOpt[Set[String]].getOrElse(Set.empty)
-    ce.inTrash = (jsVal \ "inTrash").asOpt[Boolean].getOrElse(false)
-    ce.protect = (jsVal \ "protect").asOpt[Boolean].getOrElse(false)
-    ce.showFirst = (jsVal \ "showFirst").asOpt[Boolean].getOrElse(false)
+    ce.tags = (jsVal \ "tags").asOpt[CETags].getOrElse(CETags())
+    ce.settings = (jsVal \ "settings").asOpt[CESettings].getOrElse(CESettings())
     ce
   }      
   
@@ -40,9 +38,9 @@ object ContentModel {
     var v = true
     for ((key, value) <- filters) {
       key match {
-        case "noun" => v &&= p.nouns.contains(value)
-        case "adjective" => v &&= p.adjectives.contains(value)
-        case "site" => v &&= (value == p.site)
+        case "noun" => v &&= p.tags.nouns.contains(value)
+        case "adjective" => v &&= p.tags.adjectives.contains(value)
+        case "site" => v &&= (value == p.tags.site)
         case _ => true
       }
     }
@@ -57,7 +55,7 @@ object ContentModel {
       
       (for (fav <- optFav) yield {
         if (
-          (!fav.showFirst && entry.showFirst)
+          (!fav.settings.showFirst && entry.settings.showFirst)
         ) entry else fav
       }) orElse Some(entry)
       

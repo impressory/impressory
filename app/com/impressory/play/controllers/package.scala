@@ -19,6 +19,11 @@ package object controllers {
      * An Approval token for the logged in user (which may be none).
      */
     def approval = RequestUtils.approval(request.session)
+    
+    /**
+     * The sessionKey in the cookie
+     */
+    def sessionKey = RequestUtils.sessionKey(request.session)
   }  
 
 }

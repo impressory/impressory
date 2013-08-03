@@ -90,6 +90,9 @@ POST    /course/:courseId/entry/:entryId/addComment         com.impressory.play.
 
 GET     /whatIsIt                                           com.impressory.play.controllers.ContentController.whatIsIt(code)
 
+# Stats
+POST	/pageView                   com.impressory.play.controllers.ViewLogController.addView
+
 # Multiple Choice Poll
 POST    /course/:courseId/entry/:entryId/mcPollVote com.impressory.play.controllers.PollController.vote(courseId:String, entryId:String)
 POST    /course/:courseId/entry/:entryId/pushMCPoll com.impressory.play.controllers.PollController.pushMCPollToStream(courseId:String, entryId:String)

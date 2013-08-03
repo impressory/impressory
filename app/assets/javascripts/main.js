@@ -7,6 +7,9 @@ require([
          
   "model/base",
   "modules/app",
+
+  "controllers/analytics/base",
+  "controllers/analytics/ViewAnalytics",
   
   "controllers/login/IsLoggedIn",
   "controllers/login/LogInForm",

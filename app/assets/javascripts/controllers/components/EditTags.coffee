@@ -9,8 +9,6 @@ define(["./base"], (l) ->
 
   Impressory.Controllers.Components.EditTags = ["$scope", "$http", ($scope) ->
     
-    console.log($scope.entry)
-    
     $scope.toAdd = ""    
     
     $scope.addAdj = (adj) -> 

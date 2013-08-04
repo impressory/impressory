@@ -34,6 +34,24 @@ define(["./app"], () ->
       viewPath: (entry) -> "/course/#{entry.course}/viewContent?entryId=#{entry.id}"
       
       addContent: (courseId, entry) -> $http.post("/course/#{courseId}/addContent", entry )
+
+      # Asks the server to update a content entry's item      
+      editItem: (entry) -> $http.post("/course/#{entry.course}/entry/#{entry.id}/editItem", entry).then(
+        (res) ->
+          entry = res.data 
+          viewingContent.updateEntryInPlace(entry)
+          entry 
+        (res) -> res.data
+      )
+      
+      # Asks the server to update a content entry's tags, settings, and metadata      
+      editTags: (entry) -> $http.post("/course/#{entry.course}/entry/#{entry.id}/editTags", entry).then(
+        (res) -> 
+          entry = res.data 
+          viewingContent.updateEntryInPlace(entry)
+          entry 
+        (res) -> res.data
+      )
         
       # Identifies the viewer component to include, depending on the type of content.
       # The returned string is the path to the Angular.js partial template.

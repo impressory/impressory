@@ -5,7 +5,7 @@
 
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.ViewContent.EditDetails = ["$scope", "$http", "ContentService", ($scope, $http, ContentService) ->
+  Impressory.Controllers.ViewContent.EditDetails = ["$scope", "ContentService", ($scope, ContentService) ->
     
     $scope.entry = angular.copy(Impressory.Model.Viewing.Content.display)
         
@@ -19,18 +19,13 @@ define(["./base"], (l) ->
     
       $scope.errors = []
        
-      $http.post("/course/" + $scope.entry.course + "/entry/" + $scope.entry.id + "/editTags", $scope.entry).success((data) ->
-         if (data.error?)
-           $scope.errors = [ data.error ]
-         else if (data.course?)
-           # Update the entry in memory to match the returned data
-           angular.copy(data.course, Impressory.Model.Viewing.Content.display)
-           $scope.panels.toggleEditDetails()
-      ).error((data) -> 
-         console.log(data)
-         $scope.errors = [ data.error || "Unexpected error " ]
+      ContentService.editTags($scope.entry).then(
+        (entry) -> 
+          $scope.panels.toggleEditDetails()
+        (data) ->
+          console.log(data)
+          $scope.errors = [ data.error || "Unexpected error" ]
       )
-
   ]
 
 )

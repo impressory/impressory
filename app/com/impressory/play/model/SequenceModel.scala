@@ -22,6 +22,7 @@ object SequenceModel {
       val s = new ContentSequence
       s._entries = including.getId.toSeq
       ce.item = Some(s)
+      ce.setPublished(true)
       ce
     }
   }
@@ -32,7 +33,7 @@ object SequenceModel {
   def create(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
     val including = Ref.fromOptionId(classOf[ContentEntry], (data \ "item" \ "including").asOpt[String]) 
     
-    println(s"Including is $including")
+    ce.setPublished(true)
     
     val s = new ContentSequence
     s._entries = including.getId.toSeq

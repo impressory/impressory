@@ -29,6 +29,7 @@ object ContentEntryToJson {
         "note" -> ce.note,
         "kind" -> Json.toJson(ce.kind),
         "tags" -> ce.tags,
+        "published" -> ce.published,
         "updated" -> ce.updated,
         "created" -> ce.created,
         "addedBy" -> ce.addedBy

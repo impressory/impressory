@@ -66,6 +66,14 @@ class ContentEntry (
   
   def kind = item.map(_.itemType)
   
+  def setPublished(p:Boolean) {
+    if (p) {
+      published = published orElse Some(System.currentTimeMillis())
+    } else {
+      published = None
+    }
+  }
+  
   /**
    * Two entries are equal if they have the same ID
    */
@@ -136,21 +144,24 @@ object ContentEntry extends FindById[ContentEntry] {
   def byTopic(course:Ref[Course], topic:String):RefMany[ContentEntry] = {
     println("topic is " + topic)
     
-    val query = BSONDocument("course" -> course, "tags.topics" -> topic)
+    val query = BSONDocument("course" -> course, "tags.topics" -> topic, "settings.inIndex" -> true, "published" -> BSONDocument("$exists" -> true))
     val coll = DB.coll(collName)
     val cursor = coll.find(query).cursor[ContentEntry]
     val rei = new RefEnumIter(cursor.enumerateBulks)
     rei
   }
   
-  def byCourse(course:Ref[Course]):RefMany[ContentEntry] = {
-    val query = BSONDocument("course" -> course)
+  def inIndexByCourse(course:Ref[Course]):RefMany[ContentEntry] = {
+    val query = BSONDocument("course" -> course, "settings.inIndex" -> true, "published" -> BSONDocument("$exists" -> true))
     coll.find(query).cursor[ContentEntry].refMany
   }
 
-  def recentByCourse(course:Ref[Course]):RefMany[ContentEntry] = {
-    val query = BSONDocument("course" -> course)
-    val sort = BSONDocument("created" -> 1)
+  /**
+   * Recently published entries that are listed as being in the news feed
+   */
+  def recentInNewsByCourse(course:Ref[Course]):RefMany[ContentEntry] = {
+    val query = BSONDocument("course" -> course, "settings.inNews" -> true, "published" -> BSONDocument("$exists" -> true))
+    val sort = BSONDocument("published" -> 1)
     coll.find(query).sort(sort).cursor[ContentEntry].refMany
   }
 

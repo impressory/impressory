@@ -40,7 +40,8 @@ object WebPageModel {
     ce.item match {
       case Some(wp:WebPage) => {
         wp.url = (data \ "item" \ "url").asOpt[String]
-        ce.tags.site = wp.url flatMap { s => site(s) } 
+        ce.tags.site = wp.url flatMap { s => site(s) }
+        ce.setPublished(true)
       } 
       case _ => { /* ignore */ }
     }
@@ -53,6 +54,7 @@ object WebPageModel {
   def create(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
     val url = (data \ "item" \ "url").asOpt[String]
     ce.tags.site = url flatMap { s => site(s) } 
+    ce.setPublished(true)
     WebPage.unsaved(course, ce.itself, url)
   }  
 

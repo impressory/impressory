@@ -28,6 +28,8 @@ object ContentModel {
     ce.note = (jsVal \ "note").asOpt[String]
     ce.tags = (jsVal \ "tags").asOpt[CETags].getOrElse(CETags())
     ce.settings = (jsVal \ "settings").asOpt[CESettings].getOrElse(CESettings())
+    
+    for (p <- (jsVal \ "setPublished").asOpt[Boolean]) { ce.setPublished(p) }
     ce
   }      
   
@@ -89,14 +91,14 @@ object ContentModel {
   
   def allEntries(course:Ref[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
     (for (approved <- tok ask Read(course)) yield {
-      val all = ContentEntry.byCourse(course)
+      val all = ContentEntry.inIndexByCourse(course)
       all
     }).flatten 
   }
 
   def recentEntries(course:Ref[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
     (for (approved <- tok ask Read(course)) yield {
-      val all = ContentEntry.recentByCourse(course)
+      val all = ContentEntry.recentInNewsByCourse(course)
       all
     }).flatten 
   }  

@@ -16,6 +16,7 @@ object MarkdownPageModel {
     
   def create(course: Ref[Course], approval: Approval[User], ce: ContentEntry, text: String = defaultText) = {
     ce.tags.site = None
+    ce.setPublished(false)
     RefItself(new MarkdownPage(text))
   }
 

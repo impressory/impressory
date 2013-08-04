@@ -12,6 +12,7 @@ object OtherExternalsModel {
   
   def createGoogleSlides(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
     ce.tags.site = Some("google.com")
+    ce.setPublished(true)    
     updateGoogleSlides(new GoogleSlides(), data)
   } 
   
@@ -46,6 +47,7 @@ object OtherExternalsModel {
   
   def createYouTubeVideo(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
     ce.tags.site = Some("google.com")
+    ce.setPublished(true)    
     updateYouTubeVideo(new YouTubeVideo(), data)
   } 
   

@@ -133,7 +133,7 @@ object ContentEntry extends FindById[ContentEntry] {
         voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting),
         commentCount = doc.getAs[Int]("commentCount").getOrElse(0),
         comments = doc.getAs[Seq[EmbeddedComment]]("comments").getOrElse(Seq.empty),
-        published = doc.getAs[Long]("created"),
+        published = doc.getAs[Long]("published"),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
       )

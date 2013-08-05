@@ -1,20 +1,15 @@
 package com.impressory.play.json
 
 import com.impressory.play.model._
-
 import com.wbillingsley.handy._
 import play.api.libs.json._
 import com.wbillingsley.handy.Ref._
 import play.api.libs.iteratee.Enumerator
 import com.impressory.api.CanSendToClient
-import com.impressory.play.model.EntryInSequence
-import com.impressory.play.model.MCPollModel
-import com.impressory.play.model.MarkdownPageModel
-import com.impressory.play.model.OtherExternalsModel
-import com.impressory.play.model.WebPageModel
 import com.wbillingsley.handy.Approval.wrapApproval
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import com.impressory.play.eventroom.ContentEvents
 
 object JsonConverters {
     
@@ -44,6 +39,8 @@ object JsonConverters {
         case p:MultipleChoicePoll => MCPollModel.MCPollToJson.writes(p).itself
         
         case cc:ChatComment => ChatCommentToJson.toJson(cc).itself
+        case cp:ContentEvents.ContentPublished => ContentEventsToJson.contentPublishedToJson(cp)
+        case cp:ContentEvents.ContentEdited => ContentEventsToJson.contentEditedToJson(cp)
         
         case _ => RefFailed(new IllegalArgumentException(s"The ${obj.getClass.getName} could not be written out in JSON format"))
       }

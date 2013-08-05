@@ -13,6 +13,7 @@ import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.Enumeratee
 import com.impressory.play.json.JsonConverters
 import JsonConverters._
+import com.impressory.play.eventroom.{ EventRoom, ChatEvents, ContentEvents } 
 
 object ContentController extends Controller {
   
@@ -102,7 +103,7 @@ object ContentController extends Controller {
       
       // Set the item, and save
       saved <- {
-        updated.item = Some(item)
+        updated.item = Some(item)        
         ContentEntry.saveNew(updated)
       };
       
@@ -111,7 +112,17 @@ object ContentController extends Controller {
       
       // Convert to JSON
       j <- eis.itself.toJsonFor(approval)
-    ) yield Ok(j)    
+    ) yield {
+      
+      // If the item is published, send a notification
+      if (saved.published.isDefined) {
+        for (c <- course.getId; cstr = c.stringify) {
+          EventRoom.notifyEventRoom(ChatEvents.BroadcastIt(cstr, ContentEvents.ContentPublished(saved)))
+        }
+      }
+      
+      Ok(j)    
+    }
   }
 
   /**
@@ -130,18 +141,24 @@ object ContentController extends Controller {
       // Resolve the references now, to save resolving them multiple times later
       e <- entry;
       
+      // Was it published before we started?
+      publishedBefore = e.published.isDefined;
+      
       // Check the user is allowed to create the content (and to protect it if they've chosen to)
       approved <- approval ask Permissions.EditContent(e.itself);
       
+      // Updated the metadata, as some settings might be changed (eg, published)
+      metaUpdated = ContentModel.update(e, request.body);      
+      
       // Edit the item
       updated <- {
-        e.item match {
-          case Some(cs:ContentSequence) => SequenceModel.updateItem(e, request.body)
-          case Some(wp:WebPage) => WebPageModel.updateWebPage(e, request.body)
-          case Some(y:YouTubeVideo) => { e.item = Some(OtherExternalsModel.updateYouTubeVideo(y,request.body)); e.itself }
-          case Some(gs:GoogleSlides) => { e.item = Some(OtherExternalsModel.updateGoogleSlides(gs,request.body)); e.itself }
-          case Some(mp:MarkdownPage) => MarkdownPageModel.updateItem(e, request.body)
-          case Some(p:MultipleChoicePoll) => MCPollModel.updateMCPoll(e, request.body)
+        metaUpdated.item match {
+          case Some(cs:ContentSequence) => SequenceModel.updateItem(metaUpdated, request.body)
+          case Some(wp:WebPage) => WebPageModel.updateWebPage(metaUpdated, request.body)
+          case Some(y:YouTubeVideo) => { metaUpdated.item = Some(OtherExternalsModel.updateYouTubeVideo(y,request.body)); metaUpdated.itself }
+          case Some(gs:GoogleSlides) => { metaUpdated.item = Some(OtherExternalsModel.updateGoogleSlides(gs,request.body)); metaUpdated.itself }
+          case Some(mp:MarkdownPage) => MarkdownPageModel.updateItem(metaUpdated, request.body)
+          case Some(p:MultipleChoicePoll) => MCPollModel.updateMCPoll(metaUpdated, request.body)
           case _ => RefNone
         }        
       };
@@ -150,7 +167,15 @@ object ContentController extends Controller {
       
       // Convert to JSON
       j <- saved.toJsonFor(approval)
-    ) yield {
+    ) yield 
+    {
+      // If the item is published, send a notification
+      if (!publishedBefore && saved.published.isDefined) {
+        for (c <- saved.course.getId; cstr = c.stringify) {
+          EventRoom.notifyEventRoom(ChatEvents.BroadcastIt(cstr, ContentEvents.ContentPublished(saved)))
+        }
+      }
+      
       Ok(Json.obj("entry" -> j))
     }
     r

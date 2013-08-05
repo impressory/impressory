@@ -4,17 +4,17 @@ import EventRoom._
 import com.impressory.play.model._
 import com.wbillingsley.eventroom._
 import com.wbillingsley.handy.Ref._
+import com.impressory.api.CanSendToClient
 
 object ChatEvents {
   
   case class ChatStream(courseId:String) extends ListenTo
 
-  
-  case class BroadcastIt(courseId:String, re:RecordedChatEvent) extends EREvent {
+  case class BroadcastIt(courseId:String, cts:CanSendToClient) extends EREvent {
     override def toJson = {
       import com.impressory.play.json.JsonConverters._
       
-      re.toJson
+      cts.toJson
     }
 
     /**

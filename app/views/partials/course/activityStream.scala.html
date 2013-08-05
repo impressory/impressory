@@ -39,6 +39,12 @@
     </div>
   
   </div>  
+  
+  <div ng-show="publishedSinceRefresh > 0">
+    <p class="alert alert-info">
+      {{ publishedSinceRefresh }} new items have been published. <button class="btn-link" ng-click="refreshList()">Load new items</button>
+    </p>
+  </div>
 
   <list-entries entries="entries" view-mode="columns" />
 

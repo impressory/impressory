@@ -3,7 +3,10 @@
 <header-front></header-front>
 <subheader-course course="course"></subheader-course>
 
-<div class="activity-stream">
+<div class="row-fluid" ng-controller="Impressory.Controllers.Components.FillHeight" >
+<div class="span8" ng-style="{ height: fillHeight }" style="overflow: auto">
+
+<div class="activity-stream" >
 
   <h2>Newsfeed</h2>
   
@@ -47,5 +50,27 @@
   </div>
 
   <list-entries entries="entries" view-mode="columns" />
+
+
+</div>
+</div>
+
+<div class="span4"  style="border-left: 1px solid #fafafa; background-color: #fcfcfc; height: 100%;">
+<div class="chat-room" ng-style="{ height: fillHeight }" style="overflow: auto">
+
+  <div class="sidemargin" >
+
+    <h2>Chat</h2>
+    <p>&nbsp;</p>
+  
+  	<chat-form course-id="course.id"></chat-form>
+    
+    <p>&nbsp;</p>
+  
+    <chat-view-events course-id="course.id" ></chat-view-events>
+  </div>
+
+</div>
+</div>
 
 </div>

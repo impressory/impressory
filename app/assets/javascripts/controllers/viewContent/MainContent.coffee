@@ -22,7 +22,9 @@ define(["./base"], (l) ->
       restrict: 'E'
       controller: Impressory.Controllers.ViewContent.MainContent
       scope: { entry: '=entry', viewMode: '@' }
-      template: "<div ng-include='activityStreamPartialUrl'></div>" 
+      template: """
+        <div ng-include='activityStreamPartialUrl'></div>  
+      """ 
     }
   )  
 )

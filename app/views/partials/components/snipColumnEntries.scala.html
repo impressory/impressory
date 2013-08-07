@@ -12,17 +12,22 @@
             <span class="pull-right created">{{ entry.created | date:'h:mma d MMM yy' }}</span>
             <span class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></span>
             <span class="nickname">{{ user.nickname || 'Anonymous' }}</span>
-            added a {{ entry.kind }}
+            
           </div>
         </div>
       </div>
 
       <div class="body">    
-        <h3><a ng-href="{{viewPath(entry)}}">{{ entry.title || 'Untitled' }}</a></h3>
+        <h3 ng-show="entry.title"><a ng-href="{{viewPath(entry)}}">{{ entry.title || 'Untitled' }}</a></h3>
         <p>{{ entry.note }}</p>
         
       
         <ce-render-entry-stream entry="entry"></ce-render-entry-stream>
+      
+        <p style="margin-top: 5px;">
+			<a ng-href="{{ 'viewContent?entryId=' + entry.id }}">Open in viewer</a>
+		</p>	
+      
       
         <div class="pull-right">
           @views.html.partials.components.snipShowTags()

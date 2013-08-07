@@ -6,12 +6,12 @@
 
 <div class="main-content-surround" ng-repeat="entry in viewing.Content.displaySeq" ng-class="{ hidden: entry.id != viewing.Content.display.id }">
 
-  <!-- Loading notice in background -->
+  <!-- Loading notice in background 
   <div class="loading-notice dont-print" ng-show="entry.kind == 'web page'">
     External content not displaying? Some sites don't like to be
     framed. Try using the <i class="icon-external-link"></i>
     Pop-out button in the toolbar to open it in a new tab.
-  </div>
+  </div>-->
   
   <!-- Content is placed here by Javascript -->
   <ce-render-entry-full entry="entry" ></ce-render-entry-full>

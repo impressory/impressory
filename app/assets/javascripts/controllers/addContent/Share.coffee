@@ -42,7 +42,22 @@ define(["./base"], (l) ->
       if $scope.okToSubmit()
         switch $scope.postMode
           when "post"
-            $scope.errors = [ "Whoops, we haven't done post yet!" ]
+            entry = {
+              kind: "Markdown page"
+              settings: { inIndex: false }
+              setPublished: true
+              tags: {
+                nouns: [ "News post" ]
+                adjectives: []
+                topics: []
+              }
+              item: {
+                text: $scope.share.text
+              }
+            }
+          
+            ContentService.addContent($scope.course.id, entry)
+            $scope.reset()
           when "share"
             entry = $scope.toAdd
             entry.note = $scope.share?.text

@@ -14,10 +14,16 @@ object MarkdownPageModel {
     "version" -> mp.version
   )
     
-  def create(course: Ref[Course], approval: Approval[User], ce: ContentEntry, text: String = defaultText) = {
+  def create(course: Ref[Course], approval: Approval[User], ce: ContentEntry, text: String) = {
     ce.tags.site = None
-    ce.setPublished(false)
-    RefItself(new MarkdownPage(text))
+    val mp = new MarkdownPage(text)
+    mp.itself
+  }
+
+  def create(course: Ref[Course], approval: Approval[User], ce: ContentEntry, data: JsValue) = {
+    ce.tags.site = None
+    val mp = new MarkdownPage((data \ "item" \ "text").asOpt[String] getOrElse defaultText)
+    mp.itself
   }
 
   def updateItem(ce: ContentEntry, data: JsValue) = {

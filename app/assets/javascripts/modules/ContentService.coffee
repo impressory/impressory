@@ -70,7 +70,8 @@ define(["./app"], () ->
       streamPartialUrl: (kind) -> 
         switch kind
           when 'YouTube video' then '/partials/viewcontent/stream/youTubeVideo.html'
-          else 'partials/viewcontent/stream/default.html'
+          when 'Markdown page' then '/partials/viewcontent/stream/markdownPage.html'
+          else '/partials/viewcontent/stream/default.html'
     }
   ])
 

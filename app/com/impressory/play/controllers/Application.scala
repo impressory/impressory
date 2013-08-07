@@ -91,6 +91,7 @@ object Application extends Controller {
       case "viewcontent/kinds/noContent.html" => Ok(views.html.partials.viewcontent.kinds.noContent())
       
       case "viewcontent/stream/youTubeVideo.html" => Ok(views.html.partials.viewcontent.stream.youTubeVideo())
+      case "viewcontent/stream/markdownPage.html" => Ok(views.html.partials.viewcontent.stream.markdownPage())
       case "viewcontent/stream/default.html" => Ok(views.html.partials.viewcontent.stream.default())
       
       

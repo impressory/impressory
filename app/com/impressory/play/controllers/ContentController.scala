@@ -67,7 +67,7 @@ object ContentController extends Controller {
     import Permissions._
     
     val kind = (requestBody \ "kind").asOpt[String]
-    val protect = (requestBody \ "entry" \ "protect").asOpt[Boolean].getOrElse(false)
+    val protect = (requestBody \ "entry" \ "settings" \ "protect").asOpt[Boolean].getOrElse(false)
 
     
     for (
@@ -94,7 +94,7 @@ object ContentController extends Controller {
           case Some(WebPage.itemType) => WebPageModel.create(c.itself, approval, updated, requestBody).itself
           case Some(GoogleSlides.itemType) => OtherExternalsModel.createGoogleSlides(c.itself, approval, updated, requestBody).itself
           case Some(YouTubeVideo.itemType) => OtherExternalsModel.createYouTubeVideo(c.itself, approval, updated, requestBody).itself
-          case Some(MarkdownPage.itemType) => MarkdownPageModel.create(c.itself, approval, updated)
+          case Some(MarkdownPage.itemType) => MarkdownPageModel.create(c.itself, approval, updated, requestBody)
           case Some(MultipleChoicePoll.itemType) => MCPollModel.create(c.itself, approval, updated, requestBody)
           case Some(x) => RefFailed(UserError(s"Attempted to add an unknown item: $x"))
           case None => RefFailed(UserError("Attempted to add an item that had no kind"))

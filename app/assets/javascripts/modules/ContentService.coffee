@@ -64,6 +64,13 @@ define(["./app"], () ->
           when 'web page' then '/partials/viewcontent/kinds/webPage.html'
           when 'YouTube video' then '/partials/viewcontent/kinds/youTubeVideo.html'
           else 'partials/viewcontent/kinds/noContent.html'
+
+      # Identifies the viewer component to include, depending on the type of content.
+      # The returned string is the path to the Angular.js partial template.
+      streamPartialUrl: (kind) -> 
+        switch kind
+          when 'YouTube video' then '/partials/viewcontent/stream/youTubeVideo.html'
+          else 'partials/viewcontent/stream/default.html'
     }
   ])
 

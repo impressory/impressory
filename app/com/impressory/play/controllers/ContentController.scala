@@ -176,7 +176,7 @@ object ContentController extends Controller {
         }
       }
       
-      Ok(Json.obj("entry" -> j))
+      Ok(j)
     }
     r
   }
@@ -191,7 +191,7 @@ object ContentController extends Controller {
       saved <- ContentEntry.saveExisting(updated);
       json <- saved.toJsonFor(approval)
     ) yield {
-      Ok(Json.obj("course" -> json))
+      Ok(json)
     }
     r
   

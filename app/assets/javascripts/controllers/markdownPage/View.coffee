@@ -5,7 +5,7 @@ define(["./base"], (l) ->
     updateHtml = () -> 
       $scope.madeHtml = markdownService.makeHtml($scope.entry?.item?.text)
     
-    updateHtml() 
+    $scope.$watch('entry.item.text', () -> updateHtml())
   
   ]
 

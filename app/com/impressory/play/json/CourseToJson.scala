@@ -5,7 +5,6 @@ import com.wbillingsley.handy._
 import Ref._
 import RefMany._
 import play.api.libs.json._
-
 import JsonConverters._
 
 object CourseToJson {
@@ -41,9 +40,13 @@ object CourseToJson {
     // Permissions.
     val perms = for (
       read <- optionally(appr ask Permissions.Read(course.itself));
-      edit <- optionally(appr ask Permissions.EditCourse(course.itself))
+      chat <- optionally(appr ask Permissions.Chat(course.itself));
+      edit <- optionally(appr ask Permissions.EditCourse(course.itself));
+      add <- optionally(appr ask Permissions.AddContent(course.itself))
     ) yield Json.obj(
       "read" -> read.isDefined,
+      "add" -> add.isDefined,
+      "chat" -> chat.isDefined,
       "edit" -> edit.isDefined)
 
     // Combine the JSON responses, noting that reg or perms might be RefNone

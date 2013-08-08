@@ -10,7 +10,7 @@
 
   <h2>Newsfeed</h2>
   
-  <div class="post-content" ng-controller="Impressory.Controllers.AddContent.Share">
+  <div class="post-content" ng-controller="Impressory.Controllers.AddContent.Share" ng-show="course.permissions.add">
     <textarea ng-model="share.text" placeholder="Write something"></textarea>
 
     <ul class="nav nav-pills">
@@ -42,7 +42,7 @@
     </div>
   
   </div>  
-  
+    
   <div ng-show="publishedSinceRefresh > 0">
     <p class="alert alert-info">
       {{ publishedSinceRefresh }} new items have been published. <button class="btn-link" ng-click="refreshList()">Load new items</button>

@@ -10,6 +10,7 @@ import Ref._
 import com.impressory.play.model._
 import com.impressory.play.controllers.ResultConversions._
 import com.impressory.play.controllers.RequestUtils
+import play.Logger
 
 /**
  * Implements log in with the GitHub API
@@ -45,7 +46,7 @@ object GitHubController extends Controller {
     
     val stateFromSession = request.session.get("oauth_state")
     val stateFromRequest = request.getQueryString("state")
-    
+
     /**
      * Calls GitHub to swap a code for an auth_token
      */
@@ -95,8 +96,6 @@ object GitHubController extends Controller {
     }    
     
     val refMem = for (
-      sfs <- Ref(stateFromSession) orIfNone Refused("OAuth authorization failed -- state mismatch");
-      sfr <- Ref(stateFromRequest.filter(_ == sfs)) orIfNone Refused("OAuth authorization failed -- state mismatch");
       code <- Ref(request.getQueryString("code")) orIfNone Refused("GitHub provided no code");
       authToken <- authTokenFromCode(code) orIfNone Refused("GitHub did not provide an authorization token");
       mem <- userFromAuth(authToken) orIfNone Refused("GitHub did not provide any user data for that login")
@@ -106,13 +105,29 @@ object GitHubController extends Controller {
       mem <- refMem;
       user <- optionally(User.byIdentity("github", mem.id))
     ) yield {
+      
+      /*
+       * TODO: We've had a few errors where we were getting a mismatch between the OAuth state in the
+       * session and in the callback from GitHub. For the moment, let's turn off the check and log
+       * whenever there is a mismatch to see if we can uncover why. 
+       */
+       if (stateFromSession.isEmpty) { 
+         Logger.warn("GitHub OAuth - state from session was empty")
+       } 
+       if (stateFromRequest.isEmpty) { 
+         Logger.warn("GitHub OAuth - state from request was empty")
+       } 
+       if (stateFromSession != stateFromRequest) {
+         Logger.warn(s"GitHub OAuth - state from request was $stateFromRequest but state from session was $stateFromSession")
+       }
+      
       user match {
         case Some(u) => {
-          val session = RequestUtils.withLoggedInUser(request.session, u.itself)
+          val session = RequestUtils.withLoggedInUser(request.session - "oauth_state", u.itself)
           Redirect(com.impressory.play.controllers.routes.Application.index).withSession(session)
         } 
         case None => {
-          val session = request.session + (InterstitialController.sessionVar -> mem.toJsonString)
+          val session = request.session + (InterstitialController.sessionVar -> mem.toJsonString) - "oauth_state"
           Redirect(routes.InterstitialController.viewRegisterUser(Some("GitHub"))).withSession(session)
         }
       }

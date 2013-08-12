@@ -71,6 +71,7 @@ define(["./app"], () ->
         switch kind
           when 'YouTube video' then '/partials/viewcontent/stream/youTubeVideo.html'
           when 'Markdown page' then '/partials/viewcontent/stream/markdownPage.html'
+          when 'Multiple choice poll' then '/partials/viewcontent/stream/multipleChoicePoll.html'
           else '/partials/viewcontent/stream/default.html'
     }
   ])

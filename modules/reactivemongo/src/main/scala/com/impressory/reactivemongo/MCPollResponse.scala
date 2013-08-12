@@ -6,6 +6,7 @@ import Ref._
 import reactivemongo.bson._
 import reactivemongo.api._
 import com.wbillingsley.handyplay._
+import com.impressory.api.CanSendToClient
 
 case class MCPollResponse (
   
@@ -20,7 +21,7 @@ case class MCPollResponse (
   var answer:Set[Int] = Set.empty,
   
   var updated: Long = System.currentTimeMillis
-) extends HasBSONId {
+) extends HasBSONId with CanSendToClient {
   def id = _id
 }
 

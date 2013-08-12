@@ -63,15 +63,19 @@ object ResultConversions extends AcceptExtractors {
   /**
    * Converts a Ref[play.api.templates.Html] to a Result
    */
-  implicit def refHtmlToResult(r:Ref[play.api.templates.Html]):play.api.mvc.AsyncResult = {
+  implicit def refHtmlToResult(r:Ref[play.api.templates.Html])(implicit request:Request[_]):play.api.mvc.AsyncResult = {
+    
+    val sk = RequestUtils.sessionKey(request.session).getOrElse(RequestUtils.newSessionKey);    
+    val session = RequestUtils.withSessionKey(request.session, sk);
+    
     Async {
       val p = promise[Result]
       r onComplete(
-        onSuccess = p success Ok(_),
-        onNone = p success NotFound(views.html.xErrorNotFound("Not found")),
+        onSuccess = p success Ok(_).withSession(session),
+        onNone = p success NotFound(views.html.xErrorNotFound("Not found")).withSession(session),
         onFail = _ match {
-          case Refused(msg) => p success Forbidden(views.html.xErrorForbidden(msg))
-          case exc:Throwable => p success InternalServerError(views.html.xErrorInternalError(exc.getMessage))
+          case Refused(msg) => p success Forbidden(views.html.xErrorForbidden(msg)).withSession(session)
+          case exc:Throwable => p success InternalServerError(views.html.xErrorInternalError(exc.getMessage)).withSession(session)
         }
       )
       p.future

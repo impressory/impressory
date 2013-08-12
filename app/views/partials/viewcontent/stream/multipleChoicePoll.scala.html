@@ -1,0 +1,28 @@
+@()
+
+<div ng-controller="Impressory.Controllers.MCPoll.View" class="multiple-choice-poll">
+  
+  <div style="max-height: 360px; overflow: auto;">
+    <!-- markdownService takes care of sanitization -->
+    <div ng-bind-html-unsafe="madeHtml" class="question"></div>
+  </div>
+  
+  <div class="form-inline" ng-show="showing == 'options'">
+    <ul>
+      <li ng-repeat="option in entry.item.options">
+        <label class="checkbox option">
+          <input type="checkbox" ng-model="option.selected" ng-change="recountSelected()" ng-disabled="!option.selected && selected.length >= entry.item.pick"/> {{ option.option }}
+        </label>
+      </li>
+    </ul>
+    <p>
+      (You may select {{ entry.item.pick }} options. You have selected {{ selected.length }} options.)
+    </p>
+    <button type="button" class="btn btn-primary" ng-click="vote()">Submit</button>
+    
+    <div class="alert alert-success" ng-show="voteSaved">
+      Your vote has been saved. You can move your vote by re-voting at any time.
+    </div>
+  </div>
+
+</div>  

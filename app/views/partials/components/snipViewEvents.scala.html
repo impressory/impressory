@@ -2,33 +2,37 @@
 
 <div class="events-list" ng-controller="Impressory.Controllers.EventRoom.ViewEvents">
 
-  <div ng-repeat="event in EventRoom.events | orderBy:'created':true" class="event">
+  <div ng-repeat="event in EventRoom.events | orderBy:'created':true">
     <div ng-switch="event.type">
       <div ng-switch-when="chat">
-        <div class="who" ng-repeat="user in [ Users.cache[event.addedBy] ]">
-          <span class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></span>
-          <span class="nickname">{{ user.nickname || 'Anonymous' }}</span>
+        <div class="event comment" ng-class="{ 'question' : isQuestion(event.text) }" >
+          <div class="who" ng-repeat="user in [ Users.cache[event.addedBy] ]">
+            <span class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></span>
+            <span class="nickname">{{ user.nickname || 'Anonymous' }}</span>
+          </div>
+          <div class="text" ng-bind-html="event.text | linky"></div>
+          <div class="date">{{ event.created | date:'h:mma d MMM yy' }}</div>
         </div>
-        <div class="text">{{ event.text }}</div>
-        <div class="date">{{ event.created | date:'h:mma d MMM yy' }}</div>
       </div>
       
       <div ng-switch-when="Multiple choice poll">
-        <div ng-init="entry = event.poll"></div>
-        <div ng-controller="Impressory.Controllers.MCPoll.View" class="multiple-choice-poll">
-          <div class="form-inline">
-            <div ng-bind-html-unsafe="madeHtml" class="question"></div>
-            <ul>
-              <li ng-repeat="option in entry.item.options">
-                <label class="checkbox option">
-                  <input type="checkbox" ng-model="option.selected" ng-change="recountSelected()" ng-disabled="!option.selected && selected.length >= entry.item.pick"/> {{ option.option }}
-                </label>
-              </li>
-            </ul>
-            <p>
-              (You may select {{ entry.item.pick }} options. You have selected {{ selected.length }} options.)
-            </p>
-            <button type="button" class="btn btn-primary" ng-click="vote()">Submit</button>
+        <div class="event poll">
+          <div ng-init="entry = event.poll"></div>
+          <div ng-controller="Impressory.Controllers.MCPoll.View" class="multiple-choice-poll">
+            <div class="form-inline">
+              <div ng-bind-html-unsafe="madeHtml" class="question"></div>
+              <ul>
+                <li ng-repeat="option in entry.item.options">
+                  <label class="checkbox option">
+                    <input type="checkbox" ng-model="option.selected" ng-change="recountSelected()" ng-disabled="!option.selected && selected.length >= entry.item.pick"/> {{ option.option }}
+                  </label>
+                </li>
+              </ul>
+              <p>
+                (You may select {{ entry.item.pick }} options. You have selected {{ selected.length }} options.)
+              </p>
+              <button type="button" class="btn btn-primary" ng-click="vote()">Submit</button>
+            </div>
           </div>
         </div>
       </div>

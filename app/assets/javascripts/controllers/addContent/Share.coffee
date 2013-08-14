@@ -36,6 +36,7 @@ define(["./base"], (l) ->
     $scope.reset = () -> 
       $scope.postMode = "post"  
       $scope.toAdd = { }
+      $scope.share = { }
       $scope.errors = [ ]  
    
     $scope.submit = () ->

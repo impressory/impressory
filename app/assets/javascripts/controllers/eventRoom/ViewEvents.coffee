@@ -16,6 +16,8 @@ define(["./base"], (l) ->
       $scope.message = {}
       
     $scope.$on("push", () -> $scope.$apply())
+    
+    $scope.isQuestion = (text) -> text?.startsWith("Q:")
   
   ]
   

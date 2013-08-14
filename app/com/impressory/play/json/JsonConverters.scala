@@ -25,6 +25,7 @@ object JsonConverters {
         
         case u:User => UserToJson.toJsonFor(u, appr)        
         case r:Registration => RegistrationToJson.toJson(r).itself
+        case i:Identity => IdentityToJson.toJsonFor(i, appr).itself
         
         case c:Course => CourseToJson.toJsonFor(c, appr)
         case ci:CourseInvite => CourseInviteToJson.toJson(ci).itself

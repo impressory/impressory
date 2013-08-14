@@ -60,6 +60,8 @@ object IdentityToJson {
   def toJson(identity:Identity) = Json.obj(
     "id" -> identity.id,
     "service" -> identity.service,
+    "value" -> identity.value,
+    "username" -> identity.username,
     "avatar" -> identity.avatar
   )
   

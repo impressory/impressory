@@ -3,9 +3,9 @@ package com.impressory.play.model
 import org.specs2.mutable._
 import play.api.test._
 import play.api.test.Helpers._
-
 import com.wbillingsley.handy._
 import Ref._
+import org.specs2.matcher.EventuallyMatchers._
 
 class WhatIsItTest extends Specification {
       
@@ -22,8 +22,9 @@ class WhatIsItTest extends Specification {
         """ -> "z2HJ7-Z1X4o"
       )
       
-      for ((text, videoId) <- trialists) yield {
-        ContentTypeListing.whatIsIt(text).fetch must equalTo(YouTubeVideo(Some(text), Some(videoId)).itself)        
+      for ((text, videoId) <- trialists) {        
+        val refItem = for (c <- ContentTypeListing.whatIsIt(text); i <- c.item) yield i
+        refItem.fetch must equalTo(YouTubeVideo(Some(text), Some(videoId)).itself)
       }
     }
     
@@ -41,7 +42,8 @@ class WhatIsItTest extends Specification {
       )
       
       for ((text, id) <- trialists) yield {
-        ContentTypeListing.whatIsIt(text).fetch must equalTo(GoogleSlides(Some(text), Some(id)).itself)        
+        val refItem = for (c <- ContentTypeListing.whatIsIt(text); i <- c.item) yield i
+        refItem.fetch must equalTo(GoogleSlides(Some(text), Some(id)).itself)
       }      
     }
   }

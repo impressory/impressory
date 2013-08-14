@@ -11,8 +11,9 @@ define(["./base"], (l) ->
     # The parent scope will have set the value of courseId
     viewingEvents.showForCourse($scope.courseId)
   
-    $scope.postChatMessage = (msg) -> 
-      $http.post("/course/" + $scope.courseId + "/chat", msg)
+    $scope.postChatMessage = () -> 
+      $http.post("/course/" + $scope.courseId + "/chat", $scope.message)
+      $scope.message = {}
       
     $scope.$on("push", () -> $scope.$apply())
   

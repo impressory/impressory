@@ -4,6 +4,8 @@ define(["./base"], (l) ->
   
     $scope.course = course
     
+    $scope.login = Impressory.Model.Login
+    
     # The parent scope will have set the value of courseId
     viewingEvents.showForCourse(course.id)    
     

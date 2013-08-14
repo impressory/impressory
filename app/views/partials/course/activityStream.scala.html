@@ -41,8 +41,18 @@
       <button ng-click="submit()" class="btn btn-primary" >Share</button>
     </div>
   
-  </div>  
+  </div>
+  
+  <div ng-show="!course.permissions.add">
+    <div class="alert" ng-hide="login.user">
+    You'll need to <a href="/logIn">log in</a> to post or add content.
+    </div>  
     
+    <div class="alert" ng-show="login.user">
+    You don't have permission to add content. Perhaps you need to enter an invite code on the <a ng-href="/course/{{course.id}}">cover page</a>?
+    </div>  
+  </div>
+
   <div ng-show="publishedSinceRefresh > 0">
     <p class="alert alert-info">
       {{ publishedSinceRefresh }} new items have been published. <button class="btn-link" ng-click="refreshList()">Load new items</button>

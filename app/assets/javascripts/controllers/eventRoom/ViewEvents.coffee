@@ -17,7 +17,9 @@ define(["./base"], (l) ->
       
     $scope.$on("push", () -> $scope.$apply())
     
-    $scope.isQuestion = (text) -> text?.startsWith("Q:")
+    # Matches chat comments that are questions and should be highlighted
+    questionRegex = /^Q:/    
+    $scope.isQuestion = (text) -> questionRegex.test(text)
   
   ]
   

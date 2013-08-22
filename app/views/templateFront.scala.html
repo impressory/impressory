@@ -41,10 +41,6 @@
     <!-- d3.js, used for charting -->
     <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.0.8/d3.min.js"></script>
     
-    <!-- Impressory, via require.js -->
-    @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/main").url)
-    
-    
     <!-- The client-side custom error pages -->
     <script type="text/ng-template" id="client-error-template">
       <div ng-switch="error.status">
@@ -62,5 +58,8 @@
     
     <!-- Preload directive templates -->
     @includeDirectives()
+    
+    <!-- Impressory, via require.js -->
+    @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/main").url)    
     
 </html>

@@ -10,10 +10,9 @@ import play.api.libs.json._
 import com.impressory.api._
 import com.impressory.play.model._
 import ResultConversions._
-
 import com.impressory.play.json.UserToJson._
-
 import play.api.libs.iteratee.Enumerator
+import com.impressory.play.json.UserToJson
 
 object UserController extends Controller {
   
@@ -25,6 +24,14 @@ object UserController extends Controller {
    
   def user(id:String) = Action { implicit request =>
     refUser(id)
+  }
+  
+  /**
+   * JSON for the currently logged in user
+   */
+  def whoAmI = Action { implicit request => 
+    val resp = for (u <- request.user; j <- u.toJsonForSelf) yield j
+    resp
   }
   
   def findUsersById = Action(parse.json) { implicit request =>

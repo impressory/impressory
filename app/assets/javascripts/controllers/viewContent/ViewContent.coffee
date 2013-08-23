@@ -30,20 +30,9 @@ define(["./base"], (l) ->
       viewingContent.lookUp($scope.entryQuery)
     $scope.$on('$routeUpdate', updateView)
     
-    
-    
     # Used by ng-click in slide-sorter, amongst others
     $scope.lookUp = (params) -> viewingContent.lookUp(params)
     
-    $scope.goToPrevEntry = () -> viewingContent.goToPrevEntry()
-    
-    $scope.goToNextEntry = () -> viewingContent.goToNextEntry()
-    
-    $scope.goToStart = () -> viewingContent.goToStart()
-    
-    $scope.hasNextEntry = () -> viewingContent.hasNextEntry()
-  
-    $scope.hasPrevEntry = () -> viewingContent.hasPrevEntry()
   ]
   
   Impressory.Controllers.ViewContent.ViewContent.resolve = {

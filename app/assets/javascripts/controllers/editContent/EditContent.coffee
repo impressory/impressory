@@ -9,11 +9,22 @@ define(["./base"], (l) ->
     
       ContentService.editItem($scope.entry).then(
         (entry) -> 
-          $scope.panels.toggleEditContent()
+          $scope.onClose()
         (data) ->
           $scope.errors = [ data.error || "Unexpected error" ]
       )
+      
+    $scope.editPartialUrl = ContentService.editPartialUrl($scope.entry.kind)
   
   ]
+
+  Impressory.angularApp.directive("ceEditContentItem", () -> 
+    {
+      restrict: 'E'
+      controller: Impressory.Controllers.EditContent.EditContent
+      scope: { entry: '=entry', onClose: '&' }
+      templateUrl: "directive_ce_edit_content.html" 
+    }
+  )  
 
 )

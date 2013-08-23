@@ -95,6 +95,13 @@ object Application extends Controller {
       case "viewcontent/stream/multipleChoicePoll.html" => Ok(views.html.partials.viewcontent.stream.multipleChoicePoll())
       case "viewcontent/stream/default.html" => Ok(views.html.partials.viewcontent.stream.default())
       
+      case "editcontent/kinds/contentSequence.html" => Ok(views.html.partials.editcontent.kinds.contentSequence())
+      case "editcontent/kinds/googleSlides.html" => Ok(views.html.partials.editcontent.kinds.googleSlides())
+      case "editcontent/kinds/markdownPage.html" => Ok(views.html.partials.editcontent.kinds.markdownPage())
+      case "editcontent/kinds/multipleChoicePoll.html" => Ok(views.html.partials.editcontent.kinds.multipleChoicePoll())
+      case "editcontent/kinds/webPage.html" => Ok(views.html.partials.editcontent.kinds.webPage())
+      case "editcontent/kinds/youTubeVideo.html" => Ok(views.html.partials.editcontent.kinds.youTubeVideo())
+      case "editcontent/kinds/default.html" => Ok(views.html.partials.editcontent.kinds.default())
       
       case _ => NotFound(s"No such partial template: $templ")
     }

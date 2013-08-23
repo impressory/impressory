@@ -10,8 +10,7 @@ define(["./app"], () ->
     viewing = Impressory.Model.Viewing
       
     $(window).on('resize', () ->
-      $rootScope.wh = $window.innerHeight
-      $rootScope.$apply()
+      $rootScope.$apply(() -> $rootScope.wh = $window.innerHeight)
     )
 
     $rootScope.wh = $window.innerHeight    
@@ -111,6 +110,9 @@ define(["./app"], () ->
         @updateLocation()
         viewing.Content.noContent = viewing.Content.displaySeq.length <= 0
         viewing.Content.display
+        
+        # Send a resize event so that newly visible content sizes correctly
+        $rootScope.$broadcast('resize', {})
           
       # Updates the location (URL) based on the data that has been set as being viewed
       updateLocation: () ->

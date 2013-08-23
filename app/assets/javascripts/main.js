@@ -48,6 +48,7 @@ require([
   "controllers/viewContent/ListContentForTopic",
   
   "controllers/editContent/EditContent",
+  "controllers/editContent/Sequence",
   
   "controllers/eventRoom/ViewEvents",
   

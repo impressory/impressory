@@ -3,7 +3,7 @@
 <div class="viewer-top-nav" ng-controller="Impressory.Controllers.ViewContent.TopNav">
   
   <div class="dont-print">
-    <div ng-hide="panels.minimiseHeader">
+    <div ng-hide="panels.minimisedHeader">
       <header-front ></header-front>
       <subheader-course course="course" />
     </div>
@@ -11,10 +11,10 @@
     
       <ul class="bookNav">
         <li class="navli">
-          <button title="Menu" class="command" ng-show="panels.minimiseHeader" ng-class="{ 'active': panels.top == 'menu' }" ng-click="panels.toggleTopMenu()">
+          <button title="Menu" class="command" ng-show="panels.minimisedHeader" ng-class="{ 'active': panels.top == 'menu' }" ng-click="panels.toggleTopMenu()">
             <b>|||</b>
           </button>
-          <button title="Hide menu" class="command" ng-hide="panels.minimiseHeader" ng-click="panels.minimiseHeader = true">
+          <button title="Hide menu" class="command" ng-hide="panels.minimisedHeader" ng-click="panels.minimiseHeader()">
             <i class="icon-resize-full"></i>
           </button>
         </li>
@@ -35,6 +35,11 @@
         <li class="navli">
           <button class="command" ng-disabled="!viewing.Content.display.permissions.add" ng-class="{ 'active': panels.top == 'addContent' }" ng-click="panels.toggleAddContent()">
             <i class="icon-plus"></i>
+          </button>
+        </li>
+        <li class="navli">
+          <button class="command" ng-click="panels.toggleRight()"> 
+            <img src='/assets/images/sq_chat.png' alt="Chat pane" />
           </button>
         </li>
       </ul>
@@ -78,9 +83,6 @@
         <div ng-switch-when="addContent" >
           @views.html.partials.addcontent.addContent()
         </div>
-        <div ng-switch-when="slideSorter" >
-          @snipSlideSorter()
-        </div>
         <div ng-switch-when="editDetails" >
           @snipEditDetails()
         </div>
@@ -91,7 +93,7 @@
           @snipContentForTopic()
         </div>
         <div ng-switch-when="editContent" >
-          @snipEditContent()
+          <ce-edit-content-item entry="entry" on-close="panels.closeTop()"></ce-edit-content-item>
         </div>
       
       </div>

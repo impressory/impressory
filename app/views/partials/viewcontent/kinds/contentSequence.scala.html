@@ -1,13 +1,47 @@
 @()
 
-<div class="content-sequence-contents" ng-controller="Impressory.Controllers.ViewContent.Sequence">
-  <h1>{{ viewing.Content.entry.title || 'Untitled sequence' }}</h1>
-          
-  <p>
-    A content sequence of {{ viewing.Content.display.item.entries.length || 0 }} items.
-  </p>
-  <hr />
-  <div>
-    @views.html.partials.components.snipListEntries()
+<div class="content-sequence" ng-controller="Impressory.Controllers.ViewContent.Sequence">
+
+  <div class="left-edge">
+	  <div class="v-center">
+	    <button class="command" type="button" ng-click="goToPrevEntry()" ng-disabled="!hasPrevEntry()">
+	      <i class="icon-angle-left"></i>
+	    </button>	  
+	  </div>
+	  <button class="command" ng-click="goToStart()"> 
+	    <img src='/assets/images/slideSorter_full.png' alt="Slide sorter" />
+	  </button>
   </div>
+  
+  <div class="content-sequence-content">
+  
+    <div class="content-sequence-index" ng-show="seqIndex < 0">
+	  <h1>{{ entry.title || 'Untitled sequence' }}</h1>
+	          
+	  <p>
+	    A content sequence of {{ entry.item.entries.length || 0 }} items.
+	  </p>
+	  <hr />
+	  <div>
+	    <list-entries entries="entry.item.entries" view-mode="rows" ></list-entries>
+	  </div>
+    </div>
+    
+    <div ng-repeat="entry in entry.item.entries" >
+      <div ng-show="seqIndex == $index" >
+      	<ce-render-entry-full entry="entry" ></ce-render-entry-full>
+      </div>
+    </div>
+  
+  
+  </div>
+  
+  <div class="right-edge">
+	  <div class="v-center">
+	    <button id="next-button" type="button"  ng-disabled="!hasNextEntry()" ng-click="goToNextEntry()" >
+	      <i class="icon-angle-right"></i>
+	    </button>
+	  </div>
+  </div>
+
 </div>

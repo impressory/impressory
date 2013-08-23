@@ -1,11 +1,17 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.ViewContent.Layout = ["$scope", "$location", ($scope, $location) ->
+  Impressory.Controllers.ViewContent.Layout = ["$scope", "$rootScope", "$location", ($scope, $rootScope, $location) ->
   
     # Used by the contentForTopic subview
     $scope.searchTopic = null
   
     $scope.panels = {
+    
+      minimisedHeader: false
+      
+      minimiseHeader: () -> 
+        @minimisedHeader = true
+    
       left: false
       
       right: false
@@ -24,9 +30,6 @@ define(["./base"], (l) ->
       toggleTopMenu: () ->
         @top = if (@top == "menu") then null else "menu"
         
-      toggleSlideSorter: () -> 
-        @top = if (@top == "slideSorter") then null else "slideSorter"
-
       toggleEditDetails: () -> 
         @top = if (@top == "editDetails") then null else "editDetails"
 

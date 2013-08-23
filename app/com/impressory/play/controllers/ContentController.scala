@@ -17,6 +17,22 @@ import com.impressory.play.eventroom.{ EventRoom, ChatEvents, ContentEvents }
 
 object ContentController extends Controller {
   
+  
+  /**
+   * Returns the JSON for the specified content entry
+   */
+  def entry(courseId:String, entryId:String) = Action { implicit request => 
+    val approval = request.approval
+    val refEntry = refContentEntry(entryId)
+    
+    val res = for (
+        entry <- refEntry;
+        approved <- approval ask Permissions.ReadEntry(entry.itself);
+        j <- refEntry.toJsonFor(approval)
+    ) yield j
+    res
+  }
+  
   /**
    * Finds an appropriate ContentEntry
    */

@@ -9,44 +9,8 @@
       @snipTopNav()
 
       <div id="middle">
-
-        <div id="left-edge" class="dont-print">
-          <button class="command" ng-click="panels.toggleSlideSorter()"> 
-            <img src='/assets/images/slideSorter_full.png' alt="Slide sorter" />
-          </button>
-        
-          <div class="v-center">
-            <button class="command" type="button" ng-click="goToPrevEntry()" ng-disabled="!hasPrevEntry()">
-              <i class="icon-angle-left"></i>
-            </button>
-  
-            <button class="command" type="button" ng-click="goToStart()" ng-disabled="!hasPrevEntry()">
-              <i class="icon-double-angle-left"></i>
-            </button>
-          </div>
-        </div>
-        
-        
-
-        <div id="right-edge" class="dont-print" >
-
-          <button class="command" ng-click="panels.toggleRight()"> 
-            <img src='/assets/images/sq_chat.png' alt="Chat pane" />
-          </button>
-
-          <div class="v-center">
-            <button id="next-button" type="button"  ng-disabled="!hasNextEntry()" ng-click="goToNextEntry()" >
-              <i class="icon-angle-right"></i>
-            </button>
-          </div>
-        </div>
-
         <!-- The content -->
-        <div class="content-panel">
-          <div >
-            @snipMainContent()
-          </div>
-        </div>
+        @snipMainContent()
       </div>
     </div>
     

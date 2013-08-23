@@ -12,8 +12,8 @@ define(["./base"], (l) ->
     {
       restrict: 'E'
       controller: Impressory.Controllers.ViewContent.MainContent
-      scope: { entry: '=entry', viewMode: '@' }
-      template: "<div class='content-container'><div ng-include='viewerPartialUrl'></div></div>" 
+      scope: { entry: '=entry', seqIndex: '=', viewMode: '@' }
+      templateUrl: "directive_ce_render_entry_full.html" 
     }
   )  
 

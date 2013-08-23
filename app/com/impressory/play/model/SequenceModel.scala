@@ -46,10 +46,25 @@ object SequenceModel {
   def updateItem(e:ContentEntry, data:JsValue):Ref[ContentEntry] = {
     e.item match {
       case Some(cs: ContentSequence) => {
-        (for (ce <- Ref.fromOptionId(classOf[ContentEntry], (data \ "append").asOpt[String])) yield {
-          cs._entries = cs._entries :+ ce.id
+
+        /*
+         * When we send a ContentSequence as JSON to the client, we include not just the IDs of the entries
+         * but their full JSON.  The client sends them back in the same format.
+         * So, we need to extract the IDs from the JSON that the client sent.
+         */
+        val entryIds = data \ "item" \ "entries" \\ "id"
+        
+        val verifiedIds = for (
+          entryId <- entryIds.toRefMany;
+          entry <- refContentEntry(entryId.as[String]) if (entry.course.getId == e.course.getId)
+        ) yield entry.id
+        
+        for (
+          seq <- verifiedIds.toRefOne
+        ) yield {
+          cs._entries = seq.toSeq
           e
-        }) orIfNone e.itself
+        }
       }
       case _ => RefFailed(new UserError("Attempted to edit something that wasn't a ContentSequence as if it was"))
     }

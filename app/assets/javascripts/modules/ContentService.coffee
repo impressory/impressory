@@ -1,8 +1,19 @@
 define(["./app"], () ->
 
-  Impressory.angularApp.service('ContentService', ['$http', '$location', 'viewingContent', ($http, $location, viewingContent) ->
+  Impressory.angularApp.service('ContentService', ['$http', '$location', '$cacheFactory', 'viewingContent', ($http, $location, $cacheFactory, viewingContent) ->
+   
+    cache = $cacheFactory('contentServiceCache')
    
     {
+
+      # Returns a promise containing the JSON of a content entry
+      get: (courseId, entryId) ->
+        key = { course: courseId, entry: entryId }
+        cache.get(key) || (
+          promise =  $http.get("/course/#{courseId}/entry/#{entryId}").then((res) -> res.data)
+          cache.put(key, promise)
+          promise
+        )
     
       embedUrl: (courseId, entryId) -> 
         if $location.port() == 80
@@ -73,6 +84,19 @@ define(["./app"], () ->
           when 'Markdown page' then '/partials/viewcontent/stream/markdownPage.html'
           when 'Multiple choice poll' then '/partials/viewcontent/stream/multipleChoicePoll.html'
           else '/partials/viewcontent/stream/default.html'
+          
+          
+      # Identifies the editor component to include, depending on the type of content.
+      # The returned string is the path to the Angular.js partial template.
+      editPartialUrl: (kind) -> 
+        switch kind
+          when 'sequence' then '/partials/editcontent/kinds/contentSequence.html'
+          when 'Google Slides' then '/partials/editcontent/kinds/googleSlides.html'
+          when 'Markdown page' then '/partials/editcontent/kinds/markdownPage.html'
+          when 'Multiple choice poll' then '/partials/editcontent/kinds/multipleChoicePoll.html'
+          when 'web page' then '/partials/editcontent/kinds/webPage.html'
+          when 'YouTube video' then '/partials/editcontent/kinds/youTubeVideo.html'
+          else 'partials/editcontent/kinds/default.html'          
     }
   ])
 

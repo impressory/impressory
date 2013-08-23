@@ -67,9 +67,6 @@
         <div ng-switch-when="addContent" >
           @views.html.partials.addcontent.addContent()
         </div>
-        <div ng-switch-when="slideSorter" >
-          @snipSlideSorter()
-        </div>
         <div ng-switch-when="editDetails" >
           @snipEditDetails()
         </div>
@@ -80,7 +77,7 @@
           @snipContentForTopic()
         </div>
         <div ng-switch-when="editContent" >
-          @snipEditContent()
+          <ce-edit-content-item entry="entry"></ce-edit-content-item>
         </div>
       
       </div>

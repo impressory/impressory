@@ -240,8 +240,9 @@ object ContentController extends Controller {
   
   def recentEntries(courseId: String) = Angular { Action { implicit request => 
     val approval = request.approval
+    
     val entries = for (
-      c <- refCourse(courseId);
+      c <- approval.cache(refCourse(courseId));
       e <- ContentModel.recentEntries(c.itself, approval);
       j <- e.toJsonFor(approval)
     ) yield j

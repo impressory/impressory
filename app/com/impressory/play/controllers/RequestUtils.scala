@@ -48,7 +48,11 @@ object RequestUtils {
     }
   }  
   
-  def approval(session:Session) = new Approval(loggedInUser(session))
+  def approval(session:Session) = {
+    val a = new Approval(loggedInUser(session))
+    a.cache(a.who, classOf[User])
+    a
+  }
   
   /*----
    * Form utilities

@@ -22,7 +22,7 @@ object Permissions {
   
   
   case class EditCourse(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
-    def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Administrator)
+    def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Administrator, prior.cache)
   }
   
   /**
@@ -31,7 +31,7 @@ object Permissions {
    */
   case class Read(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
     def resolve(prior:Approval[User]) = {
-      course flatMap { b =>
+      prior.cache(course, classOf[Course]) flatMap { b =>
         b.signupPolicy match {
 	        case CourseSignupPolicy.open => Approved("Anyone may read this book").itself
 	        case CourseSignupPolicy.loggedIn => {
@@ -39,7 +39,7 @@ object Permissions {
 	            w => Approved("Logged in readers may read this book")
 	          }) orIfNone Refused("You must log in to read this book")
 	        }
-	        case _ => hasRole(course, prior.who, CourseRole.Reader)          
+	        case _ => hasRole(course, prior.who, CourseRole.Reader, prior.cache)       
         }
       } orIfNone Refused("Book not found")
     }
@@ -51,10 +51,10 @@ object Permissions {
    */
   case class Chat(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
     def resolve(prior:Approval[User]) = {
-      course flatMap { c =>
+      prior.cache(course, classOf[Course]) flatMap { c =>
 	    c.chatPolicy match {
 	      case CourseChatPolicy.allReaders => prior ask Read(c.itself)
-	      case _ => hasRole(c.itself, prior.who, CourseRole.Chatter)
+	      case _ => hasRole(c.itself, prior.who, CourseRole.Chatter, prior.cache)
         }
       } orIfNone Refused("Course not found")
     }
@@ -94,7 +94,12 @@ object Permissions {
   }    
   
   case class ReadEntry(entry:Ref[ContentEntry]) extends PermOnIdRef[User, ContentEntry](entry) {
-    def resolve(prior:Approval[User]) = prior ask Read(entry flatMap(_.course))  
+    def resolve(prior:Approval[User]) = {      
+      for (
+        e <- prior.cache(entry, classOf[ContentEntry]);
+        p <- prior ask Read(e.course)
+      ) yield p
+    }
   }
   
   /**
@@ -102,7 +107,7 @@ object Permissions {
    * @param bookRef
    */
   case class AddContent(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
-    def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Author)
+    def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Author, prior.cache)
   }  
   
   /**
@@ -110,19 +115,27 @@ object Permissions {
    * @param bookRef
    */
   case class ProtectContent(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
-    def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Moderator)
+    def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Moderator, prior.cache)
   }  
   
+  /**
+   * Protect content or edit protected content in a book
+   * @param bookRef
+   */
+  case class EditUnprotectedContent(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
+    def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Author, prior.cache)
+  }  
+
   /**
    * Edit a content entry
    */
   case class EditContent(entry:Ref[ContentEntry]) extends PermOnIdRef[User, ContentEntry](entry) {
     def resolve(prior:Approval[User]) = {
-      entry flatMap { e =>
+      prior.cache(entry, classOf[ContentEntry]) flatMap { e =>
         if (e.settings.protect) {
-          hasRole(e.course, prior.who, CourseRole.Moderator)
+          prior ask ProtectContent(e.course)
         } else {
-          hasRole(e.course, prior.who, CourseRole.Author)
+          prior ask EditUnprotectedContent(e.course)
         }
       } orIfNone Refused("Entry not found")
     }
@@ -132,7 +145,7 @@ object Permissions {
    * View, edit, or create invites to a course
    */
   case class ManageCourseInvites(course:Ref[Course]) extends PermOnIdRef[User, Course](course)  {
-    def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Administrator)
+    def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Administrator, prior.cache)
   }  
   
   case class RegisterUsingInvite(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
@@ -163,10 +176,10 @@ object Permissions {
     ) yield r.roles
   }
   
-  def hasRole(course:Ref[Course], user:Ref[User], role:CourseRole):Ref[Approved] = {
+  def hasRole(course:Ref[Course], user:Ref[User], role:CourseRole, cache:LookUpCache):Ref[Approved] = {
     (
       for (
-        roles <- getRoles(course, user) if roles.contains(role)
+        roles <- getRoles(cache(course, classOf[Course]), user) if roles.contains(role)
       ) yield Approved(s"You have role $role for this course")
     ) orIfNone Refused(s"You do not have role $role for this course")
   }

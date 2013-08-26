@@ -3,7 +3,7 @@ import Keys._
 import play.Project._
 
 object ApplicationBuild extends Build {
-
+  
     val appName         = "impressory"
     val appVersion      = "0.1"
      
@@ -31,9 +31,11 @@ object ApplicationBuild extends Build {
 
     templatesImport += "com.wbillingsley.handy._",
 
-    resolvers += "handy" at "https://bitbucket.org/wbillingsley/mavenrepo/raw/master/snapshots/",
-
-    resolvers += "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
+    resolvers ++= Seq(
+        "handy releases" at "https://bitbucket.org/wbillingsley/mavenrepo/raw/master/releases/",
+        "handy snapshots" at "https://bitbucket.org/wbillingsley/mavenrepo/raw/master/snapshots/",
+        "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
+    ),
 
     requireJs ++= Seq(
           "main.js" 

@@ -24,4 +24,10 @@ lift_example
 .settings
 .target
 
+
+# Vagrant
+.vagrant
+vagrant/.bashrc
+vagrant/sbt-launch.jar
+
 tmp

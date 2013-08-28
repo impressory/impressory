@@ -50,7 +50,7 @@ object RequestUtils {
   
   def approval(session:Session) = {
     val a = new Approval(loggedInUser(session))
-    a.cache(a.who, classOf[User])
+    a.cache.remember(classOf[User], a.who)
     a
   }
   

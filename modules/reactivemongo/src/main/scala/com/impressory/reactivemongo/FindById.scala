@@ -2,12 +2,13 @@ package com.impressory.reactivemongo
 
 import com.wbillingsley.handy._
 import com.wbillingsley.handyplay._
+import Ref._
 import reactivemongo.api._
 import reactivemongo.bson._
 import play.api.libs.concurrent.Execution.Implicits._
 import reactivemongo.core.commands.GetLastError
 
-trait FindById[T] {
+trait FindById[T <: HasBSONId] {
   
   val collName: String
   
@@ -21,7 +22,29 @@ trait FindById[T] {
   } 
   
   def manyById(ids:Seq[BSONObjectID]) = {
-    findMany(BSONDocument("_id" -> BSONDocument("$in" -> ids)))
+    /*
+     * First, fetch the items.  These might not return in the same order as the
+     * sequence of IDs, and duplicate IDs will only return once
+     */
+    val rMany = findMany(BSONDocument("_id" -> BSONDocument("$in" -> ids.toSet)))
+    
+    /*
+     * As the order of the items is unspecified, build a map from id -> item
+     */
+    val rMap = for (trav <- rMany.toRefOne) yield {
+      val pairs = for (item <- trav) yield item.id -> item
+      val map = Map(pairs.toSeq:_*)
+      map
+    }
+    
+    /*
+     * For each id in the requested sequence, return the corresponding item in the map.
+     */
+    for (
+        map <- rMap; 
+        id <- ids.toRefMany;
+        item <- Ref(map.get(id))
+    ) yield item
   }
   
   def updateAndFetch(query:BSONDocument, update:BSONDocument):Ref[T] = {

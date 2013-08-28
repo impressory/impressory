@@ -30,6 +30,14 @@
 
     margin-left: 25px;
 
+	.target {
+	  line-height: 80px;
+	  vertical-align: center;	  
+	  display: inline-block;
+	  background-color: rgba(255,128,0,0.2);
+	  margin: 5px 0 5px 0;
+	}
+
     .slide {
       display: inline-block;
       vertical-align: top;
@@ -52,12 +60,16 @@
       background-color: whitesmoke;
       margin: 5px;
     }
-    .slide.active {
-        background-color: #e0f0ff;
+    
+    .slide-body {
+      margin-right: 20px;
     }
-    .slide:hover {
-        background-color: #d0e0ff;
-        cursor: pointer;
+    
+    .control-panel {
+      width: 20px;
+      border-left: 1px solid white;
+      float: right;
+      height: 100%;
     }
 
     .make-presentation {

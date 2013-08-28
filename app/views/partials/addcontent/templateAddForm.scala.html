@@ -20,7 +20,7 @@
   
   <div style="margin-bottom: 10px;">
     <div ng-show="tagsVisible">
-      @views.html.partials.components.snipEditTags()
+      <ce-edit-tags entry="entry"></ce-edit-tags>
     </div>
     <button class="btn btn-link" ng-hide="tagsVisible" ng-click="tagsVisible = !tagsVisible">show tags</button>
     <button class="btn btn-link" ng-show="tagsVisible" ng-click="tagsVisible = !tagsVisible">hide tags</button>

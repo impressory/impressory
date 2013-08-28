@@ -4,6 +4,7 @@ import Play.current
 import com.impressory.play.model._
 import com.impressory.reactivemongo.{ DB, HasBSONId }
 import play.api.mvc.AcceptExtractors
+import com.wbillingsley.handy.RefFuture
 
 object Global extends GlobalSettings with AcceptExtractors {
 
@@ -30,6 +31,9 @@ object Global extends GlobalSettings with AcceptExtractors {
     DB.dbPwd = Play.configuration.getString("mongo.dbpwd")
 
     println(s"DB is ${DB.dbName}")
+    
+    // Set the execution context (ie the thread pool) that RefFuture work should happen on
+    RefFuture.executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
     
     RefById.lookUpMethod = new RefById.LookUp {
       

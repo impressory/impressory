@@ -4,11 +4,28 @@
 
   <div class="slides">
   
-    <div ng-repeat="entry in entry.item.entries track by $index" class="slide" >
-        <div class="slide-number">{{ $index + 1 }}</div>
-        <div class="name">{{ entry.title || ('Untitled' )}}</div>
-        <div class="kind">{{ entry.kind }}</div>
+    <div class="target">
+    	<button class="btn-command thin" ng-show="moving && (movingFrom != 0)" ng-click="moveTo(0)"><i class="icon-bullseye"></i></button>
     </div>
+
+	<span ng-repeat="e in entry.item.entries track by $index">   
+	  <div class="slide" >
+	    <div class="control-panel">  	    
+	      <button class="btn-command thin red" ng-click="remove($index)"><i class="icon-remove"></i></button>
+	      <button class="btn-command thin" ng-click="moveFrom($index)" ng-disabled="{{ entry.item.entries.length <= 1 }}"><i class="icon-move"></i></button>
+	    </div>
+	    <div class="slide-body" >
+  	      <div class="slide-number">{{ $index + 1 }}</div>
+	      <div class="name">{{ e.title || ('Untitled' )}}</div>
+	      <div class="kind">{{ e.kind }}</div>
+	    </div>
+	    
+	  </div>
+
+    <div class="target">
+	   <button class="btn-command thin" ng-show="moving && ($index != movingFrom) && ($index + 1 != movingFrom)" ng-click="moveTo($index + 1)"><i class="icon-bullseye"></i></button>
+	</div>
+	</span>
   
   </div>
 

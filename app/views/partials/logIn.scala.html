@@ -1,34 +1,38 @@
 <header-front></header-front>
 
 <div class="container">
-<div class="row-fluid">
-
-<div class="span6">
-	<h1>Log In</h1>
-	  <div class="well" ng-controller="Impressory.Controllers.LogIn.LogInForm">
-	    <form name="signup">
-	      <label>Email address</label>
-	      <input type="text" ng-model="user.email" />
-	      <label>Password</label>
-	      <input type="password" ng-model="user.password" />
-	      <div>
-	      <div ng-repeat="error in errors">
-	        <div class="alert alert-error">{{ error }}</div>
-	      </div>
-	      <button class="btn btn-primary" ng-click="submit(user)">Log In</button>
-	      </div>
-	    </form>
+<div class="row">
+	
+	<div class="col-sm-6">
+		<h1>Log In</h1>
+		  <div class="well" ng-controller="Impressory.Controllers.LogIn.LogInForm">
+		    <form name="signup" role="form" class="form">
+		      <div class="form-group">
+		        <label>Email address</label>
+		        <input type="text" class="form-control" ng-model="user.email" />
+		      </div>
+		      <div class="form-group">
+		        <label>Password</label>
+		        <input type="password" class="form-control" ng-model="user.password" />
+		      </div>
+		      <div ng-repeat="error in errors">
+		        <div class="alert alert-danger">{{ error }}</div>
+		      </div>
+		      <div class="form-group">
+		        <button class="btn btn-primary" ng-click="submit(user)">Log In</button>
+		      </div>
+		    </form>
+		  </div>
+	</div>
+	
+	<div class="col-sm-6">
+	  <h1>or</h1>
+	  
+	  <div>
+	    <p><a class="btn btn-default" href="/auth/twiiter" target="_self"><i class="icon-twitter"></i> Sign in with <b>Twitter</b></a></p>
+	    <p><a class="btn btn-default" href="/auth/github" target="_self"><i class="icon-github"></i> Sign in with <b>GitHub</b></a></p>
 	  </div>
-</div>
-
-<div class="span6">
-  <h1>or</h1>
-  
-  <div>
-  <p><a href="/auth/twitter" target="_self"><img src="https://dev.twitter.com/sites/default/files/images_documentation/sign-in-with-twitter-gray.png" alt="Sign in with Twitter"/></a></p>
-  <p><a class="btn" href="/auth/github" target="_self"><i class="icon-github"></i> Sign in with <b>GitHub</b></a></p>
-  </div>
-</div>
+	</div>
 
 </div>
 </div>

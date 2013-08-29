@@ -4,11 +4,11 @@
 
   <div class="left-edge">
 	  <div class="v-center">
-	    <button class="command" type="button" ng-click="goToPrevEntry()" ng-disabled="!hasPrevEntry()">
+	    <button class="btn-command thin" type="button" ng-click="goToPrevEntry()" ng-disabled="!hasPrevEntry()">
 	      <i class="icon-angle-left"></i>
 	    </button>	  
 	  </div>
-	  <button class="command" ng-click="goToStart()"> 
+	  <button class="btn-command thin" ng-click="goToStart()"> 
 	    <img src='/assets/images/slideSorter_full.png' alt="Slide sorter" />
 	  </button>
   </div>
@@ -38,7 +38,7 @@
   
   <div class="right-edge">
 	  <div class="v-center">
-	    <button id="next-button" type="button"  ng-disabled="!hasNextEntry()" ng-click="goToNextEntry()" >
+	    <button id="next-button" type="button"  class="btn-command thin" ng-disabled="!hasNextEntry()" ng-click="goToNextEntry()" >
 	      <i class="icon-angle-right"></i>
 	    </button>
 	  </div>

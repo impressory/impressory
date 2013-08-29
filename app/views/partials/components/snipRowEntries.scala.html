@@ -2,16 +2,16 @@
 
 <div class="list-entries rows">
   <div ng-repeat="entry in entries" class="entry">
-    <div class="row-fluid">
-      <div class="span1">
+    <div class="row">
+      <div class="col-sm-1">
         <span class="badge badge-warning score">{{ entry.voting.score || 0 }} pts</span>
         <span class="badge badge-info score">{{ entry.commentCount || 0 }} <i class="icon-comments"></i></span>
         <span class="badge badge-error" ng-show="entry.protect"><i class="icon-key"></i></span>
       </div>
-      <div class="span2">
+      <div class="col-sm-2">
         <ce-show-tags entry="entry"></ce-show-tags>
       </div>
-      <div class="span5">
+      <div class="col-sm-5">
         <div class="title"><a ng-href="viewContent?entryId={{entry.id}}">{{ entry.title || 'Untitled' }}</a></div>
         <div class="note">{{ entry.note }}</div>
         <div class="info">
@@ -23,7 +23,7 @@
           <span class="updated">updated {{ entry.updated | date:'h:mma d MMM yy' }}</span>
         </div>          
       </div>
-      <div class="span4">
+      <div class="col-sm-4">
         <div class="" ng-repeat="user in [ users.cache[entry.addedBy] ]">
           <div class="ab-label">added by</div>
           <div class="who">

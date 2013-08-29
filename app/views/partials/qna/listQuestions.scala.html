@@ -4,21 +4,21 @@
 <subheader-course course="course"></subheader-course>
 
 <div class="container">
-  <div class="qna=list-questions" ng-controller="Impressory.Controllers.QnA.List">
+  <div class="qna-list-questions" ng-controller="Impressory.Controllers.QnA.List">
   
     <h3>Q&amp;A</h3>
   
     <div ng-repeat="question in questions" class="row-fluid">
-      <div class="span2">
+      <div class="col-sm-2">
         <span class="badge badge-warning score">{{ question.score || 0 }} pts</span>
         <span class="badge badge-info score">{{ question.answerCount || 0 }} answers</i></span>
         <span class="badge">{{ question.views }} views</span>
       </div>
-      <div class="span8">
+      <div class="col-sm-8">
         <a ng-href="qna/{{ question.id }}"><h4>{{ question.title }}</h4></a>
         <span ng-repeat="tag in question.tags" class="label">{{ tag }}</span>  
       </div>
-      <div class="span2">
+      <div class="col-sm-2">
         <div class="" ng-repeat="user in [ users.cache[question.addedBy] ]">
           <div class="ab-label">asked by</div>
           <div class="who">

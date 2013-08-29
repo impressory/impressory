@@ -7,19 +7,19 @@
 
     <div class="form-inline">
       <h4>Question text</h4>
-      <div class="row-fluid">
-        <div class="span6">
-          <textarea style="width:95%" ng-model="entry.item.text"></textarea>
+      <div class="row">
+        <div class="col-sm-6">
+          <textarea class="form-control" style="width:95%" ng-model="entry.item.text"></textarea>
         </div>
-        <div class="span6">
+        <div class="col-sm-6">
           <div ng-bind-html-unsafe="preview"></div>
         </div>
       </div>
       
 
-      <div>
+      <div class="form-group">
         <h4>Number of options the user may choose</h4>
-        <input type="number" ng-model="entry.item.pick"/>
+        <input type="number" class="form-control" ng-model="entry.item.pick"/>
       </div>
       
       <h4>Options</h4>
@@ -28,13 +28,13 @@
           <th>Text</th><th>Score</th><th>Feedback</th><th></th>
         </tr></thead>
         <tr ng-repeat="option in entry.item.options">
-          <td><textarea ng-model="option.option"></textarea></td>
-          <td><input type="number" ng-model="option.score" /></td>
-          <td><textarea ng-model="option.feedback" placeholder="Optional"></textarea></td>
-          <td><button type="button" class="btn btn-danger" ng-click="remove(option)">&times;</button></td>
+          <td><textarea class="form-control" ng-model="option.option"></textarea></td>
+          <td><input  class="form-control" type="number" ng-model="option.score" /></td>
+          <td><textarea  class="form-control" ng-model="option.feedback" placeholder="Optional"></textarea></td>
+          <td><button type="button" class="btn btn-danger btn-xs" ng-click="remove(option)">&times;</button></td>
         </tr>
         <tr>
-          <td><button class="btn" ng-click="addOption()"><i class="icon-plus"></i> Add option</button>
+          <td><button class="btn btn-default" ng-click="addOption()"><i class="icon-plus"></i> Add option</button>
         </tr>
       </table>
       

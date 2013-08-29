@@ -3,7 +3,7 @@
 <div ng-controller="Impressory.Controllers.MarkdownPage.Edit" class="edit-markdown-page">
     <h4>Edit Markdown page</h4>
   
-  <div>
+  <div class="form-group">
     <ul class="nav nav-pills">
       <li ng-class="{ active: tab == 'text' }"><a href="#" ng-click="showEdit()">Text</a></li>
       <li ng-class="{ active: tab == 'preview' }"><a href="#" ng-click="showPreview()" >Preview</a></li>
@@ -11,8 +11,8 @@
     </ul>
   </div>
 
-  <div ng-controller="Impressory.Controllers.Components.FillHeight" class="edit">
-    <textarea ng-show="tab == 'text'" ng-model="entry.item.text" required="true" ng-style="{ 'height': fillHeight - 75 + 'px' }" ></textarea>
+  <div class="form-group" ng-controller="Impressory.Controllers.Components.FillHeight" class="edit">
+    <textarea class="form-control" ng-show="tab == 'text'" ng-model="entry.item.text" required="true" ng-style="{ 'height': fillHeight - 75 + 'px' }" ></textarea>
     <div ng-show="tab == 'preview'" ng-bind-html="preview" class="preview" ng-style="{ 'height': fillHeight - 75 + 'px' }" >
       
     </div>

@@ -8,7 +8,7 @@
   </div>
   
   <form class="form">
-    <textarea name="comment" ng-disabled="!entry.permissions.comment" placeholder="Leave a comment" ng-model="newComment.text"></textarea><br />
+    <textarea name="comment" ng-disabled="!entry.permissions.comment" class="form-control" placeholder="Leave a comment" ng-model="newComment.text"></textarea><br />
     <button class="btn btn-primary" type="button" ng-show="newComment.text" ng-disabled="!entry.permissions.comment" ng-click="addComment(newComment)">Comment</button>
   </form>
 </div>

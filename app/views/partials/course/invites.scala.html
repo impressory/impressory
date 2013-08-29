@@ -16,7 +16,7 @@
 
     <h4>Active invites for this course</h4>
     
-    <table class="table table-bordered table-striped">
+    <table class="table table-striped table-bordered">
       <thead>
         <tr>
           <th>Code</th>
@@ -40,31 +40,38 @@
       </tbody>
     </table>
 
-    <form class="form-inline"><fieldset>
-      <h4>Create an invite</h4>
+    <h4>Create an invite</h4>
+    <form class="form"><fieldset>      
+      <div class="form-group">
+        <label>Code</label>
+        <input ng-model="newInvite.code" class="form-control" placeholder="(Auto-generate)" type="text" value="" />
+      </div>
       
+      <div class="form-group">
+        <label>Roles this invite will grant</label>
+        <div >
+          @for(role <- com.impressory.api.CourseRole.values) {
+          <label class="invites-inline-label checkbox-inline">
+            <input type="checkbox" ng-model="newInvite.roles.@role" />
+            @role &nbsp;
+          </label>
+          }
+        </div>
+      </div>
       
-      <h5>Code</h5>
-      <p>
-        <input ng-model="newInvite.code" placeholder="(Auto-generate)" type="text" value="" />
-      </p>
+      <div class="form-group">
+      <label>Number of uses</label>
+        <div class="input-group">
+          <span class="input-group-addon">
+            <label class="checkbox-inline"><input type="checkbox" ng-model="newInvite.limitedNumber" /> limited to</label>
+          </span>
+          <input id="create-invite-number" type="number" class="form-control" ng-model="newInvite.remaining" ng-disabled="!newInvite.limitedNumber" placeholder="how many"/>
+        </div>
+      </div>
       
-      <h5>Roles this invite will grant</h5>
-      <p>
-      @for(role <- com.impressory.api.CourseRole.values) {
-        <label class="invites-inline-label checkbox">
-          <input type="checkbox" ng-model="newInvite.roles.@role" />
-          @role &nbsp;
-        </label>
-      }
-      </p>
-      
-      <h5>Number of uses</h5>
-      <p>
-      <label class="invites-inline-label checkbox"><input type="checkbox" ng-model="newInvite.limitedNumber" /> limited to</label>
-      <input id="create-invite-number" type="number" ng-model="newInvite.remaining" ng-disabled="!newInvite.limitedNumber" placeholder="how many"/>
-      </p>
-      <button class="btn btn-primary" ng-click="create(newInvite)">Create</button>
+      <div class="form-group">      
+        <button class="btn btn-primary" ng-click="create(newInvite)">Create</button>
+      </div>
     </fieldset></form>  
   
 </div>

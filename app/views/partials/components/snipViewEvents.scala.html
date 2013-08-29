@@ -23,7 +23,7 @@
               <div ng-bind-html-unsafe="madeHtml" class="question"></div>
               <ul>
                 <li ng-repeat="option in entry.item.options">
-                  <label class="checkbox option">
+                  <label class="checkbox-inline option">
                     <input type="checkbox" ng-model="option.selected" ng-change="recountSelected()" ng-disabled="!option.selected && selected.length >= entry.item.pick"/> {{ option.option }}
                   </label>
                 </li>

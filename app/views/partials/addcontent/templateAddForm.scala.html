@@ -6,19 +6,19 @@
  * panels.closeAddContent() method.
  */
 }
-<div ng-controller="Impressory.Controllers.AddContent.GenericAddForm">
+<div class="form" ng-controller="Impressory.Controllers.AddContent.GenericAddForm">
   @above
 
-  <div>
-    <label>Name</label> <input type="text" ng-model="toAdd.entry.title" placeholder="Optional" />
+  <div class="form-group">
+    <label>Name</label> <input class="form-control" type="text" ng-model="toAdd.entry.title" placeholder="Optional" />
   </div>
   
-  <div>
+  <div class="form-group">
     <label>Note</label>
-    <textarea ng-model="toAdd.entry.note" placeholder="Optional"></textarea>
+    <textarea class="form-control" ng-model="toAdd.entry.note" placeholder="Optional"></textarea>
   </div>
   
-  <div style="margin-bottom: 10px;">
+  <div class="form-group" style="margin-bottom: 10px;">
     <div ng-show="tagsVisible">
       <ce-edit-tags entry="entry"></ce-edit-tags>
     </div>
@@ -28,8 +28,8 @@
   
   <div ng-repeat="error in errors" class="alert alert-error">{{ error }}</div>
   
-  <div>
-    <button class="btn" ng-click="panels.closeAddContent()">Cancel</button>
+  <div class="form-group">
+    <button class="btn btn-default" ng-click="panels.closeAddContent()">Cancel</button>
     <button class="btn btn-primary" ng-click="submit('@itemType')">Add</button>
   </div>
 </div>

@@ -14,25 +14,37 @@
     <div class="bookDetails">
     
       <div class="form" style="float: left">
-        <label>Title</label>
-        <input type="text" ng-model="course.title" required />
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" class="form-control" ng-model="course.title" required />
+        </div>
 
-        <label>Short name</label>
-        <input type="text" ng-model="course.shortName" placeholder="Optional" />
+        <div class="form-group">
+          <label>Short name</label>
+          <input type="text" class="form-control" ng-model="course.shortName" placeholder="Optional" />
+        </div>
         
-        <label>Cover image</label>
-        <input type="text" ng-model="course.coverImageURL" placeholder="Optional" />
+        <div class="form-group">
+          <label>Cover image</label>
+          <input type="text" class="form-control" ng-model="course.coverImageURL" placeholder="Optional" />
+        </div>
 
-        <label>Short description</label>
-        <textarea ng-model="course.shortDescription" placeholder="Optional"></textarea>
+        <div class="form-group">
+          <label>Short description</label>
+          <textarea class="form-control" ng-model="course.shortDescription" placeholder="Optional"></textarea>
+        </div>
+        
+        <div class="form-group">      
+          <label>Long description</label>
+          <textarea class="form-control" ng-model="course.longDescription" placeholder="Optional"></textarea>
+        </div>
       
-        <label>Long description</label>
-        <textarea ng-model="course.longDescription" placeholder="Optional"></textarea>
-      
-        <label class="checkbox"><input type="checkbox" ng-model="course.listed" /> List publicly</label>
+        <div class="form-group">
+          <label class="checkbox-inline"><input type="checkbox" ng-model="course.listed" /> List publicly</label>
+        </div>
         
         <div>
-          <a class="btn" ng-href="/course/{{course.id}}">Cancel</a>
+          <a class="btn btn-default" ng-href="/course/{{course.id}}">Cancel</a>
           <button class="btn btn-primary" ng-click="saveCourse(course)" >Save</button>
         </div>
     </div>

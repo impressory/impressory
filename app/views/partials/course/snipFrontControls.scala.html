@@ -34,8 +34,12 @@
         <div class="inviteForm">
             <h5>Use invite code</h5>
             <form class="form-inline">
-                <input type="text" ng-model="invitePacket.code" placeholder="code" />
-                <button type="button" ng-click="useInvite(invitePacket)" class="btn">Use</button>
+              <div class="input-group">                
+                <input type="text" class="form-control" ng-model="invitePacket.code" placeholder="code" />                
+                <span class="input-group-btn">
+                	<button type="button" ng-click="useInvite(invitePacket)" class="btn btn-default">Use</button>
+                </span>
+              </div>
             </form>
         </div>
     </div>

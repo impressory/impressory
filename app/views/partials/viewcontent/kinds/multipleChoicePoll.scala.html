@@ -11,7 +11,7 @@
   </ul>  
   
   <div class="pull-right">
-    <button class="btn" ng-click="pushToStream()">Push to stream</button>
+    <button class="btn btn-default" ng-click="pushToStream()">Push to stream</button>
   </div>
   
   <div ng-bind-html-unsafe="madeHtml" class="question"></div>
@@ -19,7 +19,7 @@
   <div class="form-inline" ng-show="showing == 'options'">
     <ul>
       <li ng-repeat="option in entry.item.options">
-        <label class="checkbox option">
+        <label class="checkbox-inline option">
           <input type="checkbox" ng-model="option.selected" ng-change="recountSelected()" ng-disabled="!option.selected && selected.length >= entry.item.pick"/> {{ option.option }}
         </label>
       </li>
@@ -33,10 +33,10 @@
   <div ng-show="showing == 'results'">
     <div ng-controller="Impressory.Controllers.MCPoll.Results">
       <ul>
-        <div class="row-fluid" ng-repeat="option in entry.item.options">
-          <div class="span6">{{ option.option }}</div>
-          <div class="span1">{{ option.votes }}</div>
-          <div class="span5">
+        <div class="row" ng-repeat="option in entry.item.options">
+          <div class="col-sm-6">{{ option.option }}</div>
+          <div class="col-sm-1">{{ option.votes }}</div>
+          <div class="col-sm-5">
             <div class="progress">
               <div class="bar" ng-style="{ 'width' : option.percent + '%' }"></div>
             </div>

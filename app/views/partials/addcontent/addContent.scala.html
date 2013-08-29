@@ -2,9 +2,9 @@
 
 <div class="add-content" ng-controller="Impressory.Controllers.AddContent.TopLevel">
   <div class="">
-    <div class="row-fluid">
+    <div class="row">
     
-      <div class="span3">
+      <div class="col-sm-3">
         <h4>Category</h4>
         <ul class="nav nav-pills nav-stacked">
           <li ng-repeat="(category, items) in categories" ng-class="{ 'active' : selection.category == category }">
@@ -13,7 +13,7 @@
         </ul>
       </div>
       
-      <div class="span3">
+      <div class="col-sm-3">
         <h4>Item</h4>
         <ul class="nav nav-pills nav-stacked">
           <li ng-repeat="choice in choices" ng-class="{ 'active' : selection.kind == choice.kind }">
@@ -23,7 +23,7 @@
       
       </div>
       
-      <div class="span6">      
+      <div class="col-sm-6">      
         <div ng-switch="selection.kind">
 
           <div ng-switch-when="web page">

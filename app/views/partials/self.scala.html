@@ -10,14 +10,14 @@
       
       <div class="alert alert-warning" ng-hide="login.user">You're not logged in.</div>
       
-      <div class="row-fluid" ng-show="login.user">
+      <div class="row" ng-show="login.user">
       
-        <div class="span6">
+        <div class="col-sm-6">
 	        <div ng-switch on="editing.details">
 		        <div ng-switch-default>
 		
 		          <h3>Details          
-		            <span class="btn-group pull-right"><button class="btn-mini btn-primary" ng-click="editDetails()" disabled>Edit</button></span>
+		            <span class="btn-group pull-right"><button class="btn btn-sm btn-primary" ng-click="editDetails()" disabled>Edit</button></span>
 		          </h3>
 				                    
               <div class="media">
@@ -34,25 +34,25 @@
               <h3>Details</h3>
               
               <form class="form" ng-controller="Awarinator.Controllers.SelfEditDetailsCtrl">
-                <div class="control-group">
+                <div class="form-group">
                   <label><img ng-src="{{user.avatar || 'http://placehold.it/64x64'}}" /></label>
                   <div class="controls">
                     <select ng-model="user.avatar" ng-options="i.avatar as i.service for i in user.identities" />
                   </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                   <label class="control-label">Nickname</label>
                   <div class="controls">
                     <input type="text" ng-model="user.nickname" />
                   </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                   <label class="control-label">Name</label>
                   <div class="controls">
                     <input type="text" ng-model="user.name" />
                   </div>
                 </div>
-                <div class="control-group">
+                <div class="form-group">
                   <div class="controls">
                     <button class="btn" ng-click="cancel()">Cancel</button>
                     <button class="btn btn-primary" ng-click="save(user)">Save</button>
@@ -94,20 +94,20 @@
             <div ng-switch-default>
                 
               <h3>Login
-                <span class="btn-group pull-right"><button class="btn-mini btn-primary" ng-click="editing.email=true">Edit</button></span>
+                <span class="btn-group pull-right"><button class="btn btn-sm btn-primary" ng-click="editing.email=true">Edit</button></span>
               </h3>
 	
               <table class="table">
 	              <tr><td>Email</td><td>{{login.user.email}}</td></tr>
 	              <tr><td>Username</td><td>{{login.user.username}}</td></tr>
-	              <tr><td>Password</td><td>{{(login.user.passSet && "set") || "not set"}} <button class="btn-mini btn-danger pull-right">Change</button></td></tr>
+	              <tr><td>Password</td><td>{{(login.user.passSet && "set") || "not set"}} <button class="btn btn-sm btn-danger pull-right">Change</button></td></tr>
               </table>              
             </div>
           </div>    
     
         </div>
         
-	      <div class="span6">
+	      <div class="col-sm-6">
 	      
 	        <h3>Your identities</h3>
 	        <p>Other accounts you can log on with rather than your email and password</p>
@@ -117,12 +117,12 @@
 	        <tr ng-repeat="identity in login.user.identities">
 	        <td><image ng-src="{{identity.avatar}}"</td>
 	        <td style="text-align: center">{{identity.service}}</td>
-	        <td style="text-align: right"><button class="btn-mini btn-danger" ng-click="removeIdentity(identity)">Remove</button>
+	        <td style="text-align: right"><button class="btn btn-xs btn-danger" ng-click="removeIdentity(identity)"><i class="icon-remove"></i></button>
 	        </tr>
 	        </table>
 	        
 	        <div class="btn-group">
-	          <button class="btn dropdown-toggle" data-toggle="dropdown" >
+	          <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" >
 	          Add <span class="caret"></span>
 	          </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dlabel">

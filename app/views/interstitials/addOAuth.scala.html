@@ -4,38 +4,41 @@
 
 <div class="container">
 
-<div class="">
+  <div class="row">
 
-  <h1>Add this to your existing account?</h1>
+    <h1>Add this to your existing account?</h1>
   
-  <div>
 	<p>
-	Would you <strong>add this identity</strong> to your account here?
+	Would you like to <strong>add this identity</strong> to your account here?
 
 	(If you want to create a new account instead, log out and try again.)
 	</p>
 	
-	<div class="row-fluid">
-	  <div class="pull-left" style="margin-right: 30px;">
-	    <h4>@serviceName</h4>
-		<img class="media-object" src='@mem.avatar.getOrElse("")' />
-		<label>@mem.username</label>
-	  </div>
-	  
-	  <div class="pull-left" >
-	    <h4>Impressory</h4>
-		<img class="media-object" src='@user.avatar.getOrElse("")' />
-		<label>@user.nickname.orElse(user.username).orElse(user.name)</label>
-	  </div>
-	</div>
+  </div>	
+
+  <div class="row">
+    <div class="pull-left" style="margin-right: 30px;">
+      <h4>@serviceName</h4>
+      <img class="media-object" src='@mem.avatar.getOrElse("")' />
+      <label>@mem.username</label>
+    </div>
+    
+    <div class="pull-left" >
+      <h4>Impressory</h4>
+      <img class="media-object" src='@user.avatar.getOrElse("")' />
+      <label>@user.nickname.orElse(user.username).orElse(user.name)</label>
+    </div>
+  </div>
 	
-	<hr />
-	<form method="POST" action="add">
-      <a class="btn" href="/" target="_self">Cancel</a>
-      <button type="submit" class="btn btn-primary">Yes, add it</button>		
-	</form>
+  <hr />
+  <div class="row">
+    <form method="POST" action="register">
+      <div class="form-group">
+        <a class="btn btn-default" href="/" target="_self">Cancel</a>
+        <button type="submit" class="btn btn-primary">Yes, add it</button>
+      </div>		
+    </form>
   </div>
 
-</div>	
 </div>
 }

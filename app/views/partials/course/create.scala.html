@@ -5,24 +5,34 @@
 <div class="container" ng-controller="Impressory.Controllers.Course.Create">
   <h1>Create a course</h1>
 
-  <label>Title</label> 
-  <input type="text" ng-model="course.title" /> 
-  
-  <label>Short description</label>
-  <textarea type="text" ng-model="course.shortDescription"></textarea>
+  <form role="form">
 
-  <p>
-    <i>You can edit more details after we've created the course.</i>
-  </p>
+    <div class="form-group">  
+      <label>Title</label> 
+      <input type="text" class="form-control" ng-model="course.title" /> 
+    </div>
   
-  <div ng-repeat="error in errors">
-    <div class="alert alert-error">{{ error }}</div>
-  </div>
+    <div class="form-group">  
+      <label>Short description</label>
+      <textarea type="text" class="form-control" ng-model="course.shortDescription"></textarea>
+    </div>
 
-  <div>
-    <a href="/" class="btn">Cancel</a>
-    <button class="btn btn-primary" ng-click="save(course)">Create</button>
-  </div>
+    <div class="form-group">  
+      <i>You can edit more details after we've created the course.</i>
+    </div>
+  
+    <div ng-repeat="error in errors">
+      <div class="alert alert-error">{{ error }}</div>
+    </div>
+
+    <div class="form-group">  
+      <div>
+        <a href="/" class="btn btn-default">Cancel</a>
+        <button class="btn btn-primary" ng-click="save(course)">Create</button>
+      </div>
+    </div>
+  
+  </form>
 
 </div>
 

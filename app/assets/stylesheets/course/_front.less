@@ -1,6 +1,4 @@
 
-@topHalfHeight: 300px;
-
 .course-navbar {
     background-image: url('/assets/images/sky.jpg');
     background-size: cover;
@@ -34,10 +32,8 @@
 
 .course-cover-page {
   
-  .topHalf {
-    margin: 18px @sidePadD 0 @sidePadD; 
-  }
-  
+  margin-top: 20px;
+    
   .controlSect {
       padding: 5px;
       background-color: rgba(0,0,0,0.05);
@@ -46,9 +42,9 @@
   }
   
   .controls {
-      height: @topHalfHeight;
       float: right;
       margin-right: @sidePadD;
+      	
   
       .basicActions, .adminActions, .yourRoles {
           .controlSect;
@@ -82,10 +78,10 @@
   
   
   .bookDetails {
-      max-height: @topHalfHeight;
       margin-left: @sidePadD;
       margin-right: @sidePadD;
       label {
+          display: block;
           color: gray;
           margin: 5px 0 0 0;
       }

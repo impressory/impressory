@@ -1,65 +1,58 @@
 @()
 
 <div class="edit-tags" ng-controller="Impressory.Controllers.ViewContent.EditDetails">
-  <div class="">
+  <div class="container">
     <div class="">
   
-      <form class="form-horizontal">
-          <div class="control-group">
-              <label class="control-label">Content ID</label>
-              <div class="controls">
-                <label class="entry-id">{{ entry.id }} <a ng-show="!showEmbedCode" ng-click="showEmbedCode=true">embed...</a></label>
+      <form class="form form-horizontal">
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Content ID</label>
+              <p class="col-sm-10 form-control-static">{{ entry.id }} <button ng-show="!showEmbedCode" class="btn btn-link" ng-click="showEmbedCode=true">embed...</button></label>
+          </div>
+          <div class="form-group" ng-show="showEmbedCode">
+              <label class="col-sm-2 control-label">Embed code</label>
+              <div class="col-sm-10">
+                <textarea class="form-control" readonly>{{ embedCode }}</textarea>
               </div>
           </div>
-          <div class="control-group" ng-show="showEmbedCode">
-              <label class="control-label">Embed code</label>
-              <div class="controls">
-                <textarea readonly>{{ embedCode }}</textarea>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Name</label>
+              <div class="col-sm-10">
+                <input ng-model="entry.title" class="form-control" ng-show="viewing.Content.display.permissions.edit" class="ce_name" type="text" placeholder="Optional" />
+                <p class="form-control-static" ng-hide="viewing.Content.display.permissions.edit">{{ entry.title || '(None)' }}</p>
               </div>
           </div>
-          <div class="control-group">
-              <label class="control-label">Name</label>
-              <div class="controls">
-                <input ng-model="entry.title" ng-show="viewing.Content.display.permissions.edit" class="ce_name" type="text" placeholder="Optional" />
-                <label class="entry-id" ng-hide="viewing.Content.display.permissions.edit">{{ entry.title || '(None)' }}</label>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Note</label>
+              <div class="col-sm-10">
+                <textarea ng-model="entry.note" class="form-control" class="form-control" type="text" placeholder="Optional" ng-show="viewing.Content.display.permissions.edit"></textarea>
+                <p class="form-control-static" ng-hide="viewing.Content.display.permissions.edit">{{ entry.note || '(None)' }}</p>
               </div>
           </div>
-          <div class="control-group">
-              <label class="control-label">Note</label>
-              <div class="controls">
-                <textarea ng-model="entry.note" class="ce_note" type="text" placeholder="Optional" ng-show="viewing.Content.display.permissions.edit"></textarea>
-                <label class="entry-id" ng-hide="viewing.Content.display.permissions.edit">{{ entry.note || '(None)' }}</label>
-              </div>
-          </div>
-          <div class="control-group">
-              <label class="control-label">Tags</label>
-              <div class="controls">
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Tags</label>
+              <div class="col-sm-10">
                 <ce-edit-tags entry="entry"></ce-edit-tags>
               </div>
           </div>
-          <div class="control-group">
-            <label class="control-label">Flags</label>
-            <div class="controls">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Flags</label>
+            <div class="col-sm-10">
               <div class="flags">
-                <label class="checkbox"><input type="checkbox" ng-model="entry.settings.inTrash" class="in-trash" ng-disabled="!viewing.Content.display.permissions.edit" /> In trash</label>
-                <label class="checkbox"><input type="checkbox" ng-model="entry.settings.showFirst" class="show-first" ng-disabled="!viewing.Content.display.permissions.edit" /> Show first</label>
-                <label class="checkbox"><input type="checkbox" ng-model="entry.settings.protect" class="protect" ng-disabled="!viewing.Content.display.permissions.edit" /> Protect</label>
+                <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.inTrash" class="in-trash" ng-disabled="!viewing.Content.display.permissions.edit" /> In trash</label>
+                <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.showFirst" class="show-first" ng-disabled="!viewing.Content.display.permissions.edit" /> Show first</label>
+                <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.protect" class="protect" ng-disabled="!viewing.Content.display.permissions.edit" /> Protect</label>
               </div>
             </div>          
           </div>
   
-          <div class="control-group">
-            <label class="control-label">&nbsp;</label>
-            <div class="controls">
-            <div ng-repeat="error in errors" class="alert alert-error">
-              {{ error }}
-            </div>
-            </div>          
-          </div>        
+          <div ng-repeat="error in errors" class="col-sm-offset-2 col-sm-10 alert alert-error">
+            {{ error }}
+          </div>
   
-          <div class="control-group">
-            <label class="control-label">&nbsp;</label>
-            <div class="controls">
+          <div class="form-group">
+            <label class="col-sm-2">&nbsp;</label>
+            <div class="col-sm-10">
               <div>
                   <button type="button" class="btn" ng-click="panels.toggleEditDetails()">Close</button>
                   <button type="button" ng-show="viewing.Content.display.permissions.edit" class="btn btn-primary" ng-click="submit()">Save</button>

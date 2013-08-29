@@ -8,14 +8,15 @@
     <span class="topic" ng-repeat="topic in entry.tags.topics">{{ topic }}<button ng-show="entry.permissions.edit" ng-click="deleteTopic(topic)" class="delete">&times;</button></span>
   </div>
   <div ng-show="entry.permissions.edit" >
+
     <div >
-        <input type="text" class="add-tag-inp" ng-model="toAdd" />
+        <input type="text" class="form-control" ng-model="toAdd" />
     </div>
     <div >
-        <button ng-click="addAdj(toAdd)" class="btn adj"><i class="icon-plus"></i> Adjective</button>
-        <button ng-click="addNoun(toAdd)" class="btn noun"><i class="icon-plus"></i> Noun</button>
+        <button ng-click="addAdj(toAdd)" class="btn btn-sm btn-default adj"><i class="icon-plus"></i> Adjective</button>
+        <button ng-click="addNoun(toAdd)" class="btn btn-sm btn-default noun"><i class="icon-plus"></i> Noun</button>
         about
-        <button ng-click="addTopic(toAdd)" class="btn topic"><i class="icon-plus"></i> Topic</button>
+        <button ng-click="addTopic(toAdd)" class="btn btn-sm btn-default topic"><i class="icon-plus"></i> Topic</button>
     </div>
   </div>
 </div>

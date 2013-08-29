@@ -35,7 +35,7 @@ define(["./base"], (l) ->
   Impressory.angularApp.directive("ceShowTags", () -> 
     {
       restrict: 'E'
-      scope: { entry: '=entry', viewMode: '@' }
+      scope: { entry: '=entry', viewMode: '@', onTopicClick: '&', onNounClick: '&', onAdjClick: '&' }
       templateUrl: "directive_ce_show_tags.html"
     }
   )  

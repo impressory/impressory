@@ -26,6 +26,10 @@ define(["./base"], (l) ->
         tags = entry.tags.topics.concat(entry.tags.nouns).concat(entry.tags.adjs)
         tags.filter((tag) -> tag?.indexOf($scope.tagFilter) >= 0).length > 0
       )      
+      
+    $scope.onTagClick = (tag) ->
+      console.log(tag)
+      $scope.tagFilter = tag
 
     # Filters entries to show	
     $scope.applyFilter = (entry) ->

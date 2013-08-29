@@ -1,10 +1,8 @@
-@()
-
-<span ng-controller="Impressory.Controllers.Components.EditTags" class="component-edit-tags">
+<span class="component-edit-tags">
   <span class="tags">
-    <span class="adj" ng-repeat="adj in entry.tags.adjectives">{{ adj }}</span>
-    <span class="noun" ng-repeat="noun in entry.tags.nouns">{{ noun }}</span>
+    <button class="adj" ng-repeat="adj in entry.tags.adjectives" ng-click="onAdjClick({ tag: adj })">{{ adj }}</button>
+    <button class="noun" ng-repeat="noun in entry.tags.nouns" ng-click="onNounClick({ tag: noun })">{{ noun }}</button>
     <span class="preposition">about</span>
-    <span class="topic" ng-repeat="topic in entry.tags.topics">{{ topic }}</span>
+    <button class="topic" ng-repeat="topic in entry.tags.topics" ng-click="onTopicClick({ tag: topic })">{{ topic }}</button>
   </span>
 </span>

@@ -1,7 +1,8 @@
 @()
 
 <div class="list-entries rows">
-  <div ng-repeat="entry in entries" class="entry">
+
+  <div ng-repeat="entry in entries" class="entry" ng-show="applyFilter(entry)">
     <div class="row">
       <div class="col-sm-1">
         <span class="badge badge-warning score">{{ entry.voting.score || 0 }} pts</span>

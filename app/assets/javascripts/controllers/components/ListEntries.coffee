@@ -16,6 +16,20 @@ define(["./base"], (l) ->
       viewingUsers.request(users)
       
     $scope.$watch('entries', (nv, ov) -> updateUsers())
+    
+    # String to look for in tags
+    $scope.tagFilter = null
+    
+	# Returns true for only those entries whose tags contain the tagFilter string
+    applyTagFilter = (entry) ->
+      !($scope.tagFilter?) || ( 
+        tags = entry.tags.topics.concat(entry.tags.nouns).concat(entry.tags.adjs)
+        tags.filter((tag) -> tag?.indexOf($scope.tagFilter) >= 0).length > 0
+      )      
+
+    # Filters entries to show	
+    $scope.applyFilter = (entry) ->
+      applyTagFilter(entry)        
       
     updateUsers()
   ]

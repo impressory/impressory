@@ -1,0 +1,35 @@
+
+<div class="form">
+
+  <div class="form-group">
+    <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.inNews" class="in-trash" ng-disabled="!entry.permissions.edit" /> In news</label>
+    <p>
+      Whether to show this entry in the newsfeed
+    </p>
+  </div>
+  <div class="form-group">
+    <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.inIndex" class="in-trash" ng-disabled="!entry.permissions.edit" /> In index</label>
+    <p>
+      Whether to show this entry in topic lookups
+    </p>
+  </div>
+  <div class="form-group">
+    <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.showFirst" class="show-first" ng-disabled="!entry.permissions.edit" /> Show first</label>
+    <p>
+      Whether topic queries should prefer this item
+    </p>
+  </div>
+  <div class="form-group">
+    <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.protect" class="protect" ng-disabled="!entry.permissions.protect" /> Protect</label>
+    <p>
+      Whether to restrict editing to users with the Moderator role
+    </p>
+  </div>
+  <div class="form-group">
+    <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.inTrash" class="in-trash" ng-disabled="!entry.permissions.edit" /> In trash</label>
+    <p>
+      Content marked as "in trash" will not appear in the news, queries, or topic lookups
+    </p>
+  </div>
+
+</div>

@@ -47,4 +47,12 @@ define(["./base"], (l) ->
       templateUrl: "directive_ce_edit_tags.html"
     }
   )  
+
+  Impressory.angularApp.directive("ceEditSettings", () -> 
+    {
+      restrict: 'E'
+      scope: { entry: '=entry', viewMode: '@' }
+      templateUrl: "directive_ce_edit_settings.html"
+    }
+  )  
 )

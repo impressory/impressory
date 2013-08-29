@@ -1,9 +1,10 @@
 @()
 
-<div class="edit-tags" ng-controller="Impressory.Controllers.ViewContent.EditDetails">
-  <div class="container">
-    <div class="">
+<div class="container" ng-controller="Impressory.Controllers.ViewContent.EditDetails">
+  <div class="row">
+    <div class="col-sm-6">
   
+      <h3>Details</h3>
       <form class="form form-horizontal">
           <div class="form-group">
               <label class="col-sm-2 control-label">Content ID</label>
@@ -35,16 +36,6 @@
                 <ce-edit-tags entry="entry"></ce-edit-tags>
               </div>
           </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Flags</label>
-            <div class="col-sm-10">
-              <div class="flags">
-                <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.inTrash" class="in-trash" ng-disabled="!viewing.Content.display.permissions.edit" /> In trash</label>
-                <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.showFirst" class="show-first" ng-disabled="!viewing.Content.display.permissions.edit" /> Show first</label>
-                <label class="checkbox-inline"><input type="checkbox" ng-model="entry.settings.protect" class="protect" ng-disabled="!viewing.Content.display.permissions.edit" /> Protect</label>
-              </div>
-            </div>          
-          </div>
   
           <div ng-repeat="error in errors" class="col-sm-offset-2 col-sm-10 alert alert-error">
             {{ error }}
@@ -62,6 +53,10 @@
       </form>
   
   
+    </div>
+    <div class="col-sm-6">
+      <h3>Settings</h3>
+      <ce-edit-settings entry="entry"></ce-edit-settings>
     </div>
   </div>
 </div>

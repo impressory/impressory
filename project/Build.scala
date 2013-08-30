@@ -24,7 +24,8 @@ object ApplicationBuild extends Build {
     val appDependencies = Seq(
       "com.wbillingsley" %% "handy" % "0.4-SNAPSHOT",
       "com.wbillingsley" %% "handy-play" % "0.4-SNAPSHOT",
-      "com.wbillingsley" %% "eventroom" % "0.1-SNAPSHOT"
+      "com.wbillingsley" %% "eventroom" % "0.1-SNAPSHOT",
+      "com.wbillingsley" %% "handy-play-oauth" % "0.1-SNAPSHOT"
     )
 
   lazy val aaaMain = play.Project(appName, appVersion, appDependencies).settings(

@@ -23,17 +23,20 @@ object Global extends GlobalSettings with AcceptExtractors {
   
   override def onStart(app: Application) {
     
+    // Set default content for various content entry kinds
     setDefaultContent()
     
+    // Set up the database
     DB.dbName = Play.configuration.getString("mongo.dbname").getOrElse("impressory")
     DB.connectionString = Play.configuration.getString("mongo.connection").getOrElse("localhost:27017")
     DB.dbUser = Play.configuration.getString("mongo.dbuser")
     DB.dbPwd = Play.configuration.getString("mongo.dbpwd")
-
-    println(s"DB is ${DB.dbName}")
     
     // Set the execution context (ie the thread pool) that RefFuture work should happen on
     RefFuture.executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+    // Set the completion action for OAuth
+    com.wbillingsley.handy.playoauth.PlayAuth.onAuth = com.impressory.auth.controllers.InterstitialController.onOAuth
     
     RefById.lookUpMethod = new RefById.LookUp {
       

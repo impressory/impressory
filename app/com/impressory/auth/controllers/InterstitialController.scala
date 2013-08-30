@@ -7,10 +7,12 @@ import play.api.Play
 import Play.current
 import com.wbillingsley.encrypt.Encrypt
 import com.wbillingsley.handy._
+import com.wbillingsley.handy.playoauth.UserRecord
 import Ref._
 import com.impressory.play.model._
 import com.impressory.play.controllers.ResultConversions._
 import com.impressory.play.controllers._
+import play.api.mvc.AnyContent
 
 /**
  * Controller for the interstitial form confirming that a new account should be registered
@@ -18,13 +20,37 @@ import com.impressory.play.controllers._
 object InterstitialController extends Controller {
   
   val sessionVar = "interstitialMemory"
+    
+  /**
+   * Handles the completion of OAuth authorisations
+   */
+  def onOAuth(rur:Ref[UserRecord], request:Request[AnyContent]) = {    
+    val res = for (
+      mem <- rur;
+      user <- optionally(User.byIdentity("github", mem.id))
+    ) yield {
+      user match {
+        case Some(u) => {
+          val session = RequestUtils.withLoggedInUser(request.session - "oauth_state", u.itself)
+          Redirect(com.impressory.play.controllers.routes.Application.index).withSession(session)
+        } 
+        case None => {
+          val session = request.session + (InterstitialController.sessionVar -> mem.toJsonString) - "oauth_state"
+          Redirect(routes.InterstitialController.viewRegisterUser(Some("GitHub"))).withSession(session)
+        }
+      }
+    }
+    
+    ResultConversions.refResultToResult(res)(request)
+  }
+    
   
   /**
    * Interstitial saying this account hasn't been registered yet
    */
   def viewRegisterUser(serviceName:Option[String]) = Action { implicit request => 
     val memString = request.session.get(sessionVar)
-    val mem = for (s <- memString; m <- Json.parse(s).asOpt[InterstitialMemory]) yield m
+    val mem = for (s <- memString; m <- Json.parse(s).asOpt[UserRecord]) yield m
     
     val resp = for (
       details <- Ref(mem) orIfNone Refused("There appear to be no user details to register");
@@ -43,7 +69,7 @@ object InterstitialController extends Controller {
    */
   def registerUser = Action { implicit request => 
     val memString = request.session.get(sessionVar)
-    val mem = for (s <- memString; m <- Json.parse(s).asOpt[InterstitialMemory]) yield m
+    val mem = for (s <- memString; m <- Json.parse(s).asOpt[UserRecord]) yield m
     
     val resp = for (
       details <- Ref(mem) orIfNone Refused("There appear to be no user details to register");
@@ -66,7 +92,7 @@ object InterstitialController extends Controller {
    */
   def addIdentity = Action { implicit request => 
     val memString = request.session.get(sessionVar)
-    val mem = for (s <- memString; m <- Json.parse(s).asOpt[InterstitialMemory]) yield m
+    val mem = for (s <- memString; m <- Json.parse(s).asOpt[UserRecord]) yield m
     
     val resp = for (
       details <- Ref(mem) orIfNone Refused("There appear to be no user details to register");

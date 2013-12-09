@@ -2,16 +2,18 @@ package com.impressory.play.model
 
 import com.wbillingsley.handy._
 import Ref._
-
 import _root_.scala.collection.mutable
-
 import java.net.{URISyntaxException, URI}
+
+import com.impressory.api._
+import com.impressory.reactivemongo.ContentEntryDAO
+import com.impressory.security.Permissions
 import Permissions._
-import com.impressory.api.CanSendToClient
-import play.api.libs.json.JsValue
 
 
-case class EntryInSequence(entry: ContentEntry, index:Option[Int]) extends CanSendToClient
+
+
+
 
 /**
  * Point of entry for making changes to ContentEntries.
@@ -19,19 +21,6 @@ case class EntryInSequence(entry: ContentEntry, index:Option[Int]) extends CanSe
 object ContentModel {
   
   val defaultTopic = "page one"
-  
-  def update(ce:ContentEntry, jsVal: JsValue) = {
-    
-    import com.impressory.play.json.ContentEntryToJson._
-    
-    ce.title = (jsVal \ "title").asOpt[String]
-    ce.note = (jsVal \ "note").asOpt[String]
-    ce.tags = (jsVal \ "tags").asOpt[CETags].getOrElse(CETags())
-    ce.settings = (jsVal \ "settings").asOpt[CESettings].getOrElse(CESettings())
-    
-    for (p <- (jsVal \ "setPublished").asOpt[Boolean]) { ce.setPublished(p) }
-    ce
-  }      
   
   /**
    * Return true if the ContentEntry matches all filters
@@ -71,7 +60,7 @@ object ContentModel {
    */
   def recommendCE(course:Ref[Course], tok:Approval[User], topic:Option[String], filters:Map[String,String]):Ref[ContentEntry] = {
     (for (approved <- tok ask Read(course)) yield {
-      val all = ContentEntry.byTopic(course, topic.getOrElse(defaultTopic))
+      val all = ContentEntryDAO.byTopic(course, topic.getOrElse(defaultTopic))
       val filtered = all.withFilter(applyFilters(_, filters))
       pick(filtered)
     }).flatten 
@@ -79,7 +68,7 @@ object ContentModel {
 
   def entriesForTopic(course:Ref[Course], tok:Approval[User], topic:Option[String]):RefMany[ContentEntry] = {
     (for (approved <- tok ask Read(course)) yield {
-      val all = ContentEntry.byTopic(course, topic.getOrElse(defaultTopic))
+      val all = ContentEntryDAO.byTopic(course, topic.getOrElse(defaultTopic))
       all
     }).flatten 
   }  
@@ -91,14 +80,14 @@ object ContentModel {
   
   def allEntries(course:Ref[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
     (for (approved <- tok ask Read(course)) yield {
-      val all = ContentEntry.inIndexByCourse(course)
+      val all = ContentEntryDAO.inIndexByCourse(course)
       all
     }).flatten 
   }
 
   def recentEntries(course:Ref[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
     (for (approved <- tok ask Read(course)) yield {
-      val all = ContentEntry.recentInNewsByCourse(course)
+      val all = ContentEntryDAO.recentInNewsByCourse(course)
       all
     }).flatten 
   }  
@@ -125,7 +114,7 @@ object ContentModel {
                   case Some(cs: ContentSequence) => cs.contains(e.itself)
                   case _ => false
                 }
-              } orIfNone ContentSequence.containing(e.itself).first
+              } orIfNone ContentEntryDAO.sequencesContaining(e.itself).first
               
               
               (for (s <- checkedSeq) yield {

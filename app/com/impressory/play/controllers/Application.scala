@@ -4,11 +4,11 @@ import play.api._
 import play.api.mvc._
 import com.wbillingsley.handy._
 import Ref._
-import ResultConversions._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.wbillingsley.handy.appbase.DataAction
+import com.impressory.json.UserToJson
 
-import com.impressory.play.json.JsonConverters._
 
 object Application extends Controller {  
   
@@ -28,9 +28,13 @@ object Application extends Controller {
     
 
   
-  def index = Action { implicit request => 
-    angularMain    
+  def index = DataAction.returning.result { implicit request =>
+    for {
+      j <- optionally(request.user.flatMap(UserToJson.toJsonForSelf(_)))
+    } yield Ok(views.html.main(j))  
   }
+  
+  
   
   /*--
    * Routes that are only used at the client and should be redirected to index:
@@ -41,18 +45,7 @@ object Application extends Controller {
   def viewGroup(id:String) = index
   def viewCommand = index
   
-  
-  
-  def angularMain(implicit request:Request[_]) = {
-    import com.impressory.play.json.UserToJson._
-    
-    for (
-        u <- optionally(request.user.toJsonForSelf)
-    ) yield {
-      Ok(views.html.main(u))  
-    }
-  }
-  
+
   /**
    * We put the partial templates into this method so that adding a partial 
    * template does not require editing the routes file. 

@@ -3,41 +3,44 @@ package com.impressory.play.model
 import com.wbillingsley.handy._
 import Ref._
 import play.api.libs.json._
-import com.impressory.api.UserError
 
-object MarkdownPageModel {
+import com.impressory.api._
+import com.impressory.plugins._
+
+object MarkdownPageModel extends ContentItemJsonHandler[MarkdownPage] {
 
   var defaultText = "The default text for Markdown Pages has not been set yet"
   
-  def toJson(mp:MarkdownPage) = Json.obj(
+  val clazz = classOf[MarkdownPage]
+  
+  val kind = MarkdownPage.itemType
+    
+  def urlChecker(blank:ContentEntry, url:String) = RefNone
+    
+  def toJsonFor(mp:MarkdownPage, appr:Approval[User]) = Json.obj(
     "text" -> mp.text,
     "version" -> mp.version
-  )
-    
-  def create(course: Ref[Course], approval: Approval[User], ce: ContentEntry, text: String) = {
-    ce.tags.site = None
-    val mp = new MarkdownPage(text)
-    mp.itself
+  ).itself
+  
+  def createFromJson(blank:ContentEntry, json:JsValue) = {
+    blank.copy(
+      tags = blank.tags.copy(site=None),
+      item = Some(new MarkdownPage((json \ "item" \ "text").asOpt[String] getOrElse defaultText))
+    ).itself
   }
 
-  def create(course: Ref[Course], approval: Approval[User], ce: ContentEntry, data: JsValue) = {
-    ce.tags.site = None
-    val mp = new MarkdownPage((data \ "item" \ "text").asOpt[String] getOrElse defaultText)
-    mp.itself
-  }
+  def updateFromJson(before:ContentEntry, json:JsValue) = {
+    val text = (json \ "item" \ "text").asOpt[String]
+    val version = (json \ "item" \ "version").asOpt[Int].getOrElse(0)
 
-  def updateItem(ce: ContentEntry, data: JsValue) = {
-    val text = (data \ "item" \ "text").asOpt[String]
-    val version = (data \ "item" \ "version").asOpt[Int].getOrElse(0)
-
-    ce.item match {
+    before.item match {
       case Some(mp: MarkdownPage) => {
         if (mp.version == version) {
           for (t <- text) {
             mp.text = t
             mp.version = mp.version + 1
           }
-          ce.itself
+          before.itself
         } else {
           RefFailed(UserError("The version of the page has changed"))
         }

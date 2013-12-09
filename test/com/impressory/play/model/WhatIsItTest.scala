@@ -6,6 +6,7 @@ import play.api.test.Helpers._
 import com.wbillingsley.handy._
 import Ref._
 import org.specs2.matcher.EventuallyMatchers._
+import com.impressory.plugins.ContentTypeListing
 
 class WhatIsItTest extends Specification {
       

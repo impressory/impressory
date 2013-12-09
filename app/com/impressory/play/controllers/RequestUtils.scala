@@ -5,54 +5,12 @@ import play.api.mvc._
 
 import com.wbillingsley.handy._
 import Ref._
-import ResultConversions._
-import scala.concurrent.Future
-import reactivemongo.bson._
 
-import com.impressory.play.model._
-import com.impressory.play.json.JsonConverters._
+import com.impressory.api._
 
 
 object RequestUtils {
 
-  /*---
-   * Session management
-   *---*/
-  
-  def withLoggedInUser(session:Session, uid:String):Session = {
-    session + ("userid" -> uid)
-  }
-
-  def withSessionKey(session:Session, key:String):Session = {
-    session + ("sessionkey" -> key)
-  }
-
-  def sessionKey(session:Session) = {
-    session.get("sessionkey")
-  }
-
-  def newSessionKey:String = (BSONObjectID.generate).stringify
-
-  def withLoggedInUser(session:Session, r:Ref[User]):Session = {    
-    
-    r.getId match {
-      case Some(rid) => withLoggedInUser(session, rid.stringify)
-      case _ => session - "userid"
-    }
-  }
-
-  def loggedInUser(session:Session):Ref[User] = {
-    session.get("userid") match {
-      case Some(id) => new LazyId(classOf[User], id)
-      case None => RefNone
-    }
-  }  
-  
-  def approval(session:Session) = {
-    val a = new Approval(loggedInUser(session))
-    a.cache.remember(classOf[User], a.who)
-    a
-  }
   
   /*----
    * Form utilities

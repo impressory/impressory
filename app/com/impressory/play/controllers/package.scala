@@ -5,25 +5,14 @@ import play.api.mvc.Request
 package object controllers {
   
   /**
-   * Implicit class making it easy to generate an Approval token or a 
-   * reference to the logged in User from the request.
-   */
-  implicit class RequestUser[AC](val request:Request[AC]) extends AnyVal {
-    
-    /**
-     * A reference to the logged in user.
-     */
-    def user = RequestUtils.loggedInUser(request.session)
-   
-    /**
-     * An Approval token for the logged in user (which may be none).
-     */
-    def approval = RequestUtils.approval(request.session)
-    
-    /**
-     * The sessionKey in the cookie
-     */
-    def sessionKey = RequestUtils.sessionKey(request.session)
-  }  
+   * DataAction should retrieve user information using the UserDAO
+   * from our database classes. (It includes methods for bySessionKey, etc) 
+   */  
+  implicit val userProvider = com.impressory.reactivemongo.UserDAO
 
+  def refUser(id:String) = com.impressory.play.model.refUser(id)
+  def refCourse(id:String) = com.impressory.play.model.refCourse(id)
+  def refContentEntry(id:String) = com.impressory.play.model.refContentEntry(id)
+  
+  
 }

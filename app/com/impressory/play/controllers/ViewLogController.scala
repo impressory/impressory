@@ -7,13 +7,8 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 import com.impressory.api._
-import com.impressory.play.model._
-import ResultConversions._
-import play.api.libs.iteratee.Enumerator
-import play.api.libs.iteratee.Enumeratee
-import com.impressory.play.json.JsonConverters
-import JsonConverters._
 import com.impressory.reactivemongo.ViewLog
+import com.wbillingsley.handy.appbase.DataAction
 
 object ViewLogController extends Controller {
   
@@ -23,7 +18,7 @@ object ViewLogController extends Controller {
   /**
    * Updates the viewing statistics for a pageview
    */
-  def addView = Action(parse.json) { implicit request => 
+  def addView = DataAction.returning.result(parse.json) { implicit request => 
     
     val user = request.user
     val session = request.sessionKey
@@ -39,7 +34,7 @@ object ViewLogController extends Controller {
         course = refCourse(cId),
         entry = e,
         user = user,
-        session = session,
+        session = Some(request.sessionKey),
         template = template,
         params = params,
         how = Some("webapp")

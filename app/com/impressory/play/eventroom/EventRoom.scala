@@ -6,14 +6,14 @@ import com.wbillingsley.handy.Ref._
 import com.wbillingsley.eventroom.Subscribe
 import com.wbillingsley.eventroom.Unsubscribe
 
-import com.impressory.play.model._
+import com.impressory.api._
 
 case class Mem(u: Option[User]) extends Member {
   
   val nickname = u.flatMap(_.nickname).getOrElse("Anonymous")
   
   implicit def toJson = Some(Json.obj(
-    "id" -> u.map(_.id.stringify),
+    "id" -> u.map(_.id),
     "nickname" -> nickname 
   ))
 

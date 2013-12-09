@@ -7,70 +7,64 @@ import com.wbillingsley.handy._
 import Ref._
 import play.api.Play
 import Play.current
-import com.impressory.play.model._
-import com.impressory.play.controllers.{RequestUtils, RequestUser, ResultConversions}
-import com.impressory.play.controllers.ResultConversions._
+import com.impressory.api._
+import com.impressory.play.model.refCourse
 import play.api.libs.ws.WS.WSRequest
 import play.api.libs.oauth.OAuthCalculator
+import com.impressory.reactivemongo.UserDAO
+import com.wbillingsley.handy.appbase.DataAction
+import com.wbillingsley.handy.playoauth.OAuthDetails
+import com.wbillingsley.handy.playoauth.UserRecord
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
+import com.wbillingsley.handy.playoauth.PlayAuth
+import scala.util.Success
+import com.wbillingsley.handy.appbase.DataAction.BodyAction
+import play.api.mvc.BodyParsers
+import play.api.mvc.EssentialAction
 
 
 object LTIAuthController extends Controller {
   
+  import com.impressory.play.controllers.userProvider
+  
   /**
    * Logs a user in 
    */
-  def ltiLaunch(courseId:String) = Action { implicit request =>
+  def ltiLaunch(courseId:String) = EssentialAction { request =>
+    ltiBodyAction(courseId).apply(request)
+  }
     
+  def ltiBodyAction(courseId:String) = new BodyAction(BodyParsers.parse.anyContent)({ implicit request =>
     println(request.body.asFormUrlEncoded)
     
-    val resp = (for (
+    val resp = for {
       course <- refCourse(courseId);
       valid <- validateOAuthSignature(request, course.lti.key, course.lti.secret);
       params <- Ref(request.body.asFormUrlEncoded);
       tool_consumer_instance_guid <- params.get("tool_consumer_instance_guid").flatMap(_.headOption) orIfNone RefFailed(Refused("The LTI data from your provider did not include a user id"));
-      user_id <- params.get("user_id").flatMap(_.headOption) orIfNone RefFailed(Refused("The LTI data from your provider did not include a user id"))      
-    ) yield {
+      user_id <- params.get("user_id").flatMap(_.headOption) orIfNone RefFailed(Refused("The LTI data from your provider did not include a user id"))
+      oauthDetails = OAuthDetails(
+        userRecord = UserRecord(
+            service=tool_consumer_instance_guid, 
+            id=user_id,
+            name=None,
+            username=None,
+            nickname=None,
+            avatar=None
+        ),
+        raw = Some(Json.obj(
+          "tool_consumer_instance_guid" -> tool_consumer_instance_guid,
+          "user_id" -> user_id
+        ))
+      )
+      act = PlayAuth.onAuth(Success(oauthDetails))
       
-      (for (user <- User.byIdentity(tool_consumer_instance_guid, user_id)) yield {
-        val session = RequestUtils.withLoggedInUser(request.session, user.itself)
-        Redirect(com.impressory.play.controllers.routes.CourseController.get(courseId)).withSession(session)
-      }) orIfNone {
-        var session = request.session + ("lti_user_id" -> user_id) + 
-          ("tool_consumer_instance_guid" -> tool_consumer_instance_guid)
-        
-        for (v <- params.get("lis_person_name_given").flatMap(_.headOption)) session += ("lis_person_name_given" -> v)
-        for (v <- params.get("lis_person_name_full").flatMap(_.headOption)) session += ("lis_person_name_full" -> v)
-        
-        Redirect(routes.LTIAuthController.viewRegisterUser(courseId)).withSession(session).itself
-      }
-    }).flatten
-    
-    resp
-  }
+    } yield act(request)
+      
+    DataAction.refEE(resp)
+  })
   
-  /**
-   * Interstitial saying this Twitter account hasn't been registered yet
-   */
-  def viewRegisterUser(courseId:String) = Action { request => Ok(views.html.interstitials.registerLTI())}  
-
-  /**
-   * Register the LTI user as a new user on this system
-   */
-  def registerNewUser(courseId:String) = Action { implicit request => 
-    
-    println("called!")
-    val resp = (for (
-      ltiUserId <- Ref(request.session.get("lti_user_id"));
-      tool_consumer_instance_guid <- request.session.get("tool_consumer_instance_guid")
-    ) yield {
-      val identity = Identity.unsaved(service=tool_consumer_instance_guid, value=ltiUserId)
-      val user = User.unsaved(name=request.session.get("lis_person_name_full"), nickname=request.session.get("lis_person_name_given"))
-      user.identities :+= identity
-      val session = RequestUtils.withLoggedInUser(request.session, User.save(user))
-      Redirect(com.impressory.play.controllers.routes.CourseController.get(courseId)).withSession(session)
-    })
-    resp
-  }
   
   def validateOAuthSignature(request:Request[_], key:String, secret:String):Ref[String] = {
     

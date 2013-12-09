@@ -29,8 +29,15 @@
 	  <h1>or</h1>
 	  
 	  <div>
-	    <p><a class="btn btn-default" href="/oauth/twiiter" target="_self"><i class="icon-twitter"></i> Sign in with <b>Twitter</b></a></p>
-	    <p><a class="btn btn-default" href="/oauth/github" target="_self"><i class="icon-github"></i> Sign in with <b>GitHub</b></a></p>
+	    <p>
+	      <form action="/oauth/twitter" method="POST">
+	        <button class="btn btn-default" type="submit"><i class="icon-twitter"></i> Sign in with <b>Twitter</b></button>
+	      </form>
+	    <p>
+        <form action="/oauth/github" method="POST">
+	        <button class="btn btn-default" type="submit"><i class="icon-github"></i> Sign in with <b>GitHub</b></button>
+        </form>
+	    </p>
 	  </div>
 	</div>
 

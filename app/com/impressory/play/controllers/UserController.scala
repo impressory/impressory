@@ -8,13 +8,14 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 import com.impressory.api._
-import com.impressory.play.model._
-import ResultConversions._
-import com.impressory.play.json.UserToJson._
-import play.api.libs.iteratee.Enumerator
-import com.impressory.play.json.UserToJson
+import com.impressory.json._
+import com.impressory.reactivemongo.UserDAO
+import com.wbillingsley.handy.appbase.DataAction
+
 
 object UserController extends Controller {
+
+  implicit val utoj = com.impressory.json.UserToJson
   
   /**
    * Checks whether an email address is valid.
@@ -22,20 +23,18 @@ object UserController extends Controller {
    */
   def valid(email:String) = email.contains("@")
    
-  def user(id:String) = Action { implicit request =>
+  def user(id:String) = DataAction.returning.one {
     refUser(id)
   }
   
   /**
    * JSON for the currently logged in user
    */
-  def whoAmI = Action { implicit request => 
-    val resp = for (u <- request.user; j <- u.toJsonForSelf) yield j
-    resp
+  def whoAmI = DataAction.returning.one { implicit request => 
+    request.user
   }
   
-  def findUsersById = Action(parse.json) { implicit request =>
-    
+  def findUsersById = DataAction.returning.many(parse.json) { implicit request =>
     val ids = (request.body \ "ids").asOpt[Set[String]].getOrElse(Set.empty)
     new RefManyById(classOf[User], ids.toSeq)
   }
@@ -43,137 +42,120 @@ object UserController extends Controller {
   /**
    * log out action
    */
-  def logOut = Action { implicit request => 
-    val session = RequestUtils.withLoggedInUser(request.session, RefNone)         
-    Ok("").withSession(session)  
+  def logOut = DataAction.returning.one { implicit request => 
+    UserDAO.deleteSession(request.user, ActiveSession(request.sessionKey, ip=request.remoteAddress))
   }
   
   /**
    * sign up using email address and password action
    */
-  def signUp = Angular { Action(parse.json) { implicit request =>   
-    val email = (request.body \ "email").asOpt[String] getOrElse { throw UserError("Email cannot be empty") }
-    val password = (request.body \ "password").asOpt[String] getOrElse { throw UserError("Password cannot be empty") } 
-    
-    if (!valid(email)) throw UserError("Hey, that doesn't look like a valid email address")
-    
-    val resp = for (
-      u <- User.createByEmail(email, password);
-      j <- u.itself.toJsonForSelf
-    ) yield {
-      val session = RequestUtils.withLoggedInUser(request.session, u.itself)         
-      Ok(Json.obj("user" -> j)).withSession(session)
-    }
-    resp
-  }}
+  def signUp = DataAction.returning.one(parse.json) { implicit request =>   
+    for (
+      email <- Ref((request.body \ "email").asOpt[String]) orIfNone UserError("Email must not be blank");
+      password <- Ref((request.body \ "password").asOpt[String]) orIfNone UserError("Password must not be blank");
+      user <- {
+        val u = UserDAO.unsaved  
+        val set = u.copy(
+            pwlogin=u.pwlogin.copy(email=Some(email), pwhash=u.pwlogin.hash(password)),
+            activeSessions=Seq(ActiveSession(request.sessionKey, ip=request.remoteAddress))
+        )
+        UserDAO.saveNew(set)
+      }      
+    ) yield user  
+  }
   
   /**
    * login using username and password action
    */
-  def logInUP = Action(parse.json) { implicit request =>   
+  def logInUP = DataAction.returning.one(parse.json) { implicit request =>   
     val username = (request.body \ "username").asOpt[String]
     val password = (request.body \ "password").asOpt[String] 
     
-    val resp = (for (
+    val resp = for {
         un <- Ref(username);
         pw <- Ref(password);
-        u <- User.byUsername(un) if (u.pwhash == Some(u.hash(pw))); 
-        j <- u.itself.toJsonForSelf
-     ) yield {
-      val session = RequestUtils.withLoggedInUser(request.session, u.itself)         
-      Ok(Json.obj("user" -> j)).withSession(session)
-    }).orIfNone(RefFailed(UserError("Wrong password")))
+        u <- UserDAO.byUsername(un) if (u.pwlogin.pwhash == Some(u.pwlogin.hash(pw))); 
+        pushed <- UserDAO.pushSession(u.itself, ActiveSession(request.sessionKey, ip=request.remoteAddress))
+    } yield pushed 
     
-    resp        
+    resp orIfNone(RefFailed(UserError("Wrong password")))
   }
   
   /**
    * login using email address and password action
    */
-  def logInEP = Action(parse.json) { implicit request =>   
+  def logInEP = DataAction.returning.one(parse.json) { implicit request =>   
     val email = (request.body \ "email").asOpt[String]
     val password = (request.body \ "password").asOpt[String] 
     
-    val resp = (for (
+    val resp = for {
         un <- Ref(email);
         pw <- Ref(password);
-        u <- User.byEmail(un) if (u.pwhash == u.hash(pw)); 
-        j <- u.itself.toJsonForSelf        
-     ) yield {
-      val session = RequestUtils.withLoggedInUser(request.session, u.itself)         
-      Ok(Json.obj("user" -> j)).withSession(session)
-    }).orIfNone(RefFailed(UserError("Wrong password")))
+        u <- UserDAO.byEmail(un) if (u.pwlogin.pwhash == Some(u.pwlogin.hash(pw))); 
+        pushed <- UserDAO.pushSession(u.itself, ActiveSession(request.sessionKey, ip=request.remoteAddress))        
+    } yield pushed
     
-    resp        
+    resp orIfNone(RefFailed(UserError("Wrong password")))
   }  
   
   /**
    * Action for editing basic details on the logged in user
    */
-  def editDetails = Action(parse.json) { implicit request =>
-    
-    val resp = (for (
+  def editDetails = DataAction.returning.one(parse.json) { implicit request =>
+    for {
         u <- request.user
-    ) yield {
-      u.nickname = (request.body \ "nickname").asOpt[String]
-      u.name = (request.body \ "name").asOpt[String]
-      u.avatar = (request.body \ "avatar").asOpt[String]
-      
-      for (j <- u.save.toJsonForSelf) yield Json.obj("user" -> j)
-      
-    }).flatten
-    resp
+        updated <- UserDAO.saveDetails(u.copy(
+          nickname = (request.body \ "nickname").asOpt[String] orElse u.nickname,
+          name = (request.body \ "name").asOpt[String] orElse u.name,
+          avatar = (request.body \ "avatar").asOpt[String] orElse u.avatar
+        ))
+    } yield updated
   }
   
   /**
    * Action for editing basic details on the logged in user
    */
-  def editLoginDetails = Action(parse.json) { implicit request =>
-    
-    val resp = (for (
-        u <- request.user
-    ) yield {
-      u.email = (request.body \ "email").asOpt[String]
-      u.username = (request.body \ "username").asOpt[String]
-      
-      for (j <- u.save.toJsonForSelf) yield Json.obj("user" -> j)
-      
-    }).flatten
-    resp
+  def editLoginDetails = DataAction.returning.one(parse.json) { implicit request =>
+    for {
+      u <- request.user
+      updated <- UserDAO.updatePWLogin(u.copy(
+        pwlogin = u.pwlogin.copy(
+          email = (request.body \ "email").asOpt[String] orElse u.pwlogin.email,
+          username = (request.body \ "username").asOpt[String] orElse u.pwlogin.username
+        )
+      ))
+    } yield updated
   }  
   
   /**
    * A username is available if nobody has it, or the logged in user has it
    */
-  def usernameAvailable(username:String) = Action { implicit request =>     
-    val loggedIn = request.user    
-  	val resp = (for (u <- User.byUsername(username)) yield {
-  	  Ok(Json.obj("available" -> (u.itself.getId == loggedIn.getId)))
-  	}).orIfNone(Ok(Json.obj("available" -> true)).itself)
-  	resp
+  def usernameAvailable(username:String) = DataAction.returning.json { implicit request =>     
+    val taken = for {
+      u <- UserDAO.byUsername(username)
+    } yield Json.obj("available" -> (u.itself.getId == request.user.getId))
+    taken orIfNone Json.obj("available" -> true).itself
   }
 
   /**
    * A username is "available" if nobody has it, or the logged in user has it
    */
-  def emailAvailable(email:String) = Action { implicit request => 
-    val loggedIn = request.user    
-  	val resp = (for (u <- User.byEmail(email)) yield {
-  	  Ok(Json.obj("available" -> (u.itself.getId == loggedIn.getId)))
-  	}).orIfNone(Ok(Json.obj("available" -> true)).itself)
-  	resp
+  def emailAvailable(email:String) = DataAction.returning.json { implicit request => 
+    val taken = for {
+      u <- UserDAO.byEmail(email)
+    } yield Json.obj("available" -> (u.itself.getId == request.user.getId))
+    taken orIfNone Json.obj("available" -> true).itself
   }
   
   
   /**
    * Removes an identity from the logged in user
    */
-  def removeIdentity(id: String) = Action { implicit request =>     
-    val ur = request.user
-  	val resp = (for (u <- ur) yield {
-  	  u.identities = u.identities.filter(_._id.stringify != id)
-      for (j <- u.save.toJsonForSelf) yield Ok(Json.obj("user" -> j))
-  	}).flatten
-  	resp
+  def removeIdentity = DataAction.returning.one(parse.json) { implicit request =>
+    for {
+      s <- (request.body \ "service").asOpt[String].toRef
+      i <- (request.body \ "id").asOpt[String].toRef
+      u <-UserDAO.deleteIdentity(request.user, s, i) 
+    } yield u
   }
 }

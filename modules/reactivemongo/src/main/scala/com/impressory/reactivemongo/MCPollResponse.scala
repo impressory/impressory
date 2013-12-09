@@ -1,38 +1,27 @@
 package com.impressory.reactivemongo
 
-import play.api.libs.concurrent.Execution.Implicits._
-import com.wbillingsley.handy._
-import Ref._
+import com.wbillingsley.handy.{Ref, RefNone}
+import com.wbillingsley.handy.reactivemongo.DAO
 import reactivemongo.bson._
 import reactivemongo.api._
-import com.wbillingsley.handyplay._
-import com.impressory.api.CanSendToClient
 
-case class MCPollResponse (
-  
-  _id: BSONObjectID = BSONObjectID.generate,
-  
-  poll: Ref[ContentEntry] = RefNone,
-  
-  addedBy: Ref[User] = RefNone,
-  
-  session: Option[String] = None,
-  
-  var answer:Set[Int] = Set.empty,
-  
-  var updated: Long = System.currentTimeMillis
-) extends HasBSONId with CanSendToClient {
-  def id = _id
-}
+import com.impressory.api._
+import com.impressory.api.poll._
 
-object MCPollResponse extends FindById[MCPollResponse] {
+object MCPollResponseDAO extends DAO[MCPollResponse] {
   
   val collName = "mcPollResponse"
   
+  val db = DBConnector
+  
+  val clazz = classOf[MCPollResponse]
+  
+  def unsaved = MCPollResponse(id=allocateId)
+
   implicit object bsonReader extends BSONDocumentReader[MCPollResponse] {
     def read(doc:BSONDocument):MCPollResponse = {
       new MCPollResponse(
-        _id = doc.getAs[BSONObjectID]("_id").get,
+        id = doc.getAs[BSONObjectID]("_id").get.stringify,
         addedBy = doc.getAs[Ref[User]]("addedBy").getOrElse(RefNone),
         session = doc.getAs[String]("session"),
         answer = doc.getAs[Set[Int]]("answer").getOrElse(Set.empty),
@@ -58,11 +47,11 @@ object MCPollResponse extends FindById[MCPollResponse] {
       case Some(uid) => BSONDocument("poll" -> poll, "addedBy" -> uid)
       case None => BSONDocument("poll" -> poll, "session" -> session)
     }
-    new RefFutureOption(coll.find(query).one[MCPollResponse])
+    findOne(query)
   }
   
   def byPoll(poll:Ref[ContentEntry]) ={
-    new RefEnumerator(coll.find(BSONDocument("poll" -> poll)).cursor[MCPollResponse].enumerate)
+    findMany(BSONDocument("poll" -> poll))
   }
   
   def vote(poll:Ref[ContentEntry], u:Ref[User], session:Option[String], vote:MCPollResponse) = {
@@ -70,8 +59,6 @@ object MCPollResponse extends FindById[MCPollResponse] {
       case Some(uid) => BSONDocument("poll" -> poll, "addedBy" -> uid)
       case None => BSONDocument("poll" -> poll, "session" -> session)
     }
-    val fle = coll.update(query, vote, upsert=true)
-    val fut = fle.map { _ => vote.itself } recover { case x:Throwable => RefFailed(x) }
-    new RefFutureRef(fut)
+    updateSafe(query, bsonWriter.write(vote), vote, upsert=true)
   }
 }

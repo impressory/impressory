@@ -2,11 +2,16 @@ package com.impressory.play.model
 
 import com.wbillingsley.handy._
 import Ref._
-import Permissions._
 import play.api.libs.json._
-import com.impressory.reactivemongo.PollResultsVisibility
+import com.impressory.api._
+import com.impressory.api.poll._
+import com.impressory.plugins._
+import com.impressory.security.Permissions
+import Permissions._
+import com.impressory.reactivemongo.MCPollResponseDAO
+import com.wbillingsley.handy.appbase.JsonConverter
 
-object MCPollModel {
+object MCPollModel extends ContentItemJsonHandler[MultipleChoicePoll] {
   
   var defaultText = "Now you need to edit this poll..."
 
@@ -24,31 +29,44 @@ object MCPollModel {
   
   implicit val MCPollToJson = Json.format[MultipleChoicePoll]
   
-  implicit class MCPollResponseToJson(val resp:MCPollResponse) extends AnyVal {
-    def toJson = Json.obj("answer" -> resp.answer)
+  val clazz = classOf[MultipleChoicePoll]
+  
+  val kind = MultipleChoicePoll.itemType
+  
+  def urlChecker(blank:ContentEntry, url:String) = RefNone
+  
+  def toJsonFor(p:MultipleChoicePoll, appr:Approval[User]) = {
+    MCPollToJson.writes(p).itself
   }
   
-  
-  def updateMCPoll(ce:ContentEntry, data:JsValue) = {
-    ce.item match {
+  def updateFromJson(before:ContentEntry, json:JsValue) = {
+    before.item match {
       case Some(p:MultipleChoicePoll) => {
-        ce.item = Some((data \ "item").asOpt[MultipleChoicePoll].getOrElse(p))
+        before.copy(item = Some((json \ "item").asOpt[MultipleChoicePoll].getOrElse(p))).itself
       } 
-      case _ => { /* ignore */ }
+      case _ => RefFailed(new IllegalStateException("Attempted to update something that wasn't a multiple choice poll as if it was"))
     }
-    ce.itself
   }
   
   /**
    * Creates but does not save a ContentSequence, wrapped in a ContentEntry
    */
-  def create(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
-    ce.tags.site = None
-    RefItself(new MultipleChoicePoll(Some(defaultText)))
+  def createFromJson(blank:ContentEntry, json:JsValue) = {
+    blank.copy(
+      tags = blank.tags.copy(site=None),
+      item = Some(new MultipleChoicePoll(Some(defaultText)))
+    ).itself
   } 
   
   def vote(poll:Ref[ContentEntry], tok:Approval[User], session:Option[String], answer:Set[Int]) = {
-    val response = new MCPollResponse(poll=poll, addedBy=tok.who, session=session, answer=answer)
-    MCPollResponse.vote(poll, tok.who, session, response)
+    val response = MCPollResponseDAO.unsaved.copy(poll=poll, addedBy=tok.who, session=session, answer=answer)
+    MCPollResponseDAO.vote(poll, tok.who, session, response)
   }
+}
+
+object MCPollResponseToJson extends JsonConverter[MCPollResponse, User] {
+  
+  def toJson(resp:MCPollResponse) = Json.obj("answer" -> resp.answer).itself
+  
+  def toJsonFor(resp:MCPollResponse, appr:Approval[User]) = toJson(resp)
 }

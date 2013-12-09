@@ -15,7 +15,6 @@ POST    /printit                    com.impressory.play.controllers.Application.
 # Auth
 ->      /oauth                      handyplayoauth.Routes
 
-GET     /auth/interstitial/register com.impressory.auth.controllers.InterstitialController.viewRegisterUser(service:Option[String] ?= None)
 POST    /auth/interstitial/register com.impressory.auth.controllers.InterstitialController.registerUser
 POST    /auth/interstitial/add      com.impressory.auth.controllers.InterstitialController.addIdentity
 
@@ -26,9 +25,6 @@ POST    /logOut                     com.impressory.play.controllers.UserControll
 
 # LTI
 POST    /course/:id/lti/launch       com.impressory.auth.controllers.LTIAuthController.ltiLaunch(id)
-GET     /course/:id/lti/register     com.impressory.auth.controllers.LTIAuthController.viewRegisterUser(id)
-POST     /course/:id/lti/registerNew com.impressory.auth.controllers.LTIAuthController.registerNewUser(id)
-POST     /course/:id/lti/registerExisting com.impressory.auth.controllers.LTIAuthController.registerNewUser(id)
 
 # Non-API routes
 GET     /logIn                      com.impressory.play.controllers.Application.viewLogIn
@@ -43,7 +39,7 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 # Self
 POST    /self/details               com.impressory.play.controllers.UserController.editDetails
 POST    /self/loginDetails          com.impressory.play.controllers.UserController.editLoginDetails
-POST    /self/id/:id/remove         com.impressory.play.controllers.UserController.removeIdentity(id)
+POST    /self/id/remove             com.impressory.play.controllers.UserController.removeIdentity
 
 # Users
 POST    /whoami                     com.impressory.play.controllers.UserController.whoAmI
@@ -68,9 +64,6 @@ POST    /course/:id/useInvite       com.impressory.play.controllers.CourseContro
 
 # Q&A
 GET     /course/:cid/qna            com.impressory.play.controllers.QnAController.listQuestions(cid)
-GET     /course/:cid/qna/:qid       com.impressory.play.controllers.QnAController.question(cid, qid)
-POST    /course/:cid/qna/new        com.impressory.play.controllers.QnAController.handleNewQuestion(cid)
-POST    /course/:cid/qna/:qid/newComment    com.impressory.play.controllers.QnAController.handleAddQuestionComment(cid, qid)
 POST    /course/:cid/qna/:qid/newAnswer     com.impressory.play.controllers.QnAController.handleAddAnswer(cid, qid)
 POST    /course/:cid/qna/:qid/answer/:aid/newComment    com.impressory.play.controllers.QnAController.handleAddAnswerComment(cid, qid, aid)
 

@@ -1,23 +1,46 @@
 package com.impressory.reactivemongo
 
-import reactivemongo.bson.{BSONDocumentWriter, BSONDocument, BSONDocumentReader}
-import com.impressory.api.CanSendToClient
+import reactivemongo.bson._
+import reactivemongo.api._
 
-trait ContentItem extends CanSendToClient {
-  val itemType:String
-}
+import com.impressory.api._
+import com.impressory.api.poll._
+import com.impressory.api.qna._
+import com.impressory.api.external._
 
-object ContentItem {
+object ContentItemConverter extends BSONDocumentWriter[ContentItem] {
   
-  implicit object bsonWriter extends BSONDocumentWriter[ContentItem] {
-    def write(i: ContentItem) = i match {
-      case cs:ContentSequence => ContentSequence.bsonWriter.write(cs) 
-      case wp:WebPage => WebPage.bsonWriter.write(wp) 
-      case gs:GoogleSlides => GoogleSlides.format.write(gs)
-      case y:YouTubeVideo => YouTubeVideo.format.write(y)
-      case mp:MarkdownPage => MarkdownPage.bsonWriter.write(mp)
-      case mcp:MultipleChoicePoll => MultipleChoicePoll.bsonWriter.write(mcp) 
-      case _ => BSONDocument()
+  import MultipleChoicePoll._
+  
+  implicit val formatMCOpt = reactivemongo.bson.Macros.writer[MCOpt]
+  
+  import UserDAO.RefManyByIdWriter
+  
+  def write(i: ContentItem) = i match {
+    case cs:ContentSequence => ContentSequenceWriter.write(cs) 
+    case wp:WebPage => Macros.writer[WebPage].write(wp) 
+    case gs:GoogleSlides => Macros.writer[GoogleSlides].write(gs)
+    case y:YouTubeVideo => Macros.writer[YouTubeVideo].write(y)
+    case mp:MarkdownPage => Macros.writer[MarkdownPage].write(mp)
+    case mcp:MultipleChoicePoll => MultipleChoicePollWriter.write(mcp) 
+    case _ => BSONDocument()
+  }
+  
+  def read(doc:BSONDocument, kind:String):Option[ContentItem] = {
+    kind match {
+      case ContentSequence.itemType => Some(doc.as[ContentSequence](ContentSequenceReader))
+      case WebPage.itemType => Some(doc.as[WebPage](Macros.reader[WebPage]))
+      case GoogleSlides.itemType => Some(doc.as[GoogleSlides](Macros.reader[GoogleSlides]))
+      case YouTubeVideo.itemType => Some(doc.as[YouTubeVideo](Macros.reader[YouTubeVideo]))
+      case MarkdownPage.itemType => Some(doc.as[MarkdownPage](Macros.reader[MarkdownPage]))
+      case MultipleChoicePoll.itemType => Some(doc.as[MultipleChoicePoll](MultipleChoicePollReader))
+      case _ => None
     }
   }
+  
+  def update(i: ContentItem) = i match {
+    case q:QnAQuestion => { "item.text" -> BSONString(q.text) }
+    case _ => "item" -> write(i)
+  }
 }
+

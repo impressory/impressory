@@ -1,69 +1,31 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy._
-import Ref._
 import reactivemongo.api._
 import reactivemongo.bson._
-import play.api.libs.concurrent.Execution.Implicits._
 import reactivemongo.core.commands.LastError
-import com.impressory.api.{CourseChatPolicy, CourseSignupPolicy, UserError, CanSendToClient}
+
+import com.wbillingsley.handy.Ref
+import com.wbillingsley.handy.reactivemongo.DAO
 import com.wbillingsley.handyplay.RefEnumIter
+import Ref._
+
+import com.impressory.api._
 import com.wbillingsley.encrypt.Encrypt
 
-case class TitleAndTag(title:String, tag:String)
-
-case class LTIData(key:String = Encrypt.genSaltB64, secret:String = Encrypt.genSaltB64)
-
-object LTIData {
-  implicit val format = reactivemongo.bson.Macros.handler[LTIData]
-}
-
-/**
- * Translated from "Book" in the previous version
- */
-class Course (
-  
-  var title: Option[String] = None,
-
-  var shortName:Option[String] = None,
-
-  var shortDescription:Option[String] = None,
-
-  var longDescription:Option[String] = None,
-
-  var edition:Option[String] = None,
-
-  var coverImageURL:Option[String] = None,
-
-  var expired:Option[Long] = None,
-
-  var signupPolicy:CourseSignupPolicy = CourseSignupPolicy.open,
-
-  var chatPolicy:CourseChatPolicy = CourseChatPolicy.allReaders,
-  
-  var listNouns:Seq[TitleAndTag] = Seq(TitleAndTag("Lectures", "Lecture"), TitleAndTag("Tutorials", "Tutorial")),
-  
-  var listed:Boolean = false, 
-  
-  var lti:LTIData = LTIData(),
-  
-  val created: Long = System.currentTimeMillis,
-  
-  val updated: Long = System.currentTimeMillis,
-  
-  val _id:BSONObjectID = BSONObjectID.generate
-  
-) extends HasBSONId with CanSendToClient {
-  
-  def id = _id
-  
-}
-
-
-object Course extends FindById[Course] {
+object CourseDAO extends DAO[Course] {
     
   val collName = "course"
+    
+  val db = DBConnector
+  
+  val clazz = classOf[Course]
+  
+  def unsaved = Course(id=allocateId)
+    
 
+  /** Converts PasswordLogin to and from BSON */
+  implicit val ltiFormat = Macros.handler[LTIData]
+    
   implicit object bsonSignUpPolicyWriter extends BSONWriter[CourseSignupPolicy, BSONString] {
     def write(sr:CourseSignupPolicy) = BSONString(sr.toString)
   }
@@ -85,10 +47,7 @@ object Course extends FindById[Course] {
       "title" -> course.title,
       "shortName" -> course.shortName,
       "shortDesc" -> course.shortDescription,
-      "longDesc" -> course.longDescription,
-      "edition" -> course.edition,
-      "coverImage" -> course.coverImageURL,
-      "expired" -> course.expired,
+      "coverImage" -> course.coverImage,
       "signUpPolicy" -> course.signupPolicy,
       "chatPolicy" -> course.chatPolicy,
       "listed" -> course.listed,
@@ -98,7 +57,7 @@ object Course extends FindById[Course] {
     
     
     def writeNew(course:Course) = write(course) ++ BSONDocument(
-      "_id" -> course._id,
+      "_id" -> BSONObjectID(course.id),
       "created" -> System.currentTimeMillis
     )
   }
@@ -106,14 +65,11 @@ object Course extends FindById[Course] {
   implicit object bsonReader extends BSONDocumentReader[Course] {    
     def read(doc:BSONDocument):Course = {
       val course = new Course(
-          _id = doc.getAs[BSONObjectID]("_id").get,
+          id = doc.getAs[BSONObjectID]("_id").get.stringify,
           title = doc.getAs[String]("title"),
           shortName = doc.getAs[String]("shortName"),
           shortDescription = doc.getAs[String]("shortDesc"),
-          longDescription = doc.getAs[String]("longDesc"),
-          edition = doc.getAs[String]("edition"),
-          coverImageURL = doc.getAs[String]("coverImage"),
-          expired = doc.getAs[Long]("expired"),
+          coverImage = doc.getAs[String]("coverImage"),
           signupPolicy = doc.getAs[CourseSignupPolicy]("signUpPolicy").getOrElse(CourseSignupPolicy.open),
           chatPolicy = doc.getAs[CourseChatPolicy]("chatPolicy").getOrElse(CourseChatPolicy.allReaders),
           listed = doc.getAs[Boolean]("listed").getOrElse(false),

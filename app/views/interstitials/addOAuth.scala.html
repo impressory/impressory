@@ -1,4 +1,4 @@
-@(serviceName:Option[String], mem:com.wbillingsley.handy.playoauth.UserRecord, user:com.impressory.reactivemongo.User)
+@(serviceName:Option[String], mem:com.wbillingsley.handy.playoauth.UserRecord, user:com.impressory.api.User)
 
 @templateFront("Awarinator") {
 
@@ -26,7 +26,7 @@
     <div class="pull-left" >
       <h4>Impressory</h4>
       <img class="media-object" src='@user.avatar.getOrElse("")' />
-      <label>@user.nickname.orElse(user.username).orElse(user.name)</label>
+      <label>@user.nickname.orElse(user.pwlogin.username).orElse(user.name)</label>
     </div>
   </div>
 	

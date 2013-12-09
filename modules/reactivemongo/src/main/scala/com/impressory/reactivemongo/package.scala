@@ -5,36 +5,34 @@ import _root_.reactivemongo.bson._
 import _root_.com.wbillingsley.handy._
 import _root_.com.wbillingsley.handyplay._
 
+import com.impressory.api._
+
 package object reactivemongo {
   
-  implicit def RefWriter[T <: HasBSONId] = new BSONWriter[Ref[T], BSONValue] {
-    def write(r:Ref[T]) = r.getId(HasBSONId.GetsBSONId).getOrElse(BSONNull)
+  def refReader[T <: HasStringId](c:Class[T]) = new BSONReader[BSONObjectID, Ref[T]] {
+    def read(id:BSONObjectID) = new LazyId(c, id.stringify)
   }
-  
+    
+  def refManyReader[T <: HasStringId](c:Class[T]) = new BSONReader[BSONArray, RefManyById[T, String]] {
+    def read(ids:BSONArray) = {
+      val arr = ids.as[Seq[BSONObjectID]].map(_.stringify)
+      new RefManyById(c, arr)
+    }
+  }
+  implicit val refCourseReader = refReader(classOf[Course])
+  implicit val refManyCourseReader = refManyReader(classOf[Course])
+  implicit val refUserReader = refReader(classOf[User])
+  implicit val refManyUserReader = refManyReader(classOf[User])
+  implicit val refManyEntryReader = refManyReader(classOf[ContentEntry])
   
   implicit class DocRefGetter(val doc: BSONDocument) extends AnyVal {
     def getRef[T](c:Class[T], key:String) = {
       val o:Option[BSONObjectID] = doc.getAs[BSONObjectID](key)
       o match {
-        case Some(id) => new LazyId(c, id)
+        case Some(id) => new LazyId(c, id.stringify)
         case None => RefNone
       }
     }
   }
-  
-  implicit object RefCourseReader extends BSONReader[BSONObjectID, Ref[Course]] {
-    def read(id:BSONObjectID) = RefById(classOf[Course], id)
-  }
-
-  implicit object RefUserReader extends BSONReader[BSONObjectID, Ref[User]] {
-    def read(id:BSONObjectID) = RefById(classOf[User], id)
-  }
-  
-  implicit class OurCursor[T] (val c:_root_.reactivemongo.api.Cursor[T]) extends AnyVal {
-    import play.api.libs.concurrent.Execution.Implicits._
-    def refMany = new RefEnumIter[T](c.enumerateBulks)
-    
-  } 
-  
   
 }

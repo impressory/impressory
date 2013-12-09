@@ -3,12 +3,14 @@ package com.impressory.play.eventroom
 import EventRoom._
 import com.impressory.play.model._
 import com.impressory.api._
+import com.impressory.api.events._
+import com.impressory.api.poll._
 import com.wbillingsley.handy._
 import Ref._
 import play.api.libs.json._
 import scala.collection.mutable
-
 import com.wbillingsley.eventroom
+import com.impressory.reactivemongo.MCPollResponseDAO
 
 object MCPollEvents {
 
@@ -25,7 +27,7 @@ object MCPollEvents {
          * We need to sum up the responses so far
          */
         val poll = RefById(classOf[ContentEntry], pollId)
-        val res = MCPollResponse.byPoll(poll).fold(mutable.Map.empty[Int, Int]){(rmap,pr) =>
+        val res = MCPollResponseDAO.byPoll(poll).fold(mutable.Map.empty[Int, Int]){(rmap,pr) =>
           for (ans <- pr.answer) {
             rmap(ans) = rmap.getOrElse(ans, 0) + 1
           }
@@ -42,7 +44,7 @@ object MCPollEvents {
 
 
   def broadcastState(room: eventroom.EventRoom, poll:Ref[ContentEntry]) {
-    for (pollId <- poll.getId.map(_.stringify); state <- getPollState(room, pollId)) {
+    for (pollId <- poll.getId; state <- getPollState(room, pollId)) {
       room.broadcast(PollStream(pollId), state)
     }
   }
@@ -53,13 +55,13 @@ object MCPollEvents {
 
   case class PushPollToChat(poll: ContentEntry) extends eventroom.EREvent {
     override def toJson = {
-      val course = poll.course.getId.map(_.stringify)
-      val id = poll.id.stringify
+      val course = poll.course.getId
+      val id = poll.id
       poll.item match {
         case Some(mc:MultipleChoicePoll) => {
-          import com.impressory.play.json.JsonConverters._
+          import com.impressory.json.ContentEntryToJson
           
-          for (j <- poll.toJson) yield Json.obj(
+          for (j <- ContentEntryToJson.toJson(poll)) yield Json.obj(
             "kind" -> "push",
             "type" -> MultipleChoicePoll.itemType,
             "created" -> System.currentTimeMillis(),
@@ -77,7 +79,7 @@ object MCPollEvents {
      */
     override def action(room: eventroom.EventRoom) {
       for (cid <- poll.course.getId) {
-        room.broadcast(ChatEvents.ChatStream(cid.stringify), this)
+        room.broadcast(ChatStream(cid), this)
       }
     }
   }

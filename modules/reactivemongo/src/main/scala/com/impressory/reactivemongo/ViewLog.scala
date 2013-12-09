@@ -1,12 +1,18 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy._
+import com.wbillingsley.handy.{Ref, RefItself, RefFailed}
+
 import reactivemongo.api._
 import reactivemongo.bson._
+
+import com.impressory.api._
+
 import play.api.libs.concurrent.Execution.Implicits._
 import reactivemongo.core.commands.GetLastError
 
 object ViewLog {
+  
+  import DBConnector._
 
   case class Record(
     course: Ref[Course],
@@ -54,7 +60,7 @@ object ViewLog {
     
     val incSites:Seq[(String, BSONInteger)] = for (e <- record.entry.toSeq; v <- e.tags.site) yield (s"hourly.${hour}.site.${escapeFieldName(v)}" -> BSONInteger(1))
     
-    val incEntry:Seq[(String, BSONInteger)] = for (e <- record.entry.toSeq; v = e.id) yield (s"hourly.${hour}.tags.entry.${v.stringify}" -> BSONInteger(1))
+    val incEntry:Seq[(String, BSONInteger)] = for (e <- record.entry.toSeq; v = e.id) yield (s"hourly.${hour}.tags.entry.${v}" -> BSONInteger(1))
     val incTopics:Seq[(String, BSONInteger)] = for (e <- record.entry.toSeq; v <- e.tags.topics) yield (s"hourly.${hour}.tags.topic.${escapeFieldName(v)}" -> BSONInteger(1))
     val incAdj:Seq[(String, BSONInteger)] = for (e <- record.entry.toSeq; v <- e.tags.adjectives) yield (s"hourly.${hour}.tags.adjective.${escapeFieldName(v)}" -> BSONInteger(1))
     val incNouns:Seq[(String, BSONInteger)] = for (e <- record.entry.toSeq; v <- e.tags.nouns) yield (s"hourly.${hour}.tags.noun.${escapeFieldName(v)}" -> BSONInteger(1))
@@ -73,9 +79,9 @@ object ViewLog {
       "$inc" -> BSONDocument(inc)
     )
     
-    val fle = DB.coll(collectionName).update(query, update, GetLastError(false), upsert=true)
+    val fle = DBConnector.coll(collectionName).update(query, update, GetLastError(false), upsert=true)
     val fut = fle.map { _ => RefItself("ok") } recover { case x:Throwable => RefFailed(x) }
-    new RefFutureRef(fut)
+    fut.toRef
 
   }
   

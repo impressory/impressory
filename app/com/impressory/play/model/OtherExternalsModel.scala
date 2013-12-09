@@ -2,28 +2,20 @@ package com.impressory.play.model
 
 import com.wbillingsley.handy._
 import Ref._
-import Permissions._
+
 import play.api.libs.json._
 
-object OtherExternalsModel {
+import com.impressory.api._
+import com.impressory.plugins._
+import com.impressory.api.external._
+
+object GoogleSlidesModel extends ContentItemJsonHandler[GoogleSlides] {
   
-  implicit val GoogleSlidesToJson = Json.format[GoogleSlides]
-  implicit val YouTubeVideoToJson = Json.format[YouTubeVideo]
+  implicit val format = Json.format[GoogleSlides]
   
-  def createGoogleSlides(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
-    ce.tags.site = Some("google.com")
-    ce.setPublished(true)    
-    updateGoogleSlides(new GoogleSlides(), data)
-  } 
+  val clazz = classOf[GoogleSlides]
   
-  def updateGoogleSlides(gs:GoogleSlides, data:JsValue) = {
-    val ec = (data \ "item" \ "embedCode").asOpt[String]
-    
-    val presId = for (str <- ec; id <- extractGoogleSlidesId(str)) yield id
-    gs.embedCode = ec
-    gs.presId = presId
-    gs
-  }
+  val kind = GoogleSlides.itemType
   
   /**
    * Extracts the id from Google Slides URLs and embed codes
@@ -31,35 +23,48 @@ object OtherExternalsModel {
   def extractGoogleSlidesId(url:String) = {
     "//docs.google.com/presentation/d/([^ \"?&/]+)".r.findFirstMatchIn(url).map(_.group(1))
   }
-  
+
   /**
    * Determines whether a URL or embed code is a Google Slides presentation
    */
-  def googleSlidesMatcher(code:String) = {
-    val presId = extractGoogleSlidesId(code)
+  def urlChecker(blank:ContentEntry, url:String) = {
+    val presId = extractGoogleSlidesId(url)
     for (pid <- presId) yield {
-      new ContentEntry(
-        item = Some(GoogleSlides(embedCode=Some(code), presId=Some(pid)))
+      blank.copy(
+        item = Some(GoogleSlides(embedCode=Some(url), presId=Some(pid)))
       )
     }
   }
   
-  
-  def createYouTubeVideo(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
-    ce.tags.site = Some("google.com")
-    ce.setPublished(true)    
-    updateYouTubeVideo(new YouTubeVideo(), data)
+  def createFromJson(blank:ContentEntry, json:JsValue) = {
+    updateFromJson(blank, json)
   } 
   
-  def updateYouTubeVideo(y:YouTubeVideo, data:JsValue) = {
-    val ec = (data \ "item" \ "embedCode").asOpt[String]
+  def updateFromJson(before:ContentEntry, json:JsValue) = {
+    val ec = (json \ "item" \ "embedCode").asOpt[String]
+    val presId = for (str <- ec; id <- extractGoogleSlidesId(str)) yield id
+    before.copy(
+      tags = before.tags.copy(site=Some("google.com")),
+      item = Some(GoogleSlides(
+        embedCode = ec,
+        presId = presId
+      ))
+    ).itself
+  }
+  
+  def toJsonFor(gs:GoogleSlides, appr:Approval[User]) = format.writes(gs).itself
+
+}
+
+
+object YouTubeVideoModel extends ContentItemJsonHandler[YouTubeVideo] {
+  
+  implicit val format = Json.format[YouTubeVideo]
     
-    val presId = for (str <- ec; id <- extractYouTubeId(str)) yield id
-    y.embedCode = ec
-    y.videoId = presId
-    y
-  }  
-    
+  val clazz = classOf[YouTubeVideo]
+  
+  val kind = YouTubeVideo.itemType  
+  
   /**
    * Extracts the id from YouTube URLs and embed codes
    */
@@ -72,13 +77,31 @@ object OtherExternalsModel {
   /**
    * Determines whether a URL or embed code is a YouTube video
    */
-  def youTubeMatcher(code:String) = {
-    val videoId = extractYouTubeId(code)
+  def urlChecker(blank:ContentEntry, url:String) = {
+    val videoId = extractYouTubeId(url)
     for (vid <- videoId) yield {
-      new ContentEntry(
-        item = Some(YouTubeVideo(embedCode=Some(code), videoId=Some(vid)))
+      blank.copy(
+        item = Some(YouTubeVideo(embedCode=Some(url), videoId=Some(vid)))
       )
     }
   }
 
+  
+  def createFromJson(blank:ContentEntry, json:JsValue) = {
+    updateFromJson(blank, json)
+  } 
+  
+  def updateFromJson(before:ContentEntry, json:JsValue) = {
+    val ec = (json \ "item" \ "embedCode").asOpt[String]
+    val presId = for (str <- ec; id <- extractYouTubeId(str)) yield id
+    before.copy(
+      tags = before.tags.copy(site=Some("youtube.com")),
+      item = Some(YouTubeVideo(
+        embedCode = ec,
+        videoId = presId
+      ))
+    ).itself
+  }
+  
+  def toJsonFor(yt:YouTubeVideo, appr:Approval[User]) = format.writes(yt).itself
 }

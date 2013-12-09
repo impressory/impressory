@@ -1,18 +1,19 @@
 package com.impressory.auth.controllers
 
-import play.api.mvc.{Controller, Action, Request}
+import play.api.mvc.{AnyContent, Controller, Action, Request}
 import play.api.libs.ws.WS
 import play.api.libs.json.Json
 import play.api.Play
 import Play.current
 import com.wbillingsley.encrypt.Encrypt
 import com.wbillingsley.handy._
-import com.wbillingsley.handy.playoauth.UserRecord
+import com.wbillingsley.handy.playoauth.{OAuthDetails, UserRecord}
+import com.wbillingsley.handy.appbase.DataAction
 import Ref._
-import com.impressory.play.model._
-import com.impressory.play.controllers.ResultConversions._
-import com.impressory.play.controllers._
-import play.api.mvc.AnyContent
+import com.impressory.api._
+import com.impressory.json._
+import scala.util.Try
+import com.impressory.reactivemongo.UserDAO
 
 /**
  * Controller for the interstitial form confirming that a new account should be registered
@@ -21,94 +22,89 @@ object InterstitialController extends Controller {
   
   val sessionVar = "interstitialMemory"
     
+  import com.impressory.play.controllers.userProvider 
+    
   /**
    * Handles the completion of OAuth authorisations
    */
-  def onOAuth(rur:Ref[UserRecord], request:Request[AnyContent]) = {    
+  def onOAuth(rur:Try[OAuthDetails]) = DataAction.returning.result { implicit request =>    
     val res = for (
-      mem <- rur;
-      user <- optionally(User.byIdentity("github", mem.id))
+      mem <- rur.toRef;
+      user <- optionally(userProvider.byIdentity(mem.userRecord.service, mem.userRecord.id))
     ) yield {
       user match {
         case Some(u) => {
-          val session = RequestUtils.withLoggedInUser(request.session - "oauth_state", u.itself)
-          Redirect(com.impressory.play.controllers.routes.Application.index).withSession(session)
-        } 
+          for (
+            updated <- userProvider.pushSession(u.itself, ActiveSession(request.sessionKey, ip = request.remoteAddress))
+          ) yield Redirect(com.impressory.play.controllers.routes.Application.index)
+        }         
         case None => {
-          val session = request.session + (InterstitialController.sessionVar -> mem.toJsonString) - "oauth_state"
-          Redirect(routes.InterstitialController.viewRegisterUser(Some("GitHub"))).withSession(session)
+          val session = request.session + (InterstitialController.sessionVar -> mem.toJson.toString) - "oauth_state"
+          for (u <- optionally(request.user)) yield {
+            u match {
+              case Some(user) => Ok(views.html.interstitials.addOAuth(Some(mem.userRecord.service), mem.userRecord, user)).withSession(session)
+              case None => Ok(views.html.interstitials.registerOAuth(Some(mem.userRecord.service), mem.userRecord)).withSession(session)
+            }
+          }
         }
       }
     }
     
-    ResultConversions.refResultToResult(res)(request)
+    val flat = res.flatten    
+    flat
   }
     
-  
-  /**
-   * Interstitial saying this account hasn't been registered yet
-   */
-  def viewRegisterUser(serviceName:Option[String]) = Action { implicit request => 
-    val memString = request.session.get(sessionVar)
-    val mem = for (s <- memString; m <- Json.parse(s).asOpt[UserRecord]) yield m
-    
-    val resp = for (
-      details <- Ref(mem) orIfNone Refused("There appear to be no user details to register");
-      u <- optionally(request.user)
-    ) yield {
-      u match {
-        case Some(user) => Ok(views.html.interstitials.addOAuth(serviceName, details, user))
-        case None => Ok(views.html.interstitials.registerOAuth(serviceName, details))
-      }
-    }
-    resp
-  }
      
   /**
    * Register the user as a new user on this system
    */
-  def registerUser = Action { implicit request => 
+  def registerUser = DataAction.returning.result { implicit request => 
     val memString = request.session.get(sessionVar)
-    val mem = for (s <- memString; m <- Json.parse(s).asOpt[UserRecord]) yield m
+    val mem = for (s <- memString; m <- (Json.parse(s) \ "userRecord").asOpt[UserRecord]) yield m
     
-    val resp = for (
+    for (
       details <- Ref(mem) orIfNone Refused("There appear to be no user details to register");
       user <- {
-        val i = Identity.unsaved(service=details.service, value=details.id, avatar=details.avatar, username=details.username);
-        val u = User.unsaved(name=details.name, nickname=details.nickname, avatar=details.avatar)
-        u.identities :+= i
-        User.saveNew(u)
+        val i = Identity(service=details.service, value=details.id, avatar=details.avatar, username=details.username);
+        val u = UserDAO.unsaved.copy(
+            name=details.name, 
+            nickname=details.nickname, 
+            avatar=details.avatar,
+            identities = Seq(i),
+            activeSessions = Seq(ActiveSession(request.sessionKey, ip = request.remoteAddress))
+        )
+        UserDAO.saveNew(u)
       }
     ) yield {
-      val session = RequestUtils.withLoggedInUser(request.session, user.itself) - sessionVar
+      val session = request.session - InterstitialController.sessionVar
       Redirect(com.impressory.play.controllers.routes.Application.index).withSession(session)      
     }
-    
-    resp
   }
   
   /**
    * Adds the remembered identity to the currently logged in user.
    */
-  def addIdentity = Action { implicit request => 
+  def addIdentity = DataAction.returning.result { implicit request => 
     val memString = request.session.get(sessionVar)
-    val mem = for (s <- memString; m <- Json.parse(s).asOpt[UserRecord]) yield m
+    val mem = for (s <- memString; m <- (Json.parse(s) \ "userRecord").asOpt[UserRecord]) yield m
     
-    val resp = for (
+    for {
       details <- Ref(mem) orIfNone Refused("There appear to be no user details to register");
       user <- request.user orIfNone Refused("There is no logged in user to add that identity to");
       saved <- {
-        val i = Identity.unsaved(service=details.service, value=details.id, avatar=details.avatar, username=details.username);
-        user.identities :+= i
-        user.nickname = user.nickname orElse details.nickname
-        user.avatar = user.avatar orElse details.avatar
-        user.name = user.name orElse details.name
-        User.save(user)
+        val u = user.copy(
+            name=user.name orElse details.name, nickname=user.nickname orElse details.nickname, avatar=user.avatar orElse details.avatar
+        )
+        UserDAO.saveDetails(u)
       }
-    ) yield {
+      pushed <- {
+        val i = Identity(service=details.service, value=details.id, avatar=details.avatar, username=details.username);
+        UserDAO.pushIdentity(user.itself, i)
+      }      
+    } yield {
+      val session = request.session - InterstitialController.sessionVar      
       Redirect(com.impressory.play.controllers.routes.Application.index).withSession(request.session - sessionVar)      
     }
     
-    resp
   }  
 }

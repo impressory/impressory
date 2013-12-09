@@ -7,30 +7,31 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 import com.impressory.api._
+import com.impressory.api.external._
+import com.impressory.api.events._
+import com.impressory.json._
+import com.impressory.plugins._
+import com.impressory.play.eventroom.EventRoom
 import com.impressory.play.model._
-import ResultConversions._
-import play.api.libs.iteratee.Enumerator
-import play.api.libs.iteratee.Enumeratee
-import com.impressory.play.json.JsonConverters
-import JsonConverters._
-import com.impressory.play.eventroom.{ EventRoom, ChatEvents, ContentEvents } 
+import com.impressory.security.Permissions
+import com.wbillingsley.handy.appbase.DataAction
+import com.impressory.reactivemongo.ContentEntryDAO
 
 object ContentController extends Controller {
   
+  implicit val etoj = com.impressory.json.ContentEntryToJson
+  implicit val eistoj = com.impressory.json.EntryInSequenceToJson
+  implicit val cetoj = com.impressory.json.ContentEditedToJson
+  implicit val cptoj = com.impressory.json.ContentPublishedToJson
   
   /**
    * Returns the JSON for the specified content entry
    */
-  def entry(courseId:String, entryId:String) = Action { implicit request => 
-    val approval = request.approval
-    val refEntry = refContentEntry(entryId)
-    
-    val res = for (
-        entry <- refEntry;
-        approved <- approval ask Permissions.ReadEntry(entry.itself);
-        j <- refEntry.toJsonFor(approval)
-    ) yield j
-    res
+  def entry(courseId:String, entryId:String) = DataAction.returning.one { implicit request => 
+    for (
+        entry <- refContentEntry(entryId);
+        approved <- request.approval ask Permissions.ReadEntry(entry.itself)
+    ) yield entry
   }
   
   /**
@@ -43,12 +44,12 @@ object ContentController extends Controller {
     noun:Option[String], 
     topic:Option[String],
     site:Option[String]
-  ) = Action { implicit request =>
+  ) = DataAction.returning.one { implicit request =>
 
     val course = refCourse(courseId)
     val approval = request.approval
     
-    val result = for (
+    for {
       e <- entryId match {
         case Some(eid) => {
           // An entry ID has been given. Fetch it if allowed.          
@@ -63,14 +64,11 @@ object ContentController extends Controller {
             site.map { s => "site" -> s }
             for (c <- course; e <- ContentModel.recommendCE(c.itself, approval, topic, filters)) yield e
         }
-      };
+      }
       
       // Find whether to display this entry as part of a ContentSequence
-      eis <- ContentModel.entryInSequence(e.itself, RefNone);
-      j <- eis.itself.toJsonFor(approval)
-    ) yield Ok(j)
-      
-    result
+      eis <- ContentModel.entryInSequence(e.itself, RefNone)
+    } yield eis
   }
   
   
@@ -82,11 +80,13 @@ object ContentController extends Controller {
     
     import Permissions._
     
-    val kind = (requestBody \ "kind").asOpt[String]
+    
     val protect = (requestBody \ "entry" \ "settings" \ "protect").asOpt[Boolean].getOrElse(false)
 
     
-    for (
+    for {
+      kind <- (requestBody \ "kind").asOpt[String].toRef orIfNone UserError("Attempted to create a content item with no kind")
+        
       // Resolve the references now, to save resolving them multiple times later
       c <- course;
       
@@ -100,60 +100,39 @@ object ContentController extends Controller {
       };
       
       // Create a ContentEntry (without its item) from the data
-      e <- ContentEntry.unsaved(c.itself, approval.who);
-      updated = ContentModel.update(e, requestBody);
-      
-      // Add an appropriate item
-      item <- {
-        (requestBody \ "kind").asOpt[String] match {
-          case Some(ContentSequence.itemType) => SequenceModel.create(c.itself, approval, updated, requestBody).itself
-          case Some(WebPage.itemType) => WebPageModel.create(c.itself, approval, updated, requestBody).itself
-          case Some(GoogleSlides.itemType) => OtherExternalsModel.createGoogleSlides(c.itself, approval, updated, requestBody).itself
-          case Some(YouTubeVideo.itemType) => OtherExternalsModel.createYouTubeVideo(c.itself, approval, updated, requestBody).itself
-          case Some(MarkdownPage.itemType) => MarkdownPageModel.create(c.itself, approval, updated, requestBody)
-          case Some(MultipleChoicePoll.itemType) => MCPollModel.create(c.itself, approval, updated, requestBody)
-          case Some(x) => RefFailed(UserError(s"Attempted to add an unknown item: $x"))
-          case None => RefFailed(UserError("Attempted to add an item that had no kind"))
-        }        
-      };
+      blank = ContentEntryDAO.unsaved.copy(course=c.itself, addedBy=approval.who, settings=CESettings(protect=protect));
+      updated <- ContentItemToJson.createFromJson(kind, blank, requestBody)
       
       // Set the item, and save
-      saved <- {
-        updated.item = Some(item)        
-        ContentEntry.saveNew(updated)
-      };
+      saved <- ContentEntryDAO.saveNew(updated)
       
       // Check for any sequences the new entry is part of
-      eis <- ContentModel.entryInSequence(saved.itself, RefNone);
-      
-      // Convert to JSON
-      j <- eis.itself.toJsonFor(approval)
-    ) yield {
+      eis <- ContentModel.entryInSequence(saved.itself, RefNone)
+    } yield {
       
       // If the item is published, send a notification
       if (saved.published.isDefined) {
-        for (c <- course.getId; cstr = c.stringify) {
-          EventRoom.notifyEventRoom(ChatEvents.BroadcastIt(cstr, ContentEvents.ContentPublished(saved)))
+        for (c <- course.getId) {
+          EventRoom.notifyEventRoom(BroadcastIt(c, ContentPublished(saved)))
         }
       }
       
-      Ok(j)    
+      saved
     }
   }
 
   /**
    * Request handler for creating content.
    */
-  def createContent(courseId: String) = Action(parse.json) { implicit request =>
-    val result = newContentEntry(refCourse(courseId), request.approval, request.body)
-    result
+  def createContent(courseId: String) = DataAction.returning.one(parse.json) { implicit request =>
+    newContentEntry(refCourse(courseId), request.approval, request.body)
   }
   
-  def editItem(courseId: String, entryId: String) = Action(parse.json) { implicit request => 
+  def editItem(courseId: String, entryId: String) = DataAction.returning.one(parse.json) { implicit request => 
     val entry = refContentEntry(entryId)
     val approval = request.approval
     
-    val r = for (
+    val r = for {
       // Resolve the references now, to save resolving them multiple times later
       e <- entry;
       
@@ -164,151 +143,104 @@ object ContentController extends Controller {
       approved <- approval ask Permissions.EditContent(e.itself);
       
       // Updated the metadata, as some settings might be changed (eg, published)
-      metaUpdated = ContentModel.update(e, request.body);      
+      metaUpdated = ContentEntryToJson.update(e, request.body);      
       
       // Edit the item
-      updated <- {
-        metaUpdated.item match {
-          case Some(cs:ContentSequence) => SequenceModel.updateItem(metaUpdated, request.body)
-          case Some(wp:WebPage) => WebPageModel.updateWebPage(metaUpdated, request.body)
-          case Some(y:YouTubeVideo) => { metaUpdated.item = Some(OtherExternalsModel.updateYouTubeVideo(y,request.body)); metaUpdated.itself }
-          case Some(gs:GoogleSlides) => { metaUpdated.item = Some(OtherExternalsModel.updateGoogleSlides(gs,request.body)); metaUpdated.itself }
-          case Some(mp:MarkdownPage) => MarkdownPageModel.updateItem(metaUpdated, request.body)
-          case Some(p:MultipleChoicePoll) => MCPollModel.updateMCPoll(metaUpdated, request.body)
-          case _ => RefNone
-        }        
-      };
+      updated <- ContentItemToJson.updateFromJson(metaUpdated, request.body)
       
-      saved <- ContentEntry.saveWithItem(updated);
-      
-      // Convert to JSON
-      j <- saved.toJsonFor(approval)
-    ) yield 
-    {
+      saved <- ContentEntryDAO.saveWithItem(updated)
+    } yield {
       // If the item is published, send a notification
       if (!publishedBefore && saved.published.isDefined) {
-        for (c <- saved.course.getId; cstr = c.stringify) {
-          EventRoom.notifyEventRoom(ChatEvents.BroadcastIt(cstr, ContentEvents.ContentPublished(saved)))
+        for (c <- saved.course.getId) {
+          EventRoom.notifyEventRoom(BroadcastIt(c, ContentPublished(saved)))
         }
       }
       
-      Ok(j)
+      saved
     }
     r
   }
   
-  def editTags(courseId: String, entryId: String) = Action(parse.json) { implicit request => 
-    val approval = request.approval
-    
-    val r = for (
+  def editTags(courseId: String, entryId: String) = DataAction.returning.one(parse.json) { implicit request => 
+    val approval = request.approval    
+    for (
       e <- refContentEntry(entryId);
       approved <- approval ask Permissions.EditContent(e.itself);
-      updated = ContentModel.update(e, request.body);
-      saved <- ContentEntry.saveExisting(updated);
-      json <- saved.toJsonFor(approval)
-    ) yield {
-      Ok(json)
-    }
-    r
-  
+      updated = ContentEntryToJson.update(e, request.body);
+      saved <- ContentEntryDAO.saveExisting(updated)
+    ) yield saved
   }
   
-  def entriesForTopic(courseId: String, topic:Option[String]) = Action { implicit request => 
-
-    val entries = for (
+  def entriesForTopic(courseId: String, topic:Option[String]) = DataAction.returning.many { implicit request => 
+    for (
       c <- refCourse(courseId);
-      e <- ContentModel.entriesForTopic(c.itself, request.approval, topic);
-      j <- e.toJson
-    ) yield j
-      
-    val en = Enumerator("{ \"entries\": [") andThen entries.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
-    Ok.stream(en).as("application/json")    
+      e <- ContentModel.entriesForTopic(c.itself, request.approval, topic)
+    ) yield e
   }
 
-  def allEntries(courseId: String) = Action { implicit request => 
-
-    val entries = for (
+  def allEntries(courseId: String) = DataAction.returning.many { implicit request => 
+    for (
       c <- refCourse(courseId);
-      e <- ContentModel.allEntries(c.itself, request.approval);
-      j <- e.toJson
-    ) yield j
-      
-    val en = Enumerator("{ \"entries\": [") andThen entries.enumerate.stringify andThen Enumerator("]}") andThen Enumerator.eof[String]
-    Ok.stream(en).as("application/json")    
+      e <- ContentModel.allEntries(c.itself, request.approval)
+    ) yield e
   }  
   
   
-  def recentEntries(courseId: String) = Angular { Action { implicit request => 
-    val approval = request.approval
-    
-    val entries = for (
-      c <- approval.cache(refCourse(courseId));
-      e <- ContentModel.recentEntries(c.itself, approval);
-      j <- e.toJsonFor(approval)
-    ) yield j
-      
-    val r = entries.enumerate &> Enumeratee.take(100)
-    enumJToResult(r)
-  }}
+  def recentEntries(courseId: String) = DataAction.returning.many { implicit request => 
+    ContentModel.recentEntries(refCourse(courseId), request.approval)
+  }
   
   
   /**
    * Votes an entry up. Returns JSON for the updated content entry
    */
-  def voteUp(courseId:String, entryId:String) = Action { implicit request =>
-    val approval = request.approval
-    val res = for (
+  def voteUp(courseId:String, entryId:String) = DataAction.returning.one { implicit request =>
+    for (
       entry <- refContentEntry(entryId);
-      approved <- approval ask Permissions.VoteOnEntry(entry.itself);
-      updated <- ContentEntry.voteUp(entry, approval.who);
-      j <- updated.toJsonFor(approval)
-    ) yield j
-    res
+      approved <- request.approval ask Permissions.VoteOnEntry(entry.itself);
+      updated <- ContentEntryDAO.voteUp(entry, request.approval.who)
+    ) yield updated
   }
   
   /**
    * Votes an entry down. Returns JSON for the updated content entry
    */
-  def voteDown(courseId:String, entryId:String) = Action { implicit request =>
-    val approval = request.approval
-    val res = for (
+  def voteDown(courseId:String, entryId:String) = DataAction.returning.one { implicit request =>
+    for (
       entry <- refContentEntry(entryId);
-      approved <- approval ask Permissions.VoteOnEntry(entry.itself);
-      updated <- ContentEntry.voteDown(entry, approval.who);
-      j <- updated.toJsonFor(approval)
-    ) yield j
-    res
+      approved <- request.approval ask Permissions.VoteOnEntry(entry.itself);
+      updated <- ContentEntryDAO.voteDown(entry, request.approval.who)
+    ) yield updated
   }
   
-  def addComment(courseId:String, entryId:String) = Action(parse.json) { implicit request => 
-    val approval = request.approval
-    val res = for (
+  def addComment(courseId:String, entryId:String) = DataAction.returning.one(parse.json) { implicit request => 
+    for (
       text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("The message contained no text");
       entry <- refContentEntry(entryId);
-      approved <- approval ask Permissions.CommentOnEntry(entry.itself);
-      updated <- ContentEntry.addComment(entry, approval.who, text);
-      j <- updated.toJsonFor(approval)
-    ) yield j
-    res    
+      approved <- request.approval ask Permissions.CommentOnEntry(entry.itself);
+      updated <- ContentEntryDAO.addComment(entry, request.approval.who, text)
+    ) yield updated
   }
   
   /**
    * Given a URL or Embed code, works out what kind of content item it is
    */
-  def whatIsIt(code:String) = Action { implicit request => 
+  def whatIsIt(code:String) = DataAction.returning.result { implicit request => 
     
     // This prevents the URL from being used to look up itself recursively
     request match {
       case Accepts.Json() => {
-        import com.impressory.play.json.ContentEntryToJson
-        
         val res = for (
-          ce <- ContentTypeListing.whatIsIt(code) orIfNone UserError("Sorry, I don't recognise that content");
+          ce <- ContentTypeListing.whatIsIt(
+              ContentEntryDAO.unsaved,
+              code
+            ) orIfNone UserError("Sorry, I don't recognise that content");
           j <- ContentEntryToJson.toJsonForInput(ce)
-        ) yield j
+        ) yield Ok(j)
         res
       }
-      case _ => NotAcceptable
+      case _ => NotAcceptable.itself
     }
     
     

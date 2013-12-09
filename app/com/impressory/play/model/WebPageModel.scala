@@ -1,21 +1,28 @@
 package com.impressory.play.model
 
-
 import com.wbillingsley.handy._
 import Ref._
-import Permissions._
 import play.api.libs.json._
 import play.api.libs.ws.WS
+import com.impressory.api._
+import com.impressory.api.external._
+import com.impressory.plugins._
+import com.impressory.security.Permissions
+import Permissions._
 
 /**
  *  
  */
-object WebPageModel {
+object WebPageModel extends ContentItemJsonHandler[WebPage] {
 
-  def toJson(wp:WebPage) = Json.obj(
+  val clazz = classOf[WebPage]
+  
+  val kind = WebPage.itemType
+  
+  def toJsonFor(wp:WebPage, appr:Approval[User]) = Json.obj(
       "url" -> wp.url,
       "noFrame" -> wp.noFrame
-  )
+  ).itself
   
   def site(url: String):Option[String] = {
     import java.net.{ URI, URISyntaxException }
@@ -36,48 +43,51 @@ object WebPageModel {
     }
   }
   
-  def updateWebPage(ce:ContentEntry, data:JsValue) = {
-    ce.item match {
-      case Some(wp:WebPage) => {
-        wp.url = (data \ "item" \ "url").asOpt[String]
-        ce.tags.site = wp.url flatMap { s => site(s) }
-        ce.setPublished(true)
-      } 
-      case _ => { /* ignore */ }
-    }
-    ce.itself
+  def updateFromJson(before:ContentEntry, json:JsValue) = {
+    val url = (json \ "item" \ "url").asOpt[String]
+    before.setPublished(true)
+    before.copy(
+      tags = before.tags.copy(site = url flatMap { s => site(s) }),
+      item = Some(WebPage(
+        url = url
+      ))
+    ).itself
   }
   
   /**
    * Creates but does not save a ContentSequence, wrapped in a ContentEntry
    */
-  def create(course:Ref[Course], approval:Approval[User], ce:ContentEntry, data:JsValue) = {
-    val url = (data \ "item" \ "url").asOpt[String]
-    ce.tags.site = url flatMap { s => site(s) } 
-    ce.setPublished(true)
-    WebPage.unsaved(course, ce.itself, url)
+  def createFromJson(blank:ContentEntry, json:JsValue) = {
+    val url = (json \ "item" \ "url").asOpt[String]
+    blank.setPublished(true)
+    blank.copy(
+      tags = blank.tags.copy(site = url flatMap { s => site(s) }),
+      item = Some(WebPage(
+        url = url
+      ))
+    ).itself
   }  
 
   /**
    * Determines whether a piece of text is a URL or not
    */
-  def urlMatcher(code:String) = {    
-    val isUrl = code.startsWith("http://") || code.startsWith("https://")
+  def urlChecker(blank:ContentEntry, url:String) = {
+    val isUrl = url.startsWith("http://") || url.startsWith("https://")
     
-    println(s"Checking to see if ${code} is a url")
+    println(s"Checking to see if ${url} is a url")
     
     if (isUrl) {
       import play.api.libs.ws.WS
       import play.api.libs.concurrent.Execution.Implicits._
       
       val a = for (
-        res <- WS.url(code).withHeaders("Accept" -> "text/*").get();
+        res <- WS.url(url).withHeaders("Accept" -> "text/*").get();
         title = "<title>([^<]+)</title>".r.findFirstMatchIn(res.body).map(_.group(1))
       ) yield {
-        new ContentEntry(
+        blank.copy(
           title = title,
-          tags = CETags(site=site(code)),
-          item = Some(new WebPage(url=Some(code)))  
+          tags = CETags(site=site(url)),
+          item = Some(new WebPage(url=Some(url)))  
         )
       }
       

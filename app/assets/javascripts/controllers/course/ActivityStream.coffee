@@ -10,8 +10,10 @@ define(["./base"], (l) ->
     viewingEvents.showForCourse(course.id)    
     
     $scope.refreshList = () -> 
-      $scope.publishedSinceRefresh = 0 
-      $scope.entries = ContentService.activity(course.id)
+      $scope.publishedSinceRefresh = 0
+      ContentService.activity(course.id).then((entries) -> 
+        $scope.entries = entries
+      ) 
     	
     $scope.refreshList()
     

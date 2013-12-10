@@ -36,6 +36,7 @@ require([
   "controllers/components/EditTags",
   "controllers/components/FillHeight",
   "controllers/components/ListEntries",
+  "controllers/components/SceTrustSrc",
 
   "controllers/viewContent/ViewContent",
   "controllers/viewContent/Layout",
@@ -68,4 +69,7 @@ require([
 	console.log("library has loaded")
 	
 	angular.bootstrap(document, ['impressory'])
+}, function(err) {
+  console.error("Failed loading required scripts")
+  console.error(err)
 })

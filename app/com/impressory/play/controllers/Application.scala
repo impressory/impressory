@@ -8,6 +8,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.wbillingsley.handy.appbase.DataAction
 import com.impressory.json.UserToJson
+import com.impressory.plugins.ContentItemViews
 
 
 object Application extends Controller {  
@@ -54,6 +55,11 @@ object Application extends Controller {
    * of all sources, which takes much longer than just recompiling this controller
    */
   def partial(templ:String) = Action { 
+    
+    val ciMainPrefix = "viewcontent/kinds/"
+    val ciEditPrefix = "editcontent/kinds/"
+    val ciStreamPrefix = "viewcontent/stream/"
+          
     templ match {
       case "main.html" => Ok(views.html.partials.main()) 
       case "signUp.html" => Ok(views.html.partials.signUp())
@@ -76,26 +82,34 @@ object Application extends Controller {
       case "qna/viewQuestion.html" => Ok(views.html.partials.qna.viewQuestion())
       
       case "viewcontent/kinds/contentSequence.html" => Ok(views.html.partials.viewcontent.kinds.contentSequence())
-      case "viewcontent/kinds/googleSlides.html" => Ok(views.html.partials.viewcontent.kinds.googleSlides())
       case "viewcontent/kinds/markdownPage.html" => Ok(views.html.partials.viewcontent.kinds.markdownPage())
       case "viewcontent/kinds/multipleChoicePoll.html" => Ok(views.html.partials.viewcontent.kinds.multipleChoicePoll())
-      case "viewcontent/kinds/webPage.html" => Ok(views.html.partials.viewcontent.kinds.webPage())
-      case "viewcontent/kinds/youTubeVideo.html" => Ok(views.html.partials.viewcontent.kinds.youTubeVideo())
       case "viewcontent/kinds/noContent.html" => Ok(views.html.partials.viewcontent.kinds.noContent())
       
-      case "viewcontent/stream/youTubeVideo.html" => Ok(views.html.partials.viewcontent.stream.youTubeVideo())
+      case s if s.startsWith(ciMainPrefix) => ContentItemViews.main(s.stripPrefix(ciMainPrefix)) match {
+        case Some(s) => Ok(s).as("text/html")
+        case _ => NotFound("No suitable template was found")
+      }
+
       case "viewcontent/stream/markdownPage.html" => Ok(views.html.partials.viewcontent.stream.markdownPage())
       case "viewcontent/stream/multipleChoicePoll.html" => Ok(views.html.partials.viewcontent.stream.multipleChoicePoll())
       case "viewcontent/stream/default.html" => Ok(views.html.partials.viewcontent.stream.default())
       
+      case s if s.startsWith(ciStreamPrefix) => ContentItemViews.stream(s.stripPrefix(ciStreamPrefix)) match {
+        case Some(s) => Ok(s).as("text/html")
+        case _ => NotFound("No suitable template was found")
+      }
+
       case "editcontent/kinds/contentSequence.html" => Ok(views.html.partials.editcontent.kinds.contentSequence())
-      case "editcontent/kinds/googleSlides.html" => Ok(views.html.partials.editcontent.kinds.googleSlides())
       case "editcontent/kinds/markdownPage.html" => Ok(views.html.partials.editcontent.kinds.markdownPage())
       case "editcontent/kinds/multipleChoicePoll.html" => Ok(views.html.partials.editcontent.kinds.multipleChoicePoll())
-      case "editcontent/kinds/webPage.html" => Ok(views.html.partials.editcontent.kinds.webPage())
-      case "editcontent/kinds/youTubeVideo.html" => Ok(views.html.partials.editcontent.kinds.youTubeVideo())
       case "editcontent/kinds/default.html" => Ok(views.html.partials.editcontent.kinds.default())
       
+      case s if s.startsWith(ciEditPrefix) => ContentItemViews.edit(s.stripPrefix(ciEditPrefix)) match {
+        case Some(s) => Ok(s).as("text/html")
+        case _ => NotFound("No suitable template was found")
+      }
+
       case _ => NotFound(s"No such partial template: $templ")
     }
   }

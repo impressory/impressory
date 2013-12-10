@@ -41,6 +41,9 @@ object Global extends GlobalSettings with AcceptExtractors {
     // Set the completion action for OAuth
     com.wbillingsley.handy.playoauth.PlayAuth.onAuth = com.impressory.auth.controllers.InterstitialController.onOAuth
     
+    // Set the home action for DataAction
+    com.wbillingsley.handy.appbase.DataAction.homeAction = com.impressory.play.controllers.Application.index
+    
     RefById.lookUpMethod = new RefById.LookUp {
       val pf = UserDAO.lookupPf orElse
                CourseDAO.lookupPf orElse
@@ -57,9 +60,14 @@ object Global extends GlobalSettings with AcceptExtractors {
       def lookup[T](r: RefManyById[T, _]) = pf.apply(r).asInstanceOf[RefMany[T]]
     }
     
-    // TODO: Set the home action for Angular
+    // Register plugins
+    com.impressory.json.ContentItemToJson.registerHandler(com.impressory.play.model.MarkdownPageModel)
+    com.impressory.json.ContentItemToJson.registerHandler(com.impressory.play.model.SequenceModel)
+    com.impressory.external.Plugin.onStart()
 
   }
+  
+  
 
 
 }

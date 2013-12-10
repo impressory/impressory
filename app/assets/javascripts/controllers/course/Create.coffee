@@ -9,15 +9,10 @@ define(["./base"], (l) ->
       $scope.errors = [ ]
       
       $http.post('/courses/create', course).success((data) -> 
-         if (data.course?)
-           $location.path("/course/" + data.course.id)
-         if (data.error?)
-           $scope.errors = [ data.error ]
-         else
-           console.log(data)
+        $location.path("/course/" + data.id)
       ).error((data) ->
-         $scope.errors = [ "Unexpected error" ]
-         console.log(data)
+        $scope.errors = [ data.error || "Unexpected error" ]
+        console.log(data)
       )    
   ]
 

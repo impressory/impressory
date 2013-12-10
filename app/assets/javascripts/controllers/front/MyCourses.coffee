@@ -1,6 +1,6 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.Front.MyCourses = ['$scope', '$http', ($scope, $http) ->
+  Impressory.Controllers.Front.MyCourses = ['$scope', 'CourseService', ($scope, CourseService) ->
   
     $scope.login = Impressory.Model.Login
     
@@ -9,8 +9,8 @@ define(["./base"], (l) ->
     , true)
     
     $scope.updateCourses = () -> 
-      $http.get("/courses/my").success((data) -> 
-        $scope.courses = data.courses
+      CourseService.my().then((courses) -> 
+        $scope.courses = courses
       ) 
   
   ]

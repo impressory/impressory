@@ -5,31 +5,30 @@ import Ref._
 import play.api.libs.json._
 
 import com.impressory.api._
+import com.impressory.json._
 import com.impressory.plugins._
 
-object MarkdownPageModel extends ContentItemJsonHandler[MarkdownPage] {
+object MarkdownPageModel extends ContentItemJsonHandler {
 
   var defaultText = "The default text for Markdown Pages has not been set yet"
   
-  val clazz = classOf[MarkdownPage]
-  
-  val kind = MarkdownPage.itemType
-    
   def urlChecker(blank:ContentEntry, url:String) = RefNone
     
-  def toJsonFor(mp:MarkdownPage, appr:Approval[User]) = Json.obj(
-    "text" -> mp.text,
-    "version" -> mp.version
-  ).itself
+  def toJsonFor = { case (mp: MarkdownPage, appr) => 
+    Json.obj(
+      "text" -> mp.text,
+      "version" -> mp.version
+    ).itself
+  }
   
-  def createFromJson(blank:ContentEntry, json:JsValue) = {
+  def createFromJson= { case (MarkdownPage.itemType, json, blank) =>
     blank.copy(
-      tags = blank.tags.copy(site=None),
+      tags = blank.tags.copy(nouns=blank.tags.nouns + "Wiki page", site=None),
       item = Some(new MarkdownPage((json \ "item" \ "text").asOpt[String] getOrElse defaultText))
     ).itself
   }
 
-  def updateFromJson(before:ContentEntry, json:JsValue) = {
+  def updateFromJson = { case (MarkdownPage.itemType, json, before) =>
     val text = (json \ "item" \ "text").asOpt[String]
     val version = (json \ "item" \ "version").asOpt[Int].getOrElse(0)
 

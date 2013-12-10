@@ -23,7 +23,6 @@ object ContentEntryDAO extends DAO[ContentEntry] {
   implicit val CETagsFormat = Macros.handler[CETags]
   
   implicit val CESettingsFormat = Macros.handler[CESettings]
-  implicit val cic = ContentItemConverter
   
   /* Note that when we write a content entry we do not write the votes or comments */
   implicit object bsonWriter extends BSONDocumentWriter[ContentEntry] {
@@ -43,7 +42,7 @@ object ContentEntryDAO extends DAO[ContentEntry] {
       val item:Option[ContentItem] = for {
         kind <- doc.getAs[String]("kind")
         d <- doc.getAs[BSONDocument]("item")
-        i <- ContentItemConverter.read(d, kind) 
+        i <- ContentItemToBson.read(d, kind) 
       } yield i
 
       implicit val udvr = UpDownVotingReader
@@ -98,7 +97,7 @@ object ContentEntryDAO extends DAO[ContentEntry] {
    */
   def setItem(ce:Ref[ContentEntry], item:ContentItem):Ref[ContentEntry] = {
     val query = BSONDocument("_id" -> ce)
-    val update = BSONDocument("$set" -> BSONDocument("item" -> item, "updated" -> System.currentTimeMillis()))
+    val update = BSONDocument("$set" -> (BSONDocument("updated" -> System.currentTimeMillis()) ++ ContentItemToBson.update(Some(item))))
     updateAndFetch(query, update)
   }
   
@@ -113,7 +112,7 @@ object ContentEntryDAO extends DAO[ContentEntry] {
   def saveWithItem(ce:ContentEntry) = {
     val toSave = ce.copy(updated = System.currentTimeMillis())
     val doc = bsonWriter.write(toSave)
-    val docWithItem = doc ++ BSONDocument("item" -> toSave.item)
+    val docWithItem = doc ++ ContentItemToBson.update(toSave.item)
     
     updateSafe(BSONDocument(idIs(ce.id)), BSONDocument("$set" -> docWithItem), toSave)
   }
@@ -123,8 +122,8 @@ object ContentEntryDAO extends DAO[ContentEntry] {
    */
   def saveNew(ce:ContentEntry) = {
     val doc = bsonWriter.write(ce)
-    val docWithItem = doc ++ BSONDocument(idIs(ce.id), "item" -> ce.item)
-    saveSafe(doc, ce)
+    val docWithItem = doc ++ BSONDocument(idIs(ce.id), "item" -> ContentItemToBson.create(ce.item))
+    saveSafe(docWithItem, ce)
   }
   
   /**

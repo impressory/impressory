@@ -56,6 +56,7 @@ object UserController extends Controller {
       user <- {
         val u = UserDAO.unsaved  
         val set = u.copy(
+            nickname=Some(email.takeWhile(_ != '@')),
             pwlogin=u.pwlogin.copy(email=Some(email), pwhash=u.pwlogin.hash(password)),
             activeSessions=Seq(ActiveSession(request.sessionKey, ip=request.remoteAddress))
         )
@@ -91,7 +92,7 @@ object UserController extends Controller {
     val resp = for {
         un <- Ref(email);
         pw <- Ref(password);
-        u <- UserDAO.byEmail(un) if (u.pwlogin.pwhash == Some(u.pwlogin.hash(pw))); 
+        u <- UserDAO.byEmail(un) if (u.pwlogin.pwhash == u.pwlogin.hash(pw));
         pushed <- UserDAO.pushSession(u.itself, ActiveSession(request.sessionKey, ip=request.remoteAddress))        
     } yield pushed
     

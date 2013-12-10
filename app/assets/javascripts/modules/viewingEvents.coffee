@@ -37,11 +37,10 @@ define(["./app"], () ->
           
           # Load the last few events
           $http.get("/course/" + courseId + "/chat/lastFew").success((data) -> 
-            if data.events?
-              users = (event.addedBy for event in data.events when event.addedBy?)
-              viewingUsers.request(users)
+            users = (event.addedBy for event in data when event.addedBy?)
+            viewingUsers.request(users)
 
-              ERData.events = data.events
+            ERData.events = data
           )
           
           # TODO: this needs to go into a callback 

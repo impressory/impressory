@@ -47,6 +47,7 @@ object CourseController extends Controller {
     for {
       u <- request.user
       courseIds = {
+        println(u.registrations)
         for (r <- u.registrations; id <- r.course.getId) yield id
       }
       c <- new RefManyById(classOf[Course], courseIds)      

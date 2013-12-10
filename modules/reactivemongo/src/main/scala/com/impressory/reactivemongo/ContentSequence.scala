@@ -7,24 +7,19 @@ import reactivemongo.bson._
 
 import com.impressory.api._
 
-object ContentSequenceWriter extends BSONDocumentWriter[ContentSequence] {
+object ContentSequenceHandler extends ContentItemBsonHandler {
   
   import UserDAO.RefManyByIdWriter
   
-  def write(s: ContentSequence) = {
-    val doc = BSONDocument(
-      "entries" -> s.entries
-      )
-    doc
-  }
-}
+  def create = { case s:ContentSequence => BSONDocument("entries" -> s.entries) }
   
-object ContentSequenceReader extends BSONDocumentReader[ContentSequence] {
-  def read(doc: BSONDocument): ContentSequence = {
+  def update = { case s:ContentSequence => BSONDocument("item.entries" -> s.entries) }
+  
+  def read = { case (ContentSequence.itemType, doc) => 
     new ContentSequence(
       entries = doc.getAs[RefManyById[ContentEntry, String]]("entries").getOrElse(new RefManyById(classOf[ContentEntry], Seq.empty))
     )
   }
-}
   
+}
 

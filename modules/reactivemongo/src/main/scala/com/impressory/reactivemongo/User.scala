@@ -15,6 +15,8 @@ object UserDAO extends DAO[User] with UserProvider[User] {
 
   val honorifics = Seq("rev. ", "hon. ", "rt. hon. ", "h.r.h. ", "gen. ", "flt. lt. ", "adm. ", "dr. ", "prof. ")
 
+  val defaultSiteRoles = Set(SiteRole.Reader, SiteRole.Author)
+  
   def defaultEmailNickname(email: String) = {
     def name = email.takeWhile(_ != '@')
     honorifics(scala.util.Random.nextInt(honorifics.length)) + name
@@ -40,7 +42,7 @@ object UserDAO extends DAO[User] with UserProvider[User] {
   implicit val pwloginFormat = Macros.handler[PasswordLogin]
   
   /** Converts Identity to and from BSON */
-  implicit val identityFormat = Macros.handler[Identity]
+  implicit val identityFormat = IdentityHandler
 
   /** Converts ActiveSession to and from BSON */
   implicit val activeSessionFormat = Macros.handler[ActiveSession]  
@@ -80,7 +82,7 @@ object UserDAO extends DAO[User] with UserProvider[User] {
     saveNew(updated)
   }
 
-  def unsaved = User(id = allocateId)
+  def unsaved = User(id = allocateId, siteRoles=defaultSiteRoles)
 
   /**
    * Saves the user's details
@@ -120,6 +122,7 @@ object UserDAO extends DAO[User] with UserProvider[User] {
       "identities" -> u.identities,
       "activeSessions" -> u.activeSessions,
       "registrations" -> u.registrations,
+      "siteRoles" -> u.siteRoles,
       "created" -> u.created
     ),
     u
@@ -161,7 +164,7 @@ object UserDAO extends DAO[User] with UserProvider[User] {
   }
   
   def byIdentity(service:String, id:String):Ref[User] = {
-    findOne(query=BSONDocument("identities.service" -> service, "identities.value" -> id))
+    findOne(query=BSONDocument("identities.key" -> BSONDocument("service" -> service, "value" -> id)))
   }
   
 
@@ -199,6 +202,31 @@ object UserDAO extends DAO[User] with UserProvider[User] {
         update=BSONDocument("$addToSet" -> BSONDocument("registrations" -> r))
       )
     ) yield updated
+  }
+
+}
+
+object IdentityHandler extends BSONDocumentReader[Identity] with BSONDocumentWriter[Identity] {
+  
+  def write(identity:Identity) = BSONDocument(
+      "key" -> BSONDocument(
+        "service" -> identity.service,
+        "value" -> identity.value
+      ),    	
+      "username" -> identity.username,
+      "avatar" -> identity.avatar,
+      "since" -> identity.since
+    )        
+  
+  def read(doc:BSONDocument):Identity = {      
+      val key = doc.getAs[BSONDocument]("key").get
+      Identity(
+        username = doc.getAs[String]("username"),
+        service = key.getAs[String]("service").get,
+        value = key.getAs[String]("value").get,
+        since = doc.getAs[Long]("since").get,
+        avatar = doc.getAs[String]("avatar")
+      )
   }
 
 }

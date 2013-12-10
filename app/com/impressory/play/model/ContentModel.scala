@@ -86,10 +86,10 @@ object ContentModel {
   }
 
   def recentEntries(course:Ref[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
-    (for (approved <- tok ask Read(course)) yield {
-      val all = ContentEntryDAO.recentInNewsByCourse(course)
-      all
-    }).flatten 
+    for {
+      approved <- tok ask Read(course)
+      e <- ContentEntryDAO.recentInNewsByCourse(course)
+    } yield e
   }  
   
   /**

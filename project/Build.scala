@@ -19,6 +19,8 @@ object ApplicationBuild extends Build {
       "com.wbillingsley" %% "eventroom" % "0.1-SNAPSHOT",
       "com.wbillingsley" %% "handy-play-oauth" % "0.2-SNAPSHOT"
     )
+    
+    lazy val impressoryExternalContent = play.Project(appName + "-externalcontent", appVersion, appDependencies, path=file("modules/externalcontent")).dependsOn(impressoryApi, impressoryModel, impressoryReactivemongo)
 
     lazy val mainProj = play.Project(appName, appVersion, appDependencies).settings(
 
@@ -36,7 +38,8 @@ object ApplicationBuild extends Build {
     ).dependsOn(
       impressoryApi,
       impressoryModel,
-      impressoryReactivemongo
+      impressoryReactivemongo,
+      impressoryExternalContent
     )
   
     override def rootProject = Some(mainProj)

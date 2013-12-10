@@ -11,12 +11,11 @@ define(["./base"], (l) ->
     $scope.submit = (user) -> 
       $scope.errors = [ ]
       $http.post('/signUp', user).success((data) -> 
-         if (data.user?)
-           Impressory.Model.Login.login(data.user)
-           $location.path("/")           
+        Impressory.Model.Login.login(data)
+        $location.path("/")           
       ).error((data) ->
-         $scope.errors = [ data.error || "Unexpected error" ]
-         console.log(data)
+        $scope.errors = [ data ]
+        console.log(data)
       )
   ]
 

@@ -1,0 +1,10 @@
+@(above: => Html)
+
+@above
+
+<div ng-controller="Impressory.Controllers.Components.SceTrustSrc">
+  <div ng-controller="Impressory.Controllers.Components.FillHeight">
+    <iframe ng-src="{{ trustAsResourceUrl(embedUrl) }}" style="border: none" ng-style="{ height: fillHeight }">
+    </iframe>
+  </div>
+</div>

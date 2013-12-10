@@ -23,11 +23,11 @@ define(["./base"], (l) ->
     $scope.submit = (kind) ->
       $scope.toAdd.entry.kind = kind
       ContentService.addContent($scope.courseId, $scope.toAdd.entry ).success((data) -> 
+        viewingContent.viewThisData(data)
+      ).error((data) ->
         if (data.error?)
           $scope.errors = [ data.error ]
         else
-          viewingContent.viewThisData(data)
-      ).error((data) ->
          $scope.errors = [ "Unexpected error" ]
          console.log(data)
       )      

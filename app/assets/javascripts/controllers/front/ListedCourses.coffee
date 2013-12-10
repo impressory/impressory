@@ -1,9 +1,9 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.Front.ListedCourses = ['$scope', '$http', ($scope, $http) ->
+  Impressory.Controllers.Front.ListedCourses = ['$scope', 'CourseService', ($scope, CourseService) ->
   
-    $http.get("/courses/listed").success((data) -> 
-      $scope.courses = data.courses
+    CourseService.listed().then((data) -> 
+      $scope.courses = data
     ) 
   
   ]

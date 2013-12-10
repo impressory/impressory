@@ -1,17 +1,20 @@
-define(["./app"], () ->
+define(["modules/base"], () ->
 
   Impressory.angularApp.service('CourseService', ['$http', '$cacheFactory', ($http, $cacheFactory) ->
    
     cache = $cacheFactory("courseCache")
    
     {
+      listed: () -> $http.get("/courses/listed").then((res) -> res.data)
+      
+      my: () -> $http.get("/courses/my").then((res) -> res.data)
+    
       get: (courseId) ->
         cache.get(courseId) || ( 
           prom = $http.get("/course/#{courseId}").then((res) -> res.data)
           cache.put(courseId, prom)
           prom
         )
-        
       
       save: (course) -> $http.post("/course/#{course.id}/update", course).then((res) ->
         cache.put(course.id, res.data) 

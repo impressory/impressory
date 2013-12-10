@@ -5,13 +5,14 @@ import Ref._
 import play.api.libs.json._
 import com.impressory.api._
 import com.impressory.api.poll._
+import com.impressory.json._
 import com.impressory.plugins._
 import com.impressory.security.Permissions
 import Permissions._
 import com.impressory.reactivemongo.MCPollResponseDAO
 import com.wbillingsley.handy.appbase.JsonConverter
 
-object MCPollModel extends ContentItemJsonHandler[MultipleChoicePoll] {
+object MCPollModel extends ContentItemJsonHandler {
   
   var defaultText = "Now you need to edit this poll..."
 
@@ -29,17 +30,13 @@ object MCPollModel extends ContentItemJsonHandler[MultipleChoicePoll] {
   
   implicit val MCPollToJson = Json.format[MultipleChoicePoll]
   
-  val clazz = classOf[MultipleChoicePoll]
-  
-  val kind = MultipleChoicePoll.itemType
-  
   def urlChecker(blank:ContentEntry, url:String) = RefNone
   
-  def toJsonFor(p:MultipleChoicePoll, appr:Approval[User]) = {
+  def toJsonFor = { case (p: MultipleChoicePoll, appr) =>
     MCPollToJson.writes(p).itself
   }
   
-  def updateFromJson(before:ContentEntry, json:JsValue) = {
+  def updateFromJson = { case (MultipleChoicePoll.itemType, json, before) =>
     before.item match {
       case Some(p:MultipleChoicePoll) => {
         before.copy(item = Some((json \ "item").asOpt[MultipleChoicePoll].getOrElse(p))).itself
@@ -51,7 +48,7 @@ object MCPollModel extends ContentItemJsonHandler[MultipleChoicePoll] {
   /**
    * Creates but does not save a ContentSequence, wrapped in a ContentEntry
    */
-  def createFromJson(blank:ContentEntry, json:JsValue) = {
+  def createFromJson= { case (MultipleChoicePoll.itemType, json, blank) =>
     blank.copy(
       tags = blank.tags.copy(site=None),
       item = Some(new MultipleChoicePoll(Some(defaultText)))

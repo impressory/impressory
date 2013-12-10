@@ -1,7 +1,7 @@
 
 define(["model/base"], () ->
  
-  Impressory.angularApp = angular.module('impressory', ['ngSanitize'])
+  Impressory.angularApp = angular.module('impressory', ['ngRoute', 'ngSanitize'])
   
   
   # A directive that will put the content of the sandbox into an iframe

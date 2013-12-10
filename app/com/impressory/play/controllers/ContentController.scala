@@ -7,7 +7,6 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 import com.impressory.api._
-import com.impressory.api.external._
 import com.impressory.api.events._
 import com.impressory.json._
 import com.impressory.plugins._
@@ -232,7 +231,7 @@ object ContentController extends Controller {
     request match {
       case Accepts.Json() => {
         val res = for (
-          ce <- ContentTypeListing.whatIsIt(
+          ce <- ContentItemToJson.whatIsIt(
               ContentEntryDAO.unsaved,
               code
             ) orIfNone UserError("Sorry, I don't recognise that content");

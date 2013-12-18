@@ -108,7 +108,11 @@ object ContentController extends Controller {
       
       // Create a ContentEntry (without its item) from the data
       blank = ContentEntryDAO.unsaved.copy(course=c.itself, addedBy=approval.who, settings=CESettings(protect=protect));
-      updated <- ContentItemToJson.createFromJson(kind, blank, requestBody)
+      
+      // Updated the metadata, as some settings might be changed (eg, published)
+      metaUpdated = ContentEntryToJson.update(blank, requestBody);   
+      
+      updated <- ContentItemToJson.createFromJson(kind, metaUpdated, requestBody)
       
       // Set the item, and save
       saved <- ContentEntryDAO.saveNew(updated)

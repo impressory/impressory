@@ -34,7 +34,16 @@ define(["lib/eventRoom"], (er) ->
       
         Course: { }
         
-        Content: { }
+        Content: { 
+          # The entry in MainContent
+          entry: null
+          
+          # Instructs Sequence to turn to a particular entry in the sequence
+          goToSeqIndex: -1
+          
+          # The entry Sequence has turned to
+          seqEntry: null
+        }
         
         Users: { 
           cache: { }

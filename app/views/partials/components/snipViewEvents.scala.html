@@ -20,7 +20,7 @@
           <div ng-init="entry = event.poll"></div>
           <div ng-controller="Impressory.Controllers.MCPoll.View" class="multiple-choice-poll">
             <div class="form-inline">
-              <div ng-bind-html-unsafe="madeHtml" class="question"></div>
+              <div ng-bind-html="madeHtml" class="question"></div>
               <ul>
                 <li ng-repeat="option in entry.item.options">
                   <label class="checkbox-inline option">

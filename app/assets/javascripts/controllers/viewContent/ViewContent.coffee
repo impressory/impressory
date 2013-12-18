@@ -36,24 +36,16 @@ define(["./base"], (l) ->
     course: ['$route', 'CourseService', ($route, CourseService) -> 
       CourseService.get($route.current.params.courseId)
     ]
-    entry: ['$route', 'ContentService', ($route, ContentService) ->
+    entry: ['$route', 'ContentService', 'viewingContent', ($route, ContentService, viewingContent) ->
       entryId = $route.current.params.entryId
       
-      # Check to see if we're already looking at it
-      if (Impressory.Model.Viewing.Content.entry?.id == entryId) 
+      viewingContent.tryToVisitInViewing(entryId) || ContentService.get($route.current.params.courseId, entryId).then((entry) ->
+        Impressory.Model.Viewing.Content.entry = entry
         Impressory.Model.Viewing.Content.goToSeqIndex = -1
-        Impressory.Model.Viewing.Content.entry
-      else
-        idx = Impressory.Model.Viewing.Content.entry?.item?.entries?.indexOf(entryId)
-        if (idx >= 0) 
-          Impressory.Model.Viewing.Content.goToSeqIndex = idx
-          Impressory.Model.Viewing.Content.entry
-        else
-          ContentService.get($route.current.params.courseId, ).then((entry) ->
-            Impressory.Model.Viewing.Content.entry = entry
-            Impressory.Model.Viewing.Content.goToSeqIndex = -1
-            Impressory.Model.Viewing.Content.seqEntry = null
-          )
+        Impressory.Model.Viewing.Content.seqEntry = null
+        console.log("Returning " + entry.id)
+        entry
+      )
     ]
   }
 

@@ -11,6 +11,10 @@ define(["lib/eventRoom"], (er) ->
     Services: {
     }
     
+    Caches: {
+    
+    }
+    
     Model: {
     
       Login: { 

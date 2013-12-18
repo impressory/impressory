@@ -7,7 +7,9 @@ define(["./base"], (l) ->
 
   Impressory.Controllers.ViewContent.EditDetails = ["$scope", "ContentService", ($scope, ContentService) ->
     
-    $scope.entry = angular.copy(Impressory.Model.Viewing.Content.display)
+    unedited = $scope.entry
+    
+    $scope.entry = angular.copy($scope.entry)
         
     $scope.errors = []
     
@@ -21,6 +23,9 @@ define(["./base"], (l) ->
        
       ContentService.editTags($scope.entry).then(
         (entry) -> 
+          # Update the parent's scope entry that we were asked to edit 
+          angular.copy(entry, unedited)
+        
           $scope.panels.toggleEditDetails()
         (data) ->
           console.log(data)

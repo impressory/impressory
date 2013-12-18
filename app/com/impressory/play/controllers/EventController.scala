@@ -45,7 +45,8 @@ object EventController extends Controller {
     ) yield {
       val mem = Mem(u)
       val context = "Direct connection"
-      EventRoom.serverSentEvents(listenerName=request.sessionKey, u=mem, session=request.sessionKey, context=context)
+      val uuid = java.util.UUID.randomUUID().toString()
+      EventRoom.serverSentEvents(listenerName=uuid, u=mem, session=request.sessionKey, context=context)
     }      
   }
   

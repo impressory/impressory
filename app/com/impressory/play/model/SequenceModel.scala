@@ -19,11 +19,9 @@ object SequenceModel extends ContentItemJsonHandler {
   def urlChecker(blank:ContentEntry, url:String) = RefNone
     
   def toJsonFor = { case (cs: ContentSequence, appr) => 
-    for (
-      entries <- cs.entries.withFilter(_.kind != ContentSequence.itemType).flatMap(ContentEntryToJson.toJsonFor(_, appr)).toRefOne
-    ) yield Json.obj(
-      "entries" -> entries.toSeq
-    )      
+    Json.obj(
+      "entries" -> cs.entries.rawIds
+    ).itself
   }
   
   def createFromJson= { case (ContentSequence.itemType, json, blank) =>
@@ -44,16 +42,10 @@ object SequenceModel extends ContentItemJsonHandler {
      * but their full JSON.  The client sends them back in the same format.
      * So, we need to extract the IDs from the JSON that the client sent.
      */
-    val entryIds = json \ "item" \ "entries" \\ "id"
-    
-    val verifiedIds = for {
-      entry <- new RefManyById(classOf[ContentEntry], entryIds) if (entry.course.getId == before.course.getId)
-    } yield entry.id
-    
-    for (
-      seq <- verifiedIds.toRefOne
-    ) yield {
-      before.copy(item = Some(ContentSequence(entries = new RefManyById(classOf[ContentEntry], seq.toSeq))))
+    for { 
+      entryIds <- (json \ "item" \ "entries").asOpt[Seq[String]].toRef orIfNone UserError("Content entries was missing")
+    } yield {
+      before.copy(item = Some(ContentSequence(entries = new RefManyById(classOf[ContentEntry], entryIds))))
     }
   }
 

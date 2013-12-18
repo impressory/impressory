@@ -2,13 +2,18 @@ define(["./base"], (l) ->
 
   Impressory.Controllers.EditContent.EditContent = ["$scope", "ContentService", ($scope, ContentService) ->
   
-    $scope.entry = angular.copy(Impressory.Model.Viewing.Content.display)
+    unedited = $scope.entry
+  
+    $scope.entry = angular.copy($scope.entry)
   
     $scope.save = () ->
       $scope.errors = []
     
       ContentService.editItem($scope.entry).then(
-        (entry) -> 
+        (entry) ->
+          # Update the parent's scope entry that we were asked to edit 
+          angular.copy(entry, unedited)
+          
           $scope.onClose()
         (data) ->
           $scope.errors = [ data.error || "Unexpected error" ]

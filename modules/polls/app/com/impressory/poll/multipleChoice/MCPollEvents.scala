@@ -3,7 +3,8 @@ package com.impressory.poll.multipleChoice
 import com.impressory.api._
 import com.impressory.api.events._
 import com.impressory.poll._
-import com.impressory.eventroom.EventRoom
+import com.impressory.security._
+import com.impressory.eventroom._
 import EventRoom._
 
 import com.wbillingsley.handy._
@@ -53,6 +54,16 @@ import MCPollEventHelper._
 
 case class PollStream(pollId: String) extends eventroom.ListenTo {
     override def onSubscribe(listenerName:String, room:eventroom.EventRoom) = broadcastState(room, RefById(classOf[ContentEntry], pollId))
+}
+
+object MCPollStreamLTJH extends ListenToJsonHandler {
+  def fromJson = { case ("Multiple choice poll results", j, appr) =>
+    for {
+      pollId <- (j \ "id").asOpt[String].toRef
+      approved <- appr ask Permissions.ReadEntry(new LazyId(classOf[ContentEntry], pollId))
+    } yield PollStream(pollId)
+    
+  }
 }
 
 case class PushPollToChat(poll: ContentEntry) extends eventroom.EREvent {

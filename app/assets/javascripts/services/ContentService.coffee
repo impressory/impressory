@@ -1,19 +1,69 @@
-define(["./app"], () ->
+define(["modules/base"], () ->
 
-  Impressory.angularApp.service('ContentService', ['$http', '$location', '$cacheFactory', 'viewingContent', ($http, $location, $cacheFactory, viewingContent) ->
+  Impressory.Services.ContentService = Impressory.angularApp.service('ContentService', ['$http', '$location', '$cacheFactory', '$q', ($http, $location, $cacheFactory, $q) ->
    
     cache = $cacheFactory('contentServiceCache')
+    
+    Impressory.Caches["contentServiceCache"] = cache
    
     {
-
       # Returns a promise containing the JSON of a content entry
       get: (courseId, entryId) ->
-        key = { course: courseId, entry: entryId }
-        cache.get(key) || (
-          promise =  $http.get("/course/#{courseId}/entry/#{entryId}").then((res) -> res.data)
-          cache.put(key, promise)
+        cache.get(entryId) || (
+          promise =  $http.get("/course/#{courseId}/entry/#{entryId}").then((res) -> 
+            console.log(res.data)
+            res.data
+          )
+          cache.put(entryId, promise)
           promise
         )
+        
+      request: (courseId, ids) ->
+      
+        # Eliminate the ids we have already fetched
+        unfetched = (x for x in ids when !(cache.get(x)?))
+        
+        # If there are any left to request, request them
+        if unfetched.length > 0
+          
+          deferred = []
+          
+          # put a new promise into the cache, because these are being fetched
+          for unfetchedId in unfetched
+            do (unfetchedId) -> 
+              deferred[unfetchedId] = $q.defer()
+              cache.put(unfetchedId, deferred[unfetchedId].promise)
+            
+          # fetch them and fulfill the promises
+          $http.post("/course/#{courseId}/entriesByIds", { ids: unfetched }).then((res) ->
+            for entry in res.data 
+              do (entry) ->
+                deferred[entry.id]?.resolve(entry)
+          )
+          
+        # We now have promises for every id
+        promises = (cache.get(id) for id in ids)
+        
+        # Combine them all as a single promise to return
+        $q.all(promises)
+        
+        
+      # Calls the server to query for content, returning a promise to look up the new current entry
+      # in sequence (an EntryInSequence structure)
+      lookUp: (courseId, params) ->
+        $http.get("/course/" + courseId + "/content", { params: params }).then((res) =>
+          res.data
+        , (errRes) =>
+          errRes.data?.error || "Unexpected error looking up content"
+        )
+    
+      viewUrl: (courseId, entryId) -> 
+        if $location.port() == 80
+          "#{$location.protocol()}://#{$location.host()}/course/#{courseId}/view/#{entryId}"
+        else
+          "#{$location.protocol()}://#{$location.host()}:#{$location.port()}/course/#{courseId}/view/#{entryId}"
+    
+      viewPath: (entry) -> @viewUrl(entry.course, entry.id)
     
       embedUrl: (courseId, entryId) -> 
         if $location.port() == 80
@@ -41,8 +91,6 @@ define(["./app"], () ->
       activity: (courseId) -> $http.get("/course/#{courseId}/activity").then((res) -> res.data)
       
       whatIsIt: (code) -> $http.get("/whatIsIt", { params: { code : code } })
-        
-      viewPath: (entry) -> "/course/#{entry.course}/viewContent?entryId=#{entry.id}"
       
       addContent: (courseId, entry) -> $http.post("/course/#{courseId}/addContent", entry )
 
@@ -50,7 +98,7 @@ define(["./app"], () ->
       editItem: (entry) -> $http.post("/course/#{entry.course}/entry/#{entry.id}/editItem", entry).then(
         (res) ->
           entry = res.data 
-          viewingContent.updateEntryInPlace(entry)
+          ## TODO: update the passed-in entry
           entry 
         (res) -> res.data
       )
@@ -59,7 +107,7 @@ define(["./app"], () ->
       editTags: (entry) -> $http.post("/course/#{entry.course}/entry/#{entry.id}/editTags", entry).then(
         (res) -> 
           entry = res.data 
-          viewingContent.updateEntryInPlace(entry)
+          ## TODO: update the passed-in entry
           entry 
         (res) -> res.data
       )
@@ -74,7 +122,7 @@ define(["./app"], () ->
           when 'sequence' then '/partials/viewcontent/kinds/contentSequence.html'
           when 'web page' then '/partials/viewcontent/kinds/webPage.html'
           when 'YouTube video' then '/partials/viewcontent/kinds/youTubeVideo.html'
-          else 'partials/viewcontent/kinds/noContent.html'
+          else '/partials/viewcontent/kinds/noContent.html'
 
       # Identifies the viewer component to include, depending on the type of content.
       # The returned string is the path to the Angular.js partial template.
@@ -96,7 +144,7 @@ define(["./app"], () ->
           when 'Multiple choice poll' then '/partials/editcontent/kinds/multipleChoicePoll.html'
           when 'web page' then '/partials/editcontent/kinds/webPage.html'
           when 'YouTube video' then '/partials/editcontent/kinds/youTubeVideo.html'
-          else 'partials/editcontent/kinds/default.html'          
+          else '/partials/editcontent/kinds/default.html'          
     }
   ])
 

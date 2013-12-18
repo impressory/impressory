@@ -23,11 +23,11 @@
 	  </p>
 	  <hr />
 	  <div>
-	    <list-entries entries="entry.item.entries" view-mode="rows" ></list-entries>
+	    <list-entries entries="entries" view-mode="rows" ></list-entries>
 	  </div>
     </div>
     
-    <div ng-repeat="entry in entry.item.entries" >
+    <div ng-repeat="entry in entries" >
       <div ng-show="seqIndex == $index" >
       	<ce-render-entry-full entry="entry" ></ce-render-entry-full>
       </div>

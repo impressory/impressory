@@ -1,7 +1,7 @@
 @()
 
 <div class="viewer-top-nav" ng-controller="Impressory.Controllers.ViewContent.TopNav">
-  
+
   <div class="dont-print">
     <div ng-hide="panels.minimisedHeader">
       <header-front ></header-front>
@@ -28,12 +28,12 @@
           </button>
         </li>
         <li class="navli">
-          <button class="command require-edit" ng-disabled="!viewing.Content.display.permissions.edit" ng-class="{ 'active': panels.top == 'editContent' }" ng-click="panels.toggleEditContent()"
+          <button class="command require-edit" ng-disabled="!entry.permissions.edit" ng-class="{ 'active': panels.top == 'editContent' }" ng-click="panels.toggleEditContent()"
             id="edit-button" title="Edit content">
             <i class="icon-edit"></i>
           </button></li>
         <li class="navli">
-          <button class="command" ng-disabled="!viewing.Content.display.permissions.add" ng-class="{ 'active': panels.top == 'addContent' }" ng-click="panels.toggleAddContent()">
+          <button class="command" ng-disabled="!entry.permissions.add" ng-class="{ 'active': panels.top == 'addContent' }" ng-click="panels.toggleAddContent()">
             <i class="icon-plus"></i>
           </button>
         </li>
@@ -46,26 +46,26 @@
   
       <div id="ceInfo" class="ceInfo">
   
-        <entry-vote entry="viewing.Content.display"></entry-vote> 
-        <span class="title">{{ viewing.Content.display.title || '(Untitled)' }}</span>
+        <entry-vote entry="entry"></entry-vote> 
+        <span class="title">{{ entry.title || '(Untitled)' }}</span>
         <span class="spacer"></span> 
         <span>
           <button class="command require-chat" ng-class="{ 'active': panels.top == 'comments' }" 
                   title="Comments" ng-click="panels.toggleComments();">
-            <span >{{ viewing.Content.display.commentCount || 0 }}</span> <i class="icon-comments"></i>
+            <span >{{ entry.commentCount || 0 }}</span> <i class="icon-comments"></i>
           </button>
         </span> 
         <span class="spacer"></span> 
         <span class="tags"> 
           <span class="adjs">
-            <span ng-repeat="adj in viewing.Content.display.tags.adjectives" class="adj">{{ adj }}</span> 
+            <span ng-repeat="adj in entry.tags.adjectives" class="adj">{{ adj }}</span> 
           </span> 
           <span class="nouns">
-            <span ng-repeat="noun in viewing.Content.display.tags.nouns" class="noun">{{ noun }}</span>           
+            <span ng-repeat="noun in entry.tags.nouns" class="noun">{{ noun }}</span>           
           </span> 
           <span class="preposition">about</span> 
           <span class="topics"> 
-            <button ng-repeat="topic in viewing.Content.display.tags.topics" ng-class="{ 'active': (panels.top == 'contentForTopic') && (searchTopic == topic) }" ng-click="panels.toggleContentForTopic(topic)" class="topic command">{{ topic }}</button> 
+            <button ng-repeat="topic in entry.tags.topics" ng-class="{ 'active': (panels.top == 'contentForTopic') && (searchTopic == topic) }" ng-click="panels.toggleContentForTopic(topic)" class="topic command">{{ topic }}</button> 
           </span>
         </span>
   

@@ -1,5 +1,5 @@
 
-define(["./base", "./ContentService", "services/CourseService", "./QnAService", "./markdownService", "./viewingContent", "./viewingEvents", "./viewingUsers" ], () ->
+define(["./base", "services/ContentService", "services/CourseService", "./QnAService", "./markdownService", "./viewingContent", "./viewingEvents", "./viewingUsers" ], () ->
    
     Impressory.angularApp.config(['$locationProvider', ($locationProvider) ->
         $locationProvider.html5Mode(true)
@@ -34,7 +34,8 @@ define(["./base", "./ContentService", "services/CourseService", "./QnAService", 
           when('/course/:courseId/invites', { templateUrl: '/partials/course/invites.html', resolve: Impressory.Controllers.Course.Invites.resolve, controller: Impressory.Controllers.Course.Invites  }).
           when('/course/:courseId/index', { templateUrl: '/partials/course/index.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).
           when('/course/:courseId/chatRoom', { templateUrl: '/partials/course/chatRoom.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover  }).
-          when('/course/:courseId/viewContent', { templateUrl: '/partials/course/viewContent.html', reloadOnSearch: false, resolve: Impressory.Controllers.ViewContent.ViewContent.resolve, controller: Impressory.Controllers.ViewContent.ViewContent  }).
+          when('/course/:courseId/view/lookup', { templateUrl: '/partials/course/viewContent.html', resolve: Impressory.Controllers.ViewContent.ViewContent.resolveLookup, controller: Impressory.Controllers.ViewContent.ViewContent  }).
+          when('/course/:courseId/view/:entryId', { templateUrl: '/partials/course/viewContent.html', resolve: Impressory.Controllers.ViewContent.ViewContent.resolveView, controller: Impressory.Controllers.ViewContent.ViewContent  }).
           when('/course/:courseId/embedContent', { templateUrl: '/partials/course/embedContent.html', reloadOnSearch: false, resolve: Impressory.Controllers.ViewContent.ViewContent.resolve, controller: Impressory.Controllers.ViewContent.ViewContent  }).
           when('/course/:courseId/qna', { templateUrl: '/partials/qna/listQuestions.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).
           when('/course/:courseId/qna/new', { templateUrl: '/partials/qna/newQuestion.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).

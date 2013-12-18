@@ -13,7 +13,7 @@ define(["./base"], (l) ->
     
     $scope.vote = () ->
       items = (i for option, i in $scope.entry.item.options when option.selected)
-      $http.post("/course/" + $scope.entry.course + "/entry/" + $scope.entry.id + "/mcPollVote", { options: items }).then((res) ->
+      $http.post("/poll/multipleChoice/#{$scope.entry.id}/vote", { options: items }).then((res) ->
         $scope.voteSaved = true;
       )
     
@@ -23,7 +23,7 @@ define(["./base"], (l) ->
     $scope.recountSelected()
     
     $scope.pushToStream = () -> 
-      $http.post("/course/" + $scope.entry.course + "/entry/" + $scope.entry.id + "/pushMCPoll", { })
+      $http.post("/poll/multipleChoice/#{$scope.entry.id}/push", { })
     
     
   

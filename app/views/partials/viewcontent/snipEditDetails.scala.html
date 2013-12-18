@@ -19,15 +19,15 @@
           <div class="form-group">
               <label class="col-sm-2 control-label">Name</label>
               <div class="col-sm-10">
-                <input ng-model="entry.title" class="form-control" ng-show="viewing.Content.display.permissions.edit" class="ce_name" type="text" placeholder="Optional" />
-                <p class="form-control-static" ng-hide="viewing.Content.display.permissions.edit">{{ entry.title || '(None)' }}</p>
+                <input ng-model="entry.title" class="form-control" ng-show="entry.permissions.edit" class="ce_name" type="text" placeholder="Optional" />
+                <p class="form-control-static" ng-hide="entry.permissions.edit">{{ entry.title || '(None)' }}</p>
               </div>
           </div>
           <div class="form-group">
               <label class="col-sm-2 control-label">Note</label>
               <div class="col-sm-10">
-                <textarea ng-model="entry.note" class="form-control" class="form-control" type="text" placeholder="Optional" ng-show="viewing.Content.display.permissions.edit"></textarea>
-                <p class="form-control-static" ng-hide="viewing.Content.display.permissions.edit">{{ entry.note || '(None)' }}</p>
+                <textarea ng-model="entry.note" class="form-control" class="form-control" type="text" placeholder="Optional" ng-show="entry.permissions.edit"></textarea>
+                <p class="form-control-static" ng-hide="entry.permissions.edit">{{ entry.note || '(None)' }}</p>
               </div>
           </div>
           <div class="form-group">
@@ -46,7 +46,7 @@
             <div class="col-sm-10">
               <div>
                   <button type="button" class="btn" ng-click="panels.toggleEditDetails()">Close</button>
-                  <button type="button" ng-show="viewing.Content.display.permissions.edit" class="btn btn-primary" ng-click="submit()">Save</button>
+                  <button type="button" ng-show="entry.permissions.edit" class="btn btn-primary" ng-click="submit()">Save</button>
               </div>
             </div>          
           </div>        

@@ -65,6 +65,7 @@ POST    /course/:cid/qna/:qid/answer/:aid/newComment    com.impressory.play.cont
 
 # Content
 GET     /course/:id/content                                 com.impressory.play.controllers.ContentController.contentQuery(id: String, entryId: Option[String] ?= None, adj:Option[String] ?= None, noun:Option[String] ?= None, topic:Option[String] ?= None, site:Option[String] ?= None)
+POST    /course/:courseId/entriesByIds                      com.impressory.play.controllers.ContentController.findEntriesById(courseId)
 POST    /course/:id/addContent                              com.impressory.play.controllers.ContentController.createContent(id: String)
 GET     /course/:courseId/entry/:entryId                    com.impressory.play.controllers.ContentController.entry(courseId: String, entryId: String)
 POST    /course/:courseId/entry/:entryId/editTags           com.impressory.play.controllers.ContentController.editTags(courseId: String, entryId: String)

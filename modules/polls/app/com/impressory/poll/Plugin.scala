@@ -12,6 +12,7 @@ object Plugin {
     ContentItemViews.registerHandler(multipleChoice.ViewHandler)
     ContentItemToJson.registerHandler(multipleChoice.JsonHandler)
     ContentItemToBson.registerHandler(multipleChoice.BsonHandler)
+    EventRoom.registerListenTo(multipleChoice.MCPollStreamLTJH)
     
   }
 

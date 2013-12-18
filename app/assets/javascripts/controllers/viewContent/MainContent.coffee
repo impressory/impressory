@@ -1,10 +1,11 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.ViewContent.MainContent = ["$scope", "ContentService", ($scope, ContentService) ->
+  Impressory.Controllers.ViewContent.MainContent = ["$scope", "ContentService", "viewingContent", ($scope, ContentService, viewingContent) ->
 
     $scope.viewerPartialUrl = ContentService.viewerPartialUrl($scope.entry?.kind)
 
     $scope.activityStreamPartialUrl = ContentService.streamPartialUrl($scope.entry?.kind)
+    
   ]
 
 

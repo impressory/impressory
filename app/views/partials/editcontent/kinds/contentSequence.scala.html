@@ -8,7 +8,7 @@
     	<button class="btn-command thin" ng-show="moving && (movingFrom != 0)" ng-click="moveTo(0)"><i class="icon-bullseye"></i></button>
     </div>
 
-	<span ng-repeat="e in entry.item.entries track by $index">   
+	<span ng-repeat="e in entries track by $index">   
 	  <div class="slide" >
 	    <div class="control-panel">  	    
 	      <button class="btn-command thin red" ng-click="remove($index)"><i class="icon-remove"></i></button>

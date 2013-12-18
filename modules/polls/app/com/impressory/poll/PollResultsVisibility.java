@@ -1,4 +1,4 @@
-package com.impressory.api.poll;
+package com.impressory.poll;
 
 public enum PollResultsVisibility {
     visible,

@@ -2,32 +2,9 @@ package com.impressory.reactivemongo
 
 import reactivemongo.bson._
 import reactivemongo.api._
-
 import com.impressory.api._
-import com.impressory.api.poll._
-import com.impressory.api.qna._
 
 object ContentItemToBson {
-  
-  
-  def owrite(i: ContentItem) = {
-    i match {
-      case mcp:MultipleChoicePoll => MultipleChoicePollWriter.write(mcp) 
-      case _ => BSONDocument()
-    }
-  }
-  
-  def oread(doc:BSONDocument, kind:String):Option[ContentItem] = {
-    kind match {
-      case MultipleChoicePoll.itemType => Some(doc.as[MultipleChoicePoll](MultipleChoicePollReader))
-      case _ => None
-    }
-  }
-  
-  def oupdate(i: ContentItem) = i match {
-    case q:QnAQuestion => { "item.text" -> BSONString(q.text) }
-    case _ => "item" -> owrite(i)
-  }
   
   /**
    * The list of handlers for different kinds of content item. 

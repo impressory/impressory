@@ -20,11 +20,13 @@ object ApplicationBuild extends Build {
       "com.wbillingsley" %% "handy-play-oauth" % "0.2-SNAPSHOT"
     )
     
+    lazy val impressoryPolls = play.Project(appName + "-polls", appVersion, appDependencies, path=file("modules/polls")).dependsOn(impressoryApi, impressoryModel, impressoryReactivemongo)
+    
     lazy val impressoryExternalContent = play.Project(appName + "-externalcontent", appVersion, appDependencies, path=file("modules/externalcontent")).dependsOn(impressoryApi, impressoryModel, impressoryReactivemongo)
 
     lazy val mainProj = play.Project(appName, appVersion, appDependencies).settings(
 
-      templatesImport += "com.wbillingsley.handy._",
+      templatesImport += "_root_.com.wbillingsley.handy._",
 
       resolvers ++= Seq(
         "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
@@ -39,7 +41,8 @@ object ApplicationBuild extends Build {
       impressoryApi,
       impressoryModel,
       impressoryReactivemongo,
-      impressoryExternalContent
+      impressoryExternalContent,
+      impressoryPolls
     )
   
     override def rootProject = Some(mainProj)

@@ -1,14 +1,15 @@
-package com.impressory.api.poll
+package com.impressory.poll.multipleChoice
 
 import com.impressory.api._
+import com.impressory.poll.PollResultsVisibility
+
+case class MCOpt(option:String, feedback:Option[String]=None, score:Int=0)
 
 object MultipleChoicePoll {
   
   val itemType = "Multiple choice poll"
     
   implicit def strToOpt(s:String) = MCOpt(s)
-  
-  case class MCOpt(option:String, feedback:Option[String]=None, score:Int=0)
   
 }
 
@@ -17,7 +18,7 @@ case class MultipleChoicePoll(
   var pick:Int = 1,
   var resultsVis: PollResultsVisibility = PollResultsVisibility.secret,
   var feedbackVis: PollResultsVisibility = PollResultsVisibility.secret,
-  var options: Seq[MultipleChoicePoll.MCOpt] = Seq("A", "B", "C", "E")
+  var options: Seq[MCOpt] = Seq("A", "B", "C", "E").map(MCOpt(_))
 ) extends ContentItem {
   
   val itemType = MultipleChoicePoll.itemType

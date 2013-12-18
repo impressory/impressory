@@ -12,12 +12,13 @@ import play.api.libs.iteratee.Iteratee
 import play.api.http.HeaderNames
 import com.wbillingsley.eventroom.Subscribe
 import com.impressory.play.model._
-import com.impressory.play.eventroom._
+import com.impressory.eventroom._
 import com.impressory.api._
 import com.impressory.api.events._
 import com.impressory.security.Permissions
 import com.wbillingsley.handy.appbase.DataAction
 import com.impressory.reactivemongo.ChatCommentDAO
+import com.impressory.eventroom.EventRoom
 
 /**
  * Controller handling subscriptions and connections to the EventRoom
@@ -27,38 +28,14 @@ object EventController extends Controller {
   implicit val cctoj = com.impressory.json.ChatCommentToJson
   
   def subscribe = DataAction.returning.result(parse.json) { implicit request => 
-    val approval = request.approval
-    val oListenerName = (request.body \ "listenerName").asOpt[String]
-    
-    val resp = (request.body \ "subscription" \ "type").asOpt[String] match {
-      case Some("course") => {
-        val oCourseId = (request.body \ "subscription" \ "courseId").asOpt[String]
-        for (
-          courseId <- Ref(oCourseId);
-          listenerName <- Ref(oListenerName);
-          c <- RefById(classOf[Course], courseId);
-          approved <- approval ask Permissions.Read(c.itself)
-        ) yield {
-          EventRoom.default ! Subscribe(listenerName, ChatStream(courseId))
-          Ok(Json.obj("ok" -> "ok"))        
-        }
-      }
-      case Some("Multiple choice poll results") => {
-        val oceId = (request.body \ "subscription" \ "id").asOpt[String]
-        for (
-          ceId <- Ref(oceId);
-          listenerName <- Ref(oListenerName);
-          c <- RefById(classOf[ContentEntry], ceId);
-          approved <- approval ask Permissions.ReadEntry(c.itself)
-        ) yield {
-          EventRoom.default ! Subscribe(listenerName, MCPollEvents.PollStream(ceId))
-          Ok(Json.obj("ok" -> "ok"))        
-        }
-        
-      }
-      case _ => Ok(Json.obj("error" -> "Nothing to subscribe to")).itself 
+    for {
+      listenerName <- (request.body \ "listenerName").asOpt[String].toRef orIfNone UserError("No listener to subscribe")
+      subscription <- (request.body \ "subscription").asOpt[JsObject].toRef orIfNone UserError("Nothing to subscribe to")
+      lt <- EventRoom.listenToFromJson(subscription, request.approval)
+    } yield {
+      EventRoom.default ! Subscribe(listenerName, lt)
+      Ok(Json.obj("ok" -> "ok"))        
     }
-    resp
   }
   
   def serverSentEvents = DataAction.returning.result { implicit request =>
@@ -83,7 +60,7 @@ object EventController extends Controller {
       cm = ChatCommentDAO.unsaved.copy(text=text, course=c.itself, addedBy=request.user, anonymous=anon);
       saved <- ChatCommentDAO.saveNew(cm)
     ) yield {
-      EventRoom.notifyEventRoom(BroadcastIt(courseId, saved))
+      EventRoom.notifyEventRoom(BroadcastStandard(courseId, saved))
       Ok("")
     }
     

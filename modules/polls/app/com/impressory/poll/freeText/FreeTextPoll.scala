@@ -1,6 +1,7 @@
-package com.impressory.api.poll
+package com.impressory.poll.freeText
 
 import com.impressory.api._
+import com.impressory.poll.PollResultsVisibility
 
 case class FreeTextPoll(
   var text:Option[String],

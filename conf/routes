@@ -26,10 +26,6 @@ POST    /logOut                     com.impressory.play.controllers.UserControll
 # LTI
 POST    /course/:id/lti/launch       com.impressory.auth.controllers.LTIAuthController.ltiLaunch(id)
 
-# Non-API routes
-GET     /logIn                      com.impressory.play.controllers.Application.viewLogIn
-GET     /self                       com.impressory.play.controllers.Application.viewSelf
-
 # Home page
 GET     /                           com.impressory.play.controllers.Application.index
 
@@ -85,13 +81,12 @@ GET     /whatIsIt                                           com.impressory.play.
 # Stats
 POST	/pageView                   com.impressory.play.controllers.ViewLogController.addView
 
-# Multiple Choice Poll
-POST    /course/:courseId/entry/:entryId/mcPollVote com.impressory.play.controllers.PollController.vote(courseId:String, entryId:String)
-POST    /course/:courseId/entry/:entryId/pushMCPoll com.impressory.play.controllers.PollController.pushMCPollToStream(courseId:String, entryId:String)
-
 # EventRoom
 GET     /eventRoom/ssevents         com.impressory.play.controllers.EventController.serverSentEvents
 POST    /eventRoom/subscribe        com.impressory.play.controllers.EventController.subscribe
 
 POST    /course/:id/chat            com.impressory.play.controllers.EventController.postChatMessage(id: String)
 GET     /course/:id/chat/lastFew    com.impressory.play.controllers.EventController.lastFewEvents(id: String)
+
+# Plugins
+->      /poll  com.impressory.poll.Routes

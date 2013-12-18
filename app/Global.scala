@@ -2,10 +2,14 @@
 import play.api._
 import Play.current
 import play.api.mvc.AcceptExtractors
-
 import com.impressory.api._
 import com.impressory.reactivemongo._
 import com.wbillingsley.handy._
+import com.impressory.poll.Plugin
+import play.api.mvc.Results
+import scala.concurrent.Future
+import play.api.libs.json.Json
+import com.wbillingsley.handy.appbase.AppbaseRequest
 
 
 
@@ -64,10 +68,23 @@ object Global extends GlobalSettings with AcceptExtractors {
     com.impressory.json.ContentItemToJson.registerHandler(com.impressory.play.model.MarkdownPageModel)
     com.impressory.json.ContentItemToJson.registerHandler(com.impressory.play.model.SequenceModel)
     com.impressory.external.Plugin.onStart()
+    com.impressory.poll.Plugin.onStart()
 
   }
   
-  
+  /**
+   * We have many routes that only exist on the client side. 
+   */
+  override def onHandlerNotFound(request:play.api.mvc.RequestHeader) = {
+    request match {
+      case Accepts.Html() => {
+        val fo = com.impressory.play.controllers.Application.indexInner(request).toFuture
+        fo.map(_ getOrElse Results.NotFound)(RefFuture.executionContext)
+      }
+      case Accepts.Json() => Future.successful(Results.NotFound(Json.obj("error" -> "not found")))
+      case _ => Future.successful(Results.NotFound)
+    }
+  }
 
 
 }

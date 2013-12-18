@@ -9,6 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import com.wbillingsley.handy.appbase.DataAction
 import com.impressory.json.UserToJson
 import com.impressory.plugins.ContentItemViews
+import com.wbillingsley.handy.appbase.AppbaseRequest
 
 
 object Application extends Controller {  
@@ -35,17 +36,11 @@ object Application extends Controller {
     } yield Ok(views.html.main(j))  
   }
   
-  
-  
-  /*--
-   * Routes that are only used at the client and should be redirected to index:
-   *--*/
-  def viewLogIn = index
-  def viewSelf = index
-  def viewCreateGroup = index
-  def viewGroup(id:String) = index
-  def viewCommand = index
-  
+  def indexInner(request:RequestHeader) = {
+    for {
+      j <- optionally(userProvider.user(request).flatMap(UserToJson.toJsonForSelf(_)))
+    } yield Ok(views.html.main(j))
+  }
 
   /**
    * We put the partial templates into this method so that adding a partial 
@@ -83,7 +78,6 @@ object Application extends Controller {
       
       case "viewcontent/kinds/contentSequence.html" => Ok(views.html.partials.viewcontent.kinds.contentSequence())
       case "viewcontent/kinds/markdownPage.html" => Ok(views.html.partials.viewcontent.kinds.markdownPage())
-      case "viewcontent/kinds/multipleChoicePoll.html" => Ok(views.html.partials.viewcontent.kinds.multipleChoicePoll())
       case "viewcontent/kinds/noContent.html" => Ok(views.html.partials.viewcontent.kinds.noContent())
       
       case s if s.startsWith(ciMainPrefix) => ContentItemViews.main(s.stripPrefix(ciMainPrefix)) match {
@@ -92,7 +86,6 @@ object Application extends Controller {
       }
 
       case "viewcontent/stream/markdownPage.html" => Ok(views.html.partials.viewcontent.stream.markdownPage())
-      case "viewcontent/stream/multipleChoicePoll.html" => Ok(views.html.partials.viewcontent.stream.multipleChoicePoll())
       case "viewcontent/stream/default.html" => Ok(views.html.partials.viewcontent.stream.default())
       
       case s if s.startsWith(ciStreamPrefix) => ContentItemViews.stream(s.stripPrefix(ciStreamPrefix)) match {
@@ -102,7 +95,6 @@ object Application extends Controller {
 
       case "editcontent/kinds/contentSequence.html" => Ok(views.html.partials.editcontent.kinds.contentSequence())
       case "editcontent/kinds/markdownPage.html" => Ok(views.html.partials.editcontent.kinds.markdownPage())
-      case "editcontent/kinds/multipleChoicePoll.html" => Ok(views.html.partials.editcontent.kinds.multipleChoicePoll())
       case "editcontent/kinds/default.html" => Ok(views.html.partials.editcontent.kinds.default())
       
       case s if s.startsWith(ciEditPrefix) => ContentItemViews.edit(s.stripPrefix(ciEditPrefix)) match {

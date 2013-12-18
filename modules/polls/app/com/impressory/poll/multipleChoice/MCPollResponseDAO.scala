@@ -1,4 +1,4 @@
-package com.impressory.reactivemongo
+package com.impressory.poll.multipleChoice
 
 import com.wbillingsley.handy.{Ref, RefNone}
 import com.wbillingsley.handy.reactivemongo.DAO
@@ -6,7 +6,8 @@ import reactivemongo.bson._
 import reactivemongo.api._
 
 import com.impressory.api._
-import com.impressory.api.poll._
+import com.impressory.poll._
+import com.impressory.reactivemongo._
 
 object MCPollResponseDAO extends DAO[MCPollResponse] {
   

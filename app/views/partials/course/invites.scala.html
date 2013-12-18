@@ -50,7 +50,7 @@
       <div class="form-group">
         <label>Roles this invite will grant</label>
         <div >
-          @for(role <- com.impressory.api.CourseRole.values) {
+          @for(role <- _root_.com.impressory.api.CourseRole.values) {
           <label class="invites-inline-label checkbox-inline">
             <input type="checkbox" ng-model="newInvite.roles.@role" />
             @role &nbsp;

@@ -1,6 +1,5 @@
-package com.impressory.api.poll
-
-import com.wbillingsley.handy.{Ref, RefNone, HasStringId}
+package com.impressory.poll.multipleChoice
+import com.wbillingsley.handy._
 import com.impressory.api._
 
 case class MCPollResponse (

@@ -1,18 +1,19 @@
-package com.impressory.play.model
+package com.impressory.poll.multipleChoice
 
 import com.wbillingsley.handy._
-import Ref._
+import com.wbillingsley.handy.Ref._
 import play.api.libs.json._
 import com.impressory.api._
-import com.impressory.api.poll._
+import com.impressory.poll._
 import com.impressory.json._
 import com.impressory.plugins._
-import com.impressory.security.Permissions
-import Permissions._
-import com.impressory.reactivemongo.MCPollResponseDAO
+import com.impressory.security.Permissions._
 import com.wbillingsley.handy.appbase.JsonConverter
+import play.api.libs.functional.syntax.functionalCanBuildApplicative
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
 
-object MCPollModel extends ContentItemJsonHandler {
+object JsonHandler extends ContentItemJsonHandler {
   
   var defaultText = "Now you need to edit this poll..."
 

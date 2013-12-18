@@ -3,7 +3,6 @@ package com.impressory.json
 import com.wbillingsley.handy.{Ref, RefNone, RefFailed, Approval}
 import Ref._
 import com.impressory.api._
-import com.impressory.api.external._
 import play.api.libs.json._
 import com.wbillingsley.handy.appbase.JsonConverter
 

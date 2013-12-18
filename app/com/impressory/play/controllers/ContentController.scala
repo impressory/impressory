@@ -10,7 +10,7 @@ import com.impressory.api._
 import com.impressory.api.events._
 import com.impressory.json._
 import com.impressory.plugins._
-import com.impressory.play.eventroom.EventRoom
+import com.impressory.eventroom.EventRoom
 import com.impressory.play.model._
 import com.impressory.security.Permissions
 import com.wbillingsley.handy.appbase.DataAction
@@ -112,7 +112,7 @@ object ContentController extends Controller {
       // If the item is published, send a notification
       if (saved.published.isDefined) {
         for (c <- course.getId) {
-          EventRoom.notifyEventRoom(BroadcastIt(c, ContentPublished(saved)))
+          EventRoom.notifyEventRoom(BroadcastUnique(c, ContentPublished(saved)))
         }
       }
       
@@ -152,7 +152,7 @@ object ContentController extends Controller {
       // If the item is published, send a notification
       if (!publishedBefore && saved.published.isDefined) {
         for (c <- saved.course.getId) {
-          EventRoom.notifyEventRoom(BroadcastIt(c, ContentPublished(saved)))
+          EventRoom.notifyEventRoom(BroadcastUnique(c, ContentPublished(saved)))
         }
       }
       

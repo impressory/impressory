@@ -1,19 +1,18 @@
-package com.impressory.play.eventroom
+package com.impressory.poll.multipleChoice
 
-import EventRoom._
-import com.impressory.play.model._
 import com.impressory.api._
 import com.impressory.api.events._
-import com.impressory.api.poll._
+import com.impressory.poll._
+import com.impressory.eventroom.EventRoom
+import EventRoom._
+
 import com.wbillingsley.handy._
 import Ref._
 import play.api.libs.json._
 import scala.collection.mutable
 import com.wbillingsley.eventroom
-import com.impressory.reactivemongo.MCPollResponseDAO
 
-object MCPollEvents {
-
+object MCPollEventHelper {
   /**
    * Gets or initialises the event room's poll state (the set of responses so far)
    */
@@ -48,12 +47,15 @@ object MCPollEvents {
       room.broadcast(PollStream(pollId), state)
     }
   }
+}
 
-  case class PollStream(pollId: String) extends eventroom.ListenTo {
+import MCPollEventHelper._
+
+case class PollStream(pollId: String) extends eventroom.ListenTo {
     override def onSubscribe(listenerName:String, room:eventroom.EventRoom) = broadcastState(room, RefById(classOf[ContentEntry], pollId))
-  }
+}
 
-  case class PushPollToChat(poll: ContentEntry) extends eventroom.EREvent {
+case class PushPollToChat(poll: ContentEntry) extends eventroom.EREvent {
     override def toJson = {
       val course = poll.course.getId
       val id = poll.id
@@ -82,11 +84,10 @@ object MCPollEvents {
         room.broadcast(ChatStream(cid), this)
       }
     }
-  }
+}
 
-  /** A new poll response (vote) has been made. The vote contains the adjustment to the score for each option. */
-  case class Vote(pollId:String, pr: Map[Int, Int]) extends eventroom.EREvent {
-
+/** A new poll response (vote) has been made. The vote contains the adjustment to the score for each option. */
+case class Vote(pollId:String, pr: Map[Int, Int]) extends eventroom.EREvent {
     /**
      * On receving this event, the room should re-tabulate the poll results and send them out to everyone
      * who's listening to the poll
@@ -99,11 +100,10 @@ object MCPollEvents {
         broadcastState(room, RefById(classOf[ContentEntry], pollId))
       }
     }
+}
 
-  }
-
-  /** The state of a poll is the votes so far. Broadcast on each new vote. */
-  case class PRState(val pollId: String, val counts: mutable.Map[Int, Int]) extends eventroom.State with eventroom.EREvent {
+/** The state of a poll is the votes so far. Broadcast on each new vote. */
+case class PRState(val pollId: String, val counts: mutable.Map[Int, Int]) extends eventroom.State with eventroom.EREvent {
     override def toJson = Json.obj(
       "kind" -> "state",
       "type" -> "Multiple choice poll results",
@@ -112,6 +112,4 @@ object MCPollEvents {
         counts.toSeq.map { case (opt, count) => Json.obj("option" -> opt, "votes" -> count) }
       )
     ).itself    
-  }
-
 }

@@ -56,10 +56,6 @@ object JsonHandler extends ContentItemJsonHandler {
     ).itself
   } 
   
-  def vote(poll:Ref[ContentEntry], tok:Approval[User], session:Option[String], answer:Set[Int]) = {
-    val response = MCPollResponseDAO.unsaved.copy(poll=poll, addedBy=tok.who, session=session, answer=answer)
-    MCPollResponseDAO.vote(poll, tok.who, session, response)
-  }
 }
 
 object MCPollResponseToJson extends JsonConverter[MCPollResponse, User] {

@@ -21,12 +21,35 @@ object MCPollController extends Controller {
    * Called when a vote arrives by POST
    */
   def vote(pid:String) = DataAction.returning.one(parse.json) { implicit request =>
-
     for (
         e <- new LazyId(classOf[ContentEntry], pid);
         answer <- Ref((request.body \ "options").asOpt[Set[Int]]) orIfNone UserError("No options in that vote");
         previous <- optionally(MCPollResponseDAO.byUserOrSession(e.itself, request.approval.who, Some(request.sessionKey)));
-        pr <- JsonHandler.vote(e.itself, request.approval, Some(request.sessionKey), answer)
+        pr <- previous match {
+          case Some(v) => {
+            val now = System.currentTimeMillis()
+            val updated = v.copy(
+              answer = answer,
+              session = Some(request.sessionKey),
+              responses = v.responses :+ PastResponse(answer, Some(request.sessionKey), updated=now),
+              updated = now
+            )
+            MCPollResponseDAO.updateVote(updated)
+          }
+          case None => {
+            val now = System.currentTimeMillis()
+            val v = MCPollResponseDAO.unsaved
+            val updated = v.copy(
+              poll = e.itself,
+              addedBy = request.user,
+              answer = answer,
+              session = Some(request.sessionKey),
+              responses = v.responses :+ PastResponse(answer, Some(request.sessionKey), updated=now),
+              updated = now
+            )
+            MCPollResponseDAO.newVote(updated)
+          }
+        } 
     ) yield {
       val adjustments = scala.collection.mutable.Map[Int,Int]()
       

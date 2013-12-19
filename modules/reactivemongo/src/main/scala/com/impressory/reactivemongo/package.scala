@@ -22,6 +22,7 @@ package object reactivemongo {
   implicit val refCourseReader = refReader(classOf[Course])
   implicit val refManyCourseReader = refManyReader(classOf[Course])
   implicit val refUserReader = refReader(classOf[User])
+  implicit val refContentEntryReader = refReader(classOf[ContentEntry])
   implicit val refManyUserReader = refManyReader(classOf[User])
   implicit val refManyEntryReader = refManyReader(classOf[ContentEntry])
   

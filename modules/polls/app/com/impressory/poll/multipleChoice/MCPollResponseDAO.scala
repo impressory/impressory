@@ -19,14 +19,17 @@ object MCPollResponseDAO extends DAO[MCPollResponse] {
   
   def unsaved = MCPollResponse(id=allocateId)
 
+  implicit val pastRespHandler = Macros.handler[PastResponse]
   implicit object bsonReader extends BSONDocumentReader[MCPollResponse] {
     def read(doc:BSONDocument):MCPollResponse = {
       new MCPollResponse(
         id = doc.getAs[BSONObjectID]("_id").get.stringify,
+        poll = doc.getAs[Ref[ContentEntry]]("poll").getOrElse(RefNone),
         addedBy = doc.getAs[Ref[User]]("addedBy").getOrElse(RefNone),
         session = doc.getAs[String]("session"),
         answer = doc.getAs[Set[Int]]("answer").getOrElse(Set.empty),
-        updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis)
+        updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
+        responses = doc.getAs[Seq[PastResponse]]("responses").getOrElse(Seq.empty)
       )
     }
   }
@@ -34,8 +37,9 @@ object MCPollResponseDAO extends DAO[MCPollResponse] {
   implicit object bsonWriter extends BSONDocumentWriter[MCPollResponse] {
     def write(r:MCPollResponse) = {
       BSONDocument(
+        idIs(r.id),
         "poll" -> r.poll, "answer" -> r.answer, "updated" -> System.currentTimeMillis,
-        "addedBy" -> r.addedBy, "session" -> r.session
+        "addedBy" -> r.addedBy, "session" -> r.session, "responses" -> r.responses
       )
     }
   }
@@ -45,7 +49,7 @@ object MCPollResponseDAO extends DAO[MCPollResponse] {
    */
   def byUserOrSession(poll:Ref[ContentEntry], u:Ref[User], session:Option[String]) = {
     val query = u.getId match {
-      case Some(uid) => BSONDocument("poll" -> poll, "addedBy" -> uid)
+      case Some(uid) => BSONDocument("poll" -> poll, "addedBy" -> u)
       case None => BSONDocument("poll" -> poll, "session" -> session)
     }
     findOne(query)
@@ -55,11 +59,13 @@ object MCPollResponseDAO extends DAO[MCPollResponse] {
     findMany(BSONDocument("poll" -> poll))
   }
   
-  def vote(poll:Ref[ContentEntry], u:Ref[User], session:Option[String], vote:MCPollResponse) = {
-    val query = u.getId match {
-      case Some(uid) => BSONDocument("poll" -> poll, "addedBy" -> uid)
-      case None => BSONDocument("poll" -> poll, "session" -> session)
-    }
-    updateSafe(query, bsonWriter.write(vote), vote, upsert=true)
+  def updateVote(vote:MCPollResponse) = {
+    saveSafe(bsonWriter.write(vote), vote)
+  }
+  
+  
+  
+  def newVote(vote:MCPollResponse) = {
+    saveSafe(bsonWriter.write(vote), vote)
   }
 }

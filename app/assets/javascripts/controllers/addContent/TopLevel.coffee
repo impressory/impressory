@@ -5,35 +5,26 @@ define(["./base"], (l) ->
         
     $scope.categories = {
     
-      "Web": [
-        { kind: "web page", text: "Web page" }
+      "Special": [
+        { 
+          kind: "sequence", text: "Sequence", 
+          help: """Sequences let you click through content in order. For example,
+                  during a lecture. Content can be included in more than one sequence."""
+        }
       ],
       
-      "Presentation": [
-        { kind: "Google Slides", text: "Google Slides" }
-      ],
-
-      "Video": [
-        { kind: "YouTube video", text: "YouTube" }
-      ],
-      
-      "Sequence": [
-        { kind: "sequence", text: "Content Sequence" }
+      "Text": [
+        { 
+          kind : "Markdown page", text: "Markdown",
+          help: "A simple wiki page using Markdown format"
+        }
       ],
       
-      "Broadcast": [
-        { kind : "YouTube video", text: "YouTube" }
-      ],
-      
-      "Wiki": [
-        { kind : "Markdown page", text: "Markdown" },
-        { kind : "Structured wiki", text: "Page builder" }
-      ],
-      
-      "Poll": [
-        { kind : "Multiple choice poll", text: "Multiple choice" },
-        { kind : "Free text poll", text: "Free text" }
-      
+      "Polls": [
+        { 
+          kind: "Multiple choice poll", text: "Multiple choice",
+          help: "A live poll. Can be choose-one or choose-many"
+        }
       ]
       
       
@@ -48,11 +39,14 @@ define(["./base"], (l) ->
     $scope.setCategory = (cat) -> 
       $scope.selection.category = cat
       $scope.choices = $scope.categories[cat]
-      $scope.setKind($scope.choices[0].kind)
+      $scope.choose(0)
       
-    $scope.setKind = (kind) -> $scope.selection.kind = kind
+    $scope.choose = (idx) -> 
+      $scope.selection.kind = $scope.choices[idx].kind
+      $scope.selection.help = $scope.choices[idx].help
+      $scope.create.kind = $scope.selection.kind
       
-    $scope.setCategory("Web")
+    $scope.setCategory("Polls")
   ]
 
 )

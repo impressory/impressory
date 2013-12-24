@@ -1,0 +1,71 @@
+@()
+
+<div class="post-content">
+
+    <div class="form-group" ng-show="postMode == 'post' || postMode == 'share'">
+      <ul class="nav nav-pills">
+        <li ng-class="{ active: postMode=='post' }"><a href="#" ng-click="showPostMode()">Write</a></li>
+        <li ng-class="{ active: postMode=='share' }"><a href="#" ng-click="showShareMode()">Add</a></li>
+        <li ng-class="{ active: postMode=='create' }"><a href="#" ng-click="showCreateMode()">Create &hellip;</a></li>
+      </ul>
+    </div>
+
+    
+    <form class="form form-horizontal" role="form">
+      <div ng-switch="postMode">
+        
+        <div ng-switch-when="post" >
+          <div class="form-group" ng-show="okToSubmit()">
+            <button class="btn btn-link" ng-hide="writeShowTitle" ng-click="writeShowTitle = true">+ add a title </button>
+            <input ng-model="write.title" class="form-control" placeholder="Title" ng-show="writeShowTitle"/>
+          </div>
+          <div class="form-group">
+            <textarea ng-model="write.text" class="form-control" placeholder="Write something"></textarea>
+          </div>
+        </div>
+        
+        <div ng-switch-when="share" >
+          <div ng-hide="share.item">
+            <div class="form-group">
+              <div class="input-group">
+                <input ng-model="share.url" class="form-control" type="text" placeholder="Paste the URL or embed code" >
+                <span class="input-group-btn">
+                  <button class="btn btn-default" ng-click="whatIsIt(share.url)">Add</button>
+                </span>
+              </div>
+              <p class="help-block" ng-hide="share.item">Supports web pages, images, YouTube, Google Slides, and more.</p>
+            </div>
+          </div>
+          <div ng-show="share.item">
+            <div class="form-group">
+              <label class="" ng-hide="shareEditTitle">
+                {{ share.title || 'Untitled' }} 
+              </label> <button class="btn btn-link" ng-hide="shareEditTitle" ng-click="shareEditTitle = true">edit</button>
+              <input ng-model="share.title" ng-show="shareEditTitle" class="form-control" placeholder="Title" />
+            </div>
+            <div class="form-group thumbnail">
+              <ce-render-entry-stream entry="share"></ce-render-entry-stream>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-link" ng-hide="shareShowNote" ng-click="shareShowNote = true">+ add a note </button>
+              <textarea ng-model="share.text" class="form-control" placeholder="Write a note about this" ng-show="shareShowNote"></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <div ng-switch-when="create" >
+          @snipCreateContent()
+        </div>
+        
+      </div>
+  
+      <p class="text-error" ng-repeat="error in errors">
+        {{ error }}  
+      </p>
+      
+      <div ng-show="okToSubmit()" class="footer">
+        <button ng-click="reset()" class="btn btn-default" >Cancel</button>
+        <button ng-click="submit()" class="btn btn-primary" >{{ buttonText() }}</button>
+      </div>
+    </form>
+</div>

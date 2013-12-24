@@ -6,7 +6,7 @@ define(["./base"], (l) ->
     $scope.viewAsRows = () -> $scope.viewMode = 'rows'
     $scope.viewAsColumns = () -> $scope.viewMode = 'columns'
     
-    $scope.viewPath = (entry) -> ContentService.viewPath(entry)
+    $scope.viewPath = (entry) -> ContentService.viewEntryPath(entry)
     
     $scope.users = Impressory.Model.Viewing.Users
     

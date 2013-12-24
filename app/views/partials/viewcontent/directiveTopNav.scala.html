@@ -81,7 +81,10 @@
           <subheader-course course="course" />
         </div>
         <div ng-switch-when="addContent" >
-          @views.html.partials.addcontent.addContent()
+          <div class="container">
+            <h3>Add a reply</h3>
+            <ce-add-content course="course"></ce-add-content>
+          </div>
         </div>
         <div ng-switch-when="editDetails" >
           @snipEditDetails()

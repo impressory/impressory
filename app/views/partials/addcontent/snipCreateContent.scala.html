@@ -1,0 +1,29 @@
+@()
+
+<div ng-controller="Impressory.Controllers.AddContent.TopLevel">
+  <div class="">
+    <div class="">
+      <ul class="nav nav-pills">
+        <li ng-repeat="(category, items) in categories" ng-class="{ 'active' : selection.category == category }">
+          <a href="#" ng-click="setCategory(category)">{{category}}</a>
+        </li>
+      </ul>
+    </div>
+    <hr />
+
+    <div class="">
+      <ul class="nav nav-pills">
+        <li ng-repeat="choice in choices" ng-class="{ 'active' : create.kind == choice.kind }">
+          <a href="#" ng-click="choose($index)">{{choice.text}}</a>
+        </li>
+      </ul>
+    </div>
+    <hr />
+    <p>{{ selection.help }}</p>
+  </div>
+    
+  <div class="form-group">
+    <button class="btn btn-link" ng-hide="shareShowNote" ng-click="shareShowNote = true"><i class="icon-plus"></i> add a note </button>
+    <textarea ng-model="share.text" class="form-control" placeholder="Write something" ng-show="shareShowNote"></textarea>
+  </div>
+</div>

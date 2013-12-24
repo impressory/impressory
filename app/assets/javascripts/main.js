@@ -55,7 +55,6 @@ require([
   
   "controllers/addContent/TopLevel",
   "controllers/addContent/GenericAddForm",
-  "controllers/addContent/WebPage",
   "controllers/addContent/Sequence",
   "controllers/addContent/Share",
   

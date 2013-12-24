@@ -57,13 +57,17 @@ define(["modules/base"], () ->
           errRes.data?.error || "Unexpected error looking up content"
         )
     
+      viewPath: (courseId, entryId) -> "/course/#{courseId}/view/#{entryId}"
+      
+      viewEntryPath: (entry) -> @viewPath(entry.course, entry.id)
+    
       viewUrl: (courseId, entryId) -> 
         if $location.port() == 80
-          "#{$location.protocol()}://#{$location.host()}/course/#{courseId}/view/#{entryId}"
+          "#{$location.protocol()}://#{$location.host()}#{@viewPath(courseId, entryId)}"
         else
-          "#{$location.protocol()}://#{$location.host()}:#{$location.port()}/course/#{courseId}/view/#{entryId}"
+          "#{$location.protocol()}://#{$location.host()}:#{$location.port()}#{@viewPath(courseId, entryId)}"
     
-      viewPath: (entry) -> @viewUrl(entry.course, entry.id)
+      viewEntryUrl: (entry) -> @viewUrl(entry.course, entry.id)
     
       embedUrl: (courseId, entryId) -> 
         if $location.port() == 80
@@ -92,7 +96,7 @@ define(["modules/base"], () ->
       
       whatIsIt: (code) -> $http.get("/whatIsIt", { params: { code : code } })
       
-      addContent: (courseId, entry) -> $http.post("/course/#{courseId}/addContent", entry )
+      addContent: (courseId, entry) -> $http.post("/course/#{courseId}/addContent", entry).then((res) -> res.data)
 
       # Asks the server to update a content entry's item      
       editItem: (entry) -> $http.post("/course/#{entry.course}/entry/#{entry.id}/editItem", entry).then(

@@ -106,6 +106,13 @@ object UserDAO extends DAO[User] with UserProvider[User] {
       "pwlogin" -> u.pwlogin
     ))
   )
+  
+  /**
+   * Set's the user's password
+   */
+  def setPassword(u:User, password:String) = {
+    updatePWLogin(u.copy(pwlogin=u.pwlogin.copy(pwhash=u.pwlogin.hash(password))))
+  }
 
   
   /**

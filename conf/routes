@@ -42,6 +42,7 @@ POST    /whoami                     com.impressory.play.controllers.UserControll
 GET     /users/:id                  com.impressory.play.controllers.UserController.user(id:String)
 GET     /usernames/:u               com.impressory.play.controllers.UserController.usernameAvailable(u:String)              
 POST    /users/findByIds            com.impressory.play.controllers.UserController.findUsersById
+POST    /self/changePassword        com.impressory.play.controllers.UserController.changePassword
 
 # Courses
 GET     /courses/listed             com.impressory.play.controllers.CourseController.listedCourses

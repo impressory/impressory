@@ -13,98 +13,30 @@
       <div class="row" ng-show="login.user">
       
         <div class="col-sm-6">
-	        <div ng-switch on="editing.details">
-		        <div ng-switch-default>
-		
-		          <h3>Details          
-		            <span class="btn-group pull-right"><button class="btn btn-sm btn-primary" ng-click="editDetails()" disabled>Edit</button></span>
-		          </h3>
-				                    
-              <div class="media">
-                <img class="pull-left media-object" ng-src="{{login.user.avatar || 'http://placehold.it/64x64'}}" /> 
-                <div class="media-body">
-				          <table class="table">
-		              <tr><td>Nickname</td><td>{{login.user.nickname}}</td></tr>
-				          <tr><td>Name</td><td>{{login.user.name}}</td></tr>
-				          </table>              
-	              </div>
-	            </div>
-		        </div>
-            <div ng-switch-when="true">
-              <h3>Details</h3>
-              
-              <form class="form" ng-controller="Awarinator.Controllers.SelfEditDetailsCtrl">
-                <div class="form-group">
-                  <label><img ng-src="{{user.avatar || 'http://placehold.it/64x64'}}" /></label>
-                  <div class="controls">
-                    <select ng-model="user.avatar" ng-options="i.avatar as i.service for i in user.identities" />
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="control-label">Nickname</label>
-                  <div class="controls">
-                    <input type="text" ng-model="user.nickname" />
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="control-label">Name</label>
-                  <div class="controls">
-                    <input type="text" ng-model="user.name" />
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="controls">
-                    <button class="btn" ng-click="cancel()">Cancel</button>
-                    <button class="btn btn-primary" ng-click="save(user)">Save</button>
-                  </div>
-                </div>
-              
-              </form>
-
-            </div>
-	        </div>
-    
-          <div ng-switch on="editing.email">
-            <div ng-switch-when="true">
-              <h3>Login</h3>
-              
-              <form class="form" ng-controller="Awarinator.Controllers.SelfEditEmailCtrl">
-                <div class="control-group">
-                  <label class="control-label">Email</label>
-                  <div class="controls">
-                    <input type="text" ng-model="user.email" />
-                  </div>
-                </div>
-                <div class="control-group">
-                  <label class="control-label">Username</label>
-                  <div class="controls">
-                    <input type="text" ng-model="user.username" />
-                  </div>
-                </div>
-                <div class="control-group">
-                  <div class="controls">
-                    <button class="btn" ng-click="cancel()">Cancel</button>
-                    <button class="btn btn-primary" ng-click="save(user)">Save</button>
-                  </div>
-                </div>
-              
-              </form>
-
-            </div>
-            <div ng-switch-default>
-                
-              <h3>Login
-                <span class="btn-group pull-right"><button class="btn btn-sm btn-primary" ng-click="editing.email=true">Edit</button></span>
-              </h3>
-	
+          <h3>Details          
+            <span class="btn-group pull-right"><button class="btn btn-sm btn-primary" ng-click="editDetails()" disabled>Edit</button></span>
+          </h3>
+          <div class="media">
+            <img class="pull-left media-object" ng-src="{{login.user.avatar || 'http://placehold.it/64x64'}}" /> 
+            <div class="media-body">
               <table class="table">
-	              <tr><td>Email</td><td>{{login.user.email}}</td></tr>
-	              <tr><td>Username</td><td>{{login.user.username}}</td></tr>
-	              <tr><td>Password</td><td>{{(login.user.passSet && "set") || "not set"}} <button class="btn btn-sm btn-danger pull-right">Change</button></td></tr>
+                <tr><td>Nickname</td><td>{{login.user.nickname}}</td></tr>
+                <tr><td>Name</td><td>{{login.user.name}}</td></tr>
               </table>              
             </div>
-          </div>    
+          </div>
     
+          <h3>Login
+            <span class="btn-group pull-right"><button class="btn btn-sm btn-primary" ng-click="editing.email=true">Edit</button></span>
+          </h3>
+
+          <table class="table">
+            <tr><td>Email</td><td>{{login.user.email}}</td></tr>
+            <tr>
+              <td>Password</td><td ng-hide="show.changePassword">{{(login.user.passSet && "set") || "not set"}} <button class="btn btn-xs btn-danger pull-right" ng-click="show.changePassword = true">Change</button></td>
+              <td ng-if="show.changePassword"><user-change-password-form on-close="show.changePassword = false"></user-change-password-form></td>
+            </tr>
+          </table>              
         </div>
         
 	      <div class="col-sm-6">

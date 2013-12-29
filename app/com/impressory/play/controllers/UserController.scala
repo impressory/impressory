@@ -126,7 +126,27 @@ object UserController extends Controller {
         )
       ))
     } yield updated
-  }  
+  }
+  
+  /**
+   * Changing the user's password
+   */
+  def changePassword = DataAction.returning.one(parse.json) { implicit request => 
+    for {
+      u <- request.user
+      newPassword <- (request.body \ "newPassword").asOpt[String].toRef orIfNone UserError("No new password!")
+      oldHash = (request.body \ "oldPassword").asOpt[String].flatMap(u.pwlogin.hash(_))
+      matches <- u.pwlogin.pwhash match {
+        case Some(hash) => if (Some(hash) == oldHash) {
+          true.itself
+        } else {
+          RefFailed(UserError("Old password did not match"))
+        }
+        case None => true.itself
+      }
+      updated <- UserDAO.setPassword(u, newPassword)
+    } yield updated
+  }
   
   /**
    * A username is available if nobody has it, or the logged in user has it

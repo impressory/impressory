@@ -63,6 +63,17 @@ define(["modules/base"], () ->
         # Combine them all as a single promise to return
         $q.all(promises)
       
+      
+      # Change password
+      changePassword: (oldPassword, newPassword) ->
+        $http.post("/self/changePassword", { oldPassword: oldPassword, newPassword: newPassword }).then(
+          (res) ->
+            # update the record of self
+            Impressory.Model.Login.login(res.data) 
+            res.data
+          ,
+          (res) -> $q.reject(res.data.error || "Unexpected error")
+        )
     }
   ])
 

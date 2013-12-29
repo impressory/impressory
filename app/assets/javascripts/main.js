@@ -16,6 +16,7 @@ require([
   "controllers/login/SignUp",
   
   "controllers/user/Self",
+  "controllers/user/ChangePassword",
   
   "controllers/front/Header",
   "controllers/front/ListedCourses",

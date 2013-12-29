@@ -6,9 +6,8 @@
     <div ng-switch="event.type">
       <div ng-switch-when="chat">
         <div class="event comment" ng-class="{ 'question' : isQuestion(event.text) }" >
-          <div class="who" ng-repeat="user in [ Users.cache[event.addedBy] ]">
-            <span class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></span>
-            <span class="nickname">{{ user.nickname || 'Anonymous' }}</span>
+          <div class="who">
+            <user-tag user="userCache.get(event.addedBy)"></user-tag>
           </div>
           <div class="text" ng-bind-html="event.text | linky"></div>
           <div class="date">{{ event.created | date:'h:mma d MMM yy' }}</div>

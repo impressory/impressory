@@ -1,6 +1,7 @@
 @()
 
 <div class="text">{{ comment.text }}</div>
-<div ng-repeat="user in [ users.cache[comment.addedBy] ]" class="who">
-  {{ user.nickname || 'Anonymous'}} at {{ comment.created | date:'h:mma d MMM yy' }} 
+<div class="who">
+  <user-tag user="userCache.get(comment.addedBy)"></user-tag>
+  at {{ comment.created | date:'h:mma d MMM yy' }} 
 </div>

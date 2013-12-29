@@ -59,7 +59,6 @@ object Application extends Controller {
       case "main.html" => Ok(views.html.partials.main()) 
       case "signUp.html" => Ok(views.html.partials.signUp())
       case "logIn.html" => Ok(views.html.partials.logIn())
-      case "self.html" => Ok(views.html.partials.self())
       case "about.html" => Ok(views.html.partials.about())
       
       case "course/create.html" => Ok(views.html.partials.course.create())
@@ -71,6 +70,8 @@ object Application extends Controller {
       case "course/chatRoom.html" => Ok(views.html.partials.course.chatRoom())
       case "course/viewContent.html" => Ok(views.html.partials.viewcontent.viewContent())
       case "course/embedContent.html" => Ok(views.html.partials.viewcontent.embedContent())
+      
+      case "user/self.html" => Ok(views.html.partials.user.self())
       
       case "qna/listQuestions.html" => Ok(views.html.partials.qna.listQuestions())
       case "qna/newQuestion.html" => Ok(views.html.partials.qna.newQuestion())

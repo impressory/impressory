@@ -1,10 +1,10 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.EventRoom.ViewEvents = ['$scope', '$http', 'viewingEvents', ($scope, $http, viewingEvents) ->
+  Impressory.Controllers.EventRoom.ViewEvents = ['$scope', '$http', 'UserService', 'viewingEvents', ($scope, $http, UserService, viewingEvents) ->
   
     $scope.EventRoom = Impressory.Model.Viewing.EventRoom
     
-    $scope.Users = Impressory.Model.Viewing.Users
+    $scope.userCache = UserService.userCache()
     
     console.log("Course Id is " + $scope.courseId)
     

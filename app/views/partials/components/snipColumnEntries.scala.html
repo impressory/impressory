@@ -7,13 +7,9 @@
     <div class="entry" ng-show="applyFilter(entry)">
       
       <div class="header">
-        <div class="" ng-repeat="user in [ users.cache[entry.addedBy] ]">
-          <div class="who">
-            <span class="pull-right created">{{ entry.created | date:'h:mma d MMM yy' }}</span>
-            <span class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></span>
-            <span class="nickname">{{ user.nickname || 'Anonymous' }}</span>
-            
-          </div>
+        <div class="who">
+          <user-tag user="userCache.get(entry.addedBy)"></user-tag>
+          <span class="pull-right created">{{ entry.created | date:'h:mma d MMM yy' }}</span>
         </div>
       </div>
 

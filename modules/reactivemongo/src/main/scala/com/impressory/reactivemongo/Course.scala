@@ -95,4 +95,13 @@ object CourseDAO extends DAO[Course] {
     updateSafe(query, update, course)
   }
   
+  def pushNoun(course:Ref[Course], noun:String) = {
+    val query = BSONDocument("_id" -> course)
+    val update = BSONDocument("$addToSet" -> BSONDocument("contentTags.nouns" -> noun))
+  }
+  
+  def pushTopic(course:Ref[Course], topic:String) = {
+    val query = BSONDocument("_id" -> course)
+    val update = BSONDocument("$addToSet" -> BSONDocument("contentTags.topics" -> topic))
+  }
 }

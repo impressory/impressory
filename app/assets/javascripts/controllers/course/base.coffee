@@ -1,4 +1,4 @@
-define(["model/base"], (l) -> 
+define(["modules/base"], (l) -> 
 
   Impressory.Controllers.Course = {}
 

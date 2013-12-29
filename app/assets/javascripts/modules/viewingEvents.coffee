@@ -1,6 +1,6 @@
-define(["./app"], () ->
+define(["./base", "services/UserService"], () ->
 
-  Impressory.angularApp.service('viewingEvents', ['$http', '$location', '$rootScope', 'viewingUsers', ($http, $location, $rootScope, viewingUsers) ->
+  Impressory.angularApp.service('viewingEvents', ['$http', '$location', '$rootScope', 'UserService', ($http, $location, $rootScope, UserService) ->
     
     ERData = Impressory.Model.Viewing.EventRoom
 
@@ -38,7 +38,7 @@ define(["./app"], () ->
           # Load the last few events
           $http.get("/course/" + courseId + "/chat/lastFew").success((data) -> 
             users = (event.addedBy for event in data when event.addedBy?)
-            viewingUsers.request(users)
+            UserService.request(users)
 
             ERData.events = data
           )

@@ -1,5 +1,5 @@
 
-define(["./base", "services/ContentService", "services/CourseService", "./QnAService", "./markdownService", "./viewingContent", "./viewingEvents", "./viewingUsers" ], () ->
+define(["./base", "services/ContentService", "services/CourseService", "services/UserService", "./QnAService", "./markdownService", "./viewingContent", "./viewingEvents" ], () ->
    
     Impressory.angularApp.config(['$locationProvider', ($locationProvider) ->
         $locationProvider.html5Mode(true)
@@ -25,9 +25,9 @@ define(["./base", "services/ContentService", "services/CourseService", "./QnASer
           when('/', { templateUrl: '/partials/main.html' }).
           when('/logIn', { templateUrl: '/partials/logIn.html' }).
           when('/signUp', { templateUrl: '/partials/signUp.html' }).
-          when('/self', { templateUrl: '/partials/self.html' }).
           when('/about', { templateUrl: '/partials/about.html' }).
           when('/createCourse', { templateUrl: '/partials/course/create.html' }).
+          when('/self', { templateUrl: '/partials/user/self.html', controller: Impressory.Controllers.User.Self }).
           when('/course/:courseId', { templateUrl: '/partials/course/cover.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).
           when('/course/:courseId/activity', { templateUrl: '/partials/course/activityStream.html', resolve: Impressory.Controllers.Course.ActivityStream.resolve, controller: Impressory.Controllers.Course.ActivityStream }).
           when('/course/:courseId/editDetails', { templateUrl: '/partials/course/editDetails.html', resolve: Impressory.Controllers.Course.Edit.resolve, controller: Impressory.Controllers.Course.Edit }).

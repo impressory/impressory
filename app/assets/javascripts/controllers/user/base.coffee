@@ -1,5 +1,5 @@
 define(["modules/base"], (l) -> 
 
-  Impressory.Controllers.Front = {}
+  Impressory.Controllers.User = {}
 
 )

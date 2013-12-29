@@ -1,6 +1,6 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.Components.ListEntries = ["$scope", "ContentService", "viewingUsers", ($scope, ContentService, viewingUsers) ->
+  Impressory.Controllers.Components.ListEntries = ["$scope", "ContentService", "UserService", ($scope, ContentService, UserService) ->
   
     $scope.viewMode = $scope.viewMode || 'rows'
     $scope.viewAsRows = () -> $scope.viewMode = 'rows'
@@ -8,12 +8,12 @@ define(["./base"], (l) ->
     
     $scope.viewPath = (entry) -> ContentService.viewEntryPath(entry)
     
-    $scope.users = Impressory.Model.Viewing.Users
+    $scope.userCache = UserService.userCache()
     
     updateUsers = () -> 
       # Look up any users we haven't cached 
       users = (entry.addedBy for entry in ($scope.entries || []))
-      viewingUsers.request(users)
+      UserService.request(users)
       
     $scope.$watch('entries', (nv, ov) -> updateUsers())
     

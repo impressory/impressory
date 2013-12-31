@@ -77,7 +77,7 @@ object YouTubeVideo {
         ).itself
     }
 
-    def toJsonFor = { case (gs: YouTubeVideo, appr) => format.writes(gs).itself }
+    def toJsonFor = { case (entry, gs: YouTubeVideo, appr) => format.writes(gs).itself }
     
   }
     

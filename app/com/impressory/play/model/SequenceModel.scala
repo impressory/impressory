@@ -18,7 +18,7 @@ object SequenceModel extends ContentItemJsonHandler {
   
   def urlChecker(blank:ContentEntry, url:String) = RefNone
     
-  def toJsonFor = { case (cs: ContentSequence, appr) => 
+  def toJsonFor = { case (entry, cs: ContentSequence, appr) => 
     Json.obj(
       "entries" -> cs.entries.rawIds
     ).itself

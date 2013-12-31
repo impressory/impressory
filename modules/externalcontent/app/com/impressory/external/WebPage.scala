@@ -106,7 +106,7 @@ object WebPage {
       ).itself
     }
 
-    def toJsonFor = { case (wp: WebPage, appr) => 
+    def toJsonFor = { case (entry, wp: WebPage, appr) => 
       Json.obj(
         "url" -> wp.url,
         "noFrame" -> wp.noFrame

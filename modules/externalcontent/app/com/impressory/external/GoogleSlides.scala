@@ -75,7 +75,7 @@ object GoogleSlides {
       ).itself
     }
 
-    def toJsonFor = { case (gs: GoogleSlides, appr) => format.writes(gs).itself }
+    def toJsonFor = { case (entry, gs: GoogleSlides, appr) => format.writes(gs).itself }
     
   }
     

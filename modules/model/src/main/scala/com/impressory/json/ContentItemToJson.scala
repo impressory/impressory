@@ -6,16 +6,16 @@ import com.impressory.api._
 import play.api.libs.json._
 import com.wbillingsley.handy.appbase.JsonConverter
 
-object ContentItemToJson extends JsonConverter[ContentItem, User] {
+object ContentItemToJson {
     
-  def toJsonFor(ci:ContentItem, appr:Approval[User]):Ref[JsObject] = {
+  def toJsonFor(entry:ContentEntry, ci:ContentItem, appr:Approval[User]):Ref[JsObject] = {
     for {
-      h <- handlers.find(_.toJsonFor.isDefinedAt((ci, appr))).toRef orIfNone RefFailed(new IllegalStateException(s"No toJsonFor handler for ${ci.itemType} has been registered"))
-      j <- h.toJsonFor(ci, appr)
+      h <- handlers.find(_.toJsonFor.isDefinedAt((entry, ci, appr))).toRef orIfNone RefFailed(new IllegalStateException(s"No toJsonFor handler for ${ci.itemType} has been registered"))
+      j <- h.toJsonFor(entry, ci, appr)
     } yield j
   }
 
-  def toJson(ci:ContentItem) = toJsonFor(ci, Approval(RefNone))
+  def toJson(entry:ContentEntry, ci:ContentItem) = toJsonFor(entry, ci, Approval(RefNone))
   
   def createFromJson(kind:String, blank:ContentEntry, json:JsValue):Ref[ContentEntry] = {
     for {
@@ -53,6 +53,10 @@ trait ContentItemJsonHandler {
   
   def updateFromJson:PartialFunction[(String, JsValue, ContentEntry), Ref[ContentEntry]]
   
-  def toJsonFor:PartialFunction[(ContentItem, Approval[User]), Ref[JsObject]]
+  /**
+   * Produces a JSON block representing the content item. The content entry is also passed in,
+   * as the function may need to look things up (eg, using the content entry's ID or course)
+   */
+  def toJsonFor:PartialFunction[(ContentEntry, ContentItem, Approval[User]), Ref[JsObject]]
 
 }

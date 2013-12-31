@@ -1,3 +1,4 @@
 # Multiple Choice Poll
 POST    /multipleChoice/:entryId/vote com.impressory.poll.multipleChoice.MCPollController.vote(entryId:String)
 POST    /multipleChoice/:entryId/push com.impressory.poll.multipleChoice.MCPollController.pushMCPollToStream(entryId:String)
+GET     /multipleChoice/:entryId/vote com.impressory.poll.multipleChoice.MCPollController.getVote(entryId:String)

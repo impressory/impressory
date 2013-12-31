@@ -20,7 +20,7 @@
     <ul>
       <li ng-repeat="option in entry.item.options">
         <label class="checkbox-inline option">
-          <input type="checkbox" ng-model="option.selected" ng-change="recountSelected()" ng-disabled="!option.selected && selected.length >= entry.item.pick"/> {{ option.option }}
+          <input type="checkbox" ng-model="selection[$index]" ng-disabled="!selection[$index] && selectedMax()"/> {{ option.option }}
         </label>
       </li>
     </ul>
@@ -38,7 +38,7 @@
           <div class="col-sm-1">{{ option.votes }}</div>
           <div class="col-sm-5">
             <div class="progress">
-              <div class="bar" ng-style="{ 'width' : option.percent + '%' }"></div>
+              <div class="progress-bar" ng-style="{ 'width' : option.percent + '%' }"></div>
             </div>
           </div>
         </div>

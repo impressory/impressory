@@ -62,8 +62,7 @@ require([
   "controllers/markdownPage/View",
   "controllers/markdownPage/Edit",
   
-  "controllers/mcPoll/View",
-  "controllers/mcPoll/Edit"
+  "plugins/mcPoll/plugin"
   
 ], function(l) {
 	console.log("library has loaded")

@@ -8,7 +8,6 @@ define(["./base"], (l) ->
     
   ]
 
-
   Impressory.angularApp.directive("ceRenderEntryFull", () -> 
     {
       restrict: 'E'
@@ -26,6 +25,23 @@ define(["./base"], (l) ->
       template: """
         <div ng-include='activityStreamPartialUrl'></div>  
       """ 
+    }
+  )  
+
+  Impressory.Controllers.ViewContent.LoadEntry = ["$scope", "ContentService", ($scope, ContentService) ->
+    ContentService.get($scope.courseId, $scope.entryId).then((entry) ->
+      $scope.loaded = entry
+      $scope.onLoad({ loaded: entry })
+    )
+  ]
+
+  Impressory.angularApp.directive("ceLoadEntry", () -> 
+    {
+      restrict: 'AE'
+      controller: Impressory.Controllers.ViewContent.LoadEntry
+      scope: { courseId: '@courseId', entryId: '@entryId', onLoad: '&' }
+      transclude: true
+      template: "<div ng-transclude></div>"
     }
   )  
 )

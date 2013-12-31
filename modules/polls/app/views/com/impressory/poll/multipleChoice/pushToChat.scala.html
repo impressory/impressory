@@ -1,0 +1,7 @@
+@()
+
+<ce-load-entry course-id="{{ courseId }}" entry-id="{{ event.poll }}" on-load="entry = loaded">
+  <div ng-if="entry">
+    <ce-render-entry-stream entry="entry"></ce-render-entry-stream>
+  </div>
+</ce-load-entry>

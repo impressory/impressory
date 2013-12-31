@@ -14,7 +14,7 @@ object MarkdownPageModel extends ContentItemJsonHandler {
   
   def urlChecker(blank:ContentEntry, url:String) = RefNone
     
-  def toJsonFor = { case (mp: MarkdownPage, appr) => 
+  def toJsonFor = { case (entry, mp: MarkdownPage, appr) => 
     Json.obj(
       "text" -> mp.text,
       "version" -> mp.version

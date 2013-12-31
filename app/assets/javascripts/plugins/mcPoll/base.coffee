@@ -1,4 +1,4 @@
-define(["model/base"], (l) -> 
+define(["modules/app"], (l) -> 
 
   Impressory.Controllers.MCPoll = {}
 

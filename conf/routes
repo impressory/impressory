@@ -6,6 +6,9 @@
 # Partials
 
 GET     /partials/*template         com.impressory.play.controllers.Application.partial(template:String)
+GET     /eventPartial               com.impressory.play.controllers.Application.eventPartial(kind:String)
+
+
 
 # Debugging
 GET     /session                    com.impressory.play.controllers.Application.inspectSession

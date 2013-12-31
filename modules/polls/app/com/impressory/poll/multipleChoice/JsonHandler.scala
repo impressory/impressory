@@ -33,7 +33,7 @@ object JsonHandler extends ContentItemJsonHandler {
   
   def urlChecker(blank:ContentEntry, url:String) = RefNone
   
-  def toJsonFor = { case (p: MultipleChoicePoll, appr) =>
+  def toJsonFor = { case (entry, p: MultipleChoicePoll, appr) =>
     MCPollToJson.writes(p).itself
   }
   

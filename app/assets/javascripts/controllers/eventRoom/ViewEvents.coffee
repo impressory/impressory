@@ -20,6 +20,9 @@ define(["./base"], (l) ->
     # Matches chat comments that are questions and should be highlighted
     questionRegex = /^Q:/    
     $scope.isQuestion = (text) -> questionRegex.test(text)
+    
+    # Calculates the URL for a partial template to render this kind of event
+    $scope.partialUrl = (kind) -> viewingEvents.eventPartialUrl(kind)
   
   ]
   

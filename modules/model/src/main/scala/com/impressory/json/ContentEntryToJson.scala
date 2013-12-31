@@ -46,7 +46,7 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
       for {
         j <- toJsonCore(ce)
         item <- ce.item.toRef
-        itemj <- ContentItemToJson.toJson(item)
+        itemj <- ContentItemToJson.toJson(ce, item)
       } yield {
         j ++ Json.obj("item" -> itemj)
       }
@@ -79,7 +79,7 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
         ej <- toJson(ce);
         p <- optionally(permissions(ce, appr));
         item <- Ref(ce.item);
-        itemj <- ContentItemToJson.toJsonFor(item, appr);
+        itemj <- ContentItemToJson.toJsonFor(ce, item, appr);
         voting <- UpDownVotingToJson.toJsonFor(ce.voting, appr);
         comments <- (
           for {
@@ -102,7 +102,7 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
     def toJsonForInput(ce:ContentEntry) = {      
       for (
         item <- Ref(ce.item);
-        itemj <- ContentItemToJson.toJsonFor(item, Approval(RefNone))
+        itemj <- ContentItemToJson.toJsonFor(ce, item, Approval(RefNone))
       ) yield {
         Json.obj(
           "title" -> ce.title,

@@ -53,6 +53,9 @@ define(["./base", "services/UserService"], () ->
       unsubscribe: (sub) ->
         Impressory.EventRoom.connect()
         Impressory.EventRoom.unsubscribe(sub)
+      
+      # Calculates the URL for a partial template to render this kind of event
+      eventPartialUrl: (kind) -> "/eventPartial?kind=#{kind}"
     }
   ])
 

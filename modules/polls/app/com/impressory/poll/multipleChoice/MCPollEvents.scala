@@ -66,36 +66,15 @@ object MCPollStreamLTJH extends ListenToJsonHandler {
   }
 }
 
-case class PushPollToChat(poll: ContentEntry) extends eventroom.EREvent {
-    override def toJson = {
-      val course = poll.course.getId
-      val id = poll.id
-      poll.item match {
-        case Some(mc:MultipleChoicePoll) => {
-          import com.impressory.json.ContentEntryToJson
-          
-          for (j <- ContentEntryToJson.toJson(poll)) yield Json.obj(
-            "kind" -> "push",
-            "type" -> MultipleChoicePoll.itemType,
-            "created" -> System.currentTimeMillis(),
-            "poll" -> j
-          )
-        }
-        case _ => {
-          RefFailed(UserError(s"Content entry $id is not a multiple choice poll"))
-        }
-      }
-    }
-
-    /**
-     * The event room should broadcast this to everyone who's listening to the book's chat stream
-     */
-    override def action(room: eventroom.EventRoom) {
-      for (cid <- poll.course.getId) {
-        room.broadcast(ChatStream(cid), this)
-      }
-    }
-}
+case class PushPollToChat(poll: ContentEntry) extends com.wbillingsley.eventroom.JsonEvent(
+  ChatStream(poll.course.getId.getOrElse("")),
+  Json.obj(
+    "kind" -> "push",
+    "type" -> MultipleChoicePoll.itemType,
+    "created" -> System.currentTimeMillis(),
+    "poll" -> poll.id
+  )
+)
 
 /** A new poll response (vote) has been made. The vote contains the adjustment to the score for each option. */
 case class Vote(pollId:String, pr: Map[Int, Int]) extends eventroom.EREvent {

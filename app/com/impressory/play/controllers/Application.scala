@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.wbillingsley.handy.appbase.DataAction
 import com.impressory.json.UserToJson
-import com.impressory.plugins.ContentItemViews
+import com.impressory.plugins._
 import com.wbillingsley.handy.appbase.AppbaseRequest
 
 
@@ -54,6 +54,7 @@ object Application extends Controller {
     val ciMainPrefix = "viewcontent/kinds/"
     val ciEditPrefix = "editcontent/kinds/"
     val ciStreamPrefix = "viewcontent/stream/"
+    val evtPrefix = "event/"
           
     templ match {
       case "main.html" => Ok(views.html.partials.main()) 
@@ -81,6 +82,9 @@ object Application extends Controller {
       case "viewcontent/kinds/markdownPage.html" => Ok(views.html.partials.viewcontent.kinds.markdownPage())
       case "viewcontent/kinds/noContent.html" => Ok(views.html.partials.viewcontent.kinds.noContent())
       
+      /*
+       * Registered templates for viewing a content item in the viewer
+       */
       case s if s.startsWith(ciMainPrefix) => ContentItemViews.main(s.stripPrefix(ciMainPrefix)) match {
         case Some(s) => Ok(s).as("text/html")
         case _ => NotFound("No suitable template was found")
@@ -89,6 +93,9 @@ object Application extends Controller {
       case "viewcontent/stream/markdownPage.html" => Ok(views.html.partials.viewcontent.stream.markdownPage())
       case "viewcontent/stream/default.html" => Ok(views.html.partials.viewcontent.stream.default())
       
+      /*
+       * Registered templates for viewing a content item in the activity stream
+       */
       case s if s.startsWith(ciStreamPrefix) => ContentItemViews.stream(s.stripPrefix(ciStreamPrefix)) match {
         case Some(s) => Ok(s).as("text/html")
         case _ => NotFound("No suitable template was found")
@@ -98,12 +105,25 @@ object Application extends Controller {
       case "editcontent/kinds/markdownPage.html" => Ok(views.html.partials.editcontent.kinds.markdownPage())
       case "editcontent/kinds/default.html" => Ok(views.html.partials.editcontent.kinds.default())
       
+      /*
+       * Registered templates for editing a content item
+       */
       case s if s.startsWith(ciEditPrefix) => ContentItemViews.edit(s.stripPrefix(ciEditPrefix)) match {
         case Some(s) => Ok(s).as("text/html")
         case _ => NotFound("No suitable template was found")
       }
 
       case _ => NotFound(s"No such partial template: $templ")
+    }
+  }
+  
+  /*
+   * Templates for rendering events in the chat room
+   */
+  def eventPartial(k:String) = Action { 
+    EventViews.view(k) match {
+      case Some(s) => Ok(s).as("text/html")
+      case _ => NotFound("No suitable template was found")
     }
   }
   

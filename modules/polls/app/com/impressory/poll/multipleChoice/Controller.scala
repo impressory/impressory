@@ -62,6 +62,11 @@ object MCPollController extends Controller {
     }
   }
   
+  def getVote(pid:String) = DataAction.returning.one { implicit request =>
+    val poll = new LazyId(classOf[ContentEntry], pid)
+    MCPollResponseDAO.byUserOrSession(poll, request.user, Some(request.sessionKey))
+  }
+  
   /**
    * Pushes the poll to the interaction stream
    */

@@ -25,14 +25,11 @@
         </div>          
       </div>
       <div class="col-sm-4">
-        <div class="" ng-repeat="user in [ users.cache[entry.addedBy] ]">
-          <div class="ab-label">added by</div>
-          <div class="who">
-            <div class="avatar"><img ng-src="{{ user.avatar || 'http://placehold.it/64x64' }}" alt="User's avatar"/></div>
-            <div class="nickname">{{ user.nickname || 'Anonymous' }}</div>
-          </div>
-          <div class="created">{{ entry.created | date:'h:mma d MMM yy' }}</div>
+        <div class="ab-label">added by</div>
+        <div class="who">
+          <user-tag user="userCache.get(entry.addedBy)"></user-tag>
         </div>
+        <div class="created">{{ entry.created | date:'h:mma d MMM yy' }}</div>
       </div>
     </div>
   </div>

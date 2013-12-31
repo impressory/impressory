@@ -3,8 +3,8 @@
 @above
 
 <div ng-controller="Impressory.Controllers.Components.SceTrustSrc">
-  <div ng-controller="Impressory.Controllers.Components.FillHeight">
-    <iframe ng-src="{{ trustAsResourceUrl(embedUrl) }}" style="border: none" ng-style="{ height: fillHeight }">
+  <div im-fill-height ng-style="{ height: fillHeight - 5 }" style="position: relative; top: 0;">
+    <iframe ng-src="{{ trustAsResourceUrl(embedUrl) }}" style="border: none" style="height: 100%; width: 100%;">
     </iframe>
   </div>
 </div>

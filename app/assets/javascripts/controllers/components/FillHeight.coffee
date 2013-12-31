@@ -19,4 +19,11 @@ define(["./base"], (l) ->
     
   ]
 
+  Impressory.angularApp.directive("imFillHeight", () -> 
+    {
+      restrict: 'A'
+      controller: Impressory.Controllers.Components.FillHeight
+    }
+  )
+
 )

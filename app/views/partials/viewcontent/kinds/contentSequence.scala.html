@@ -2,46 +2,49 @@
 
 <div class="content-sequence" ng-controller="Impressory.Controllers.ViewContent.Sequence">
 
-  <div class="left-edge">
-	  <div class="v-center">
-	    <button class="btn-command thin" type="button" ng-click="goToPrevEntry()" ng-disabled="!hasPrevEntry()">
-	      <i class="icon-angle-left"></i>
-	    </button>	  
-	  </div>
-	  <button class="btn-command thin" ng-click="goToStart()"> 
-	    <img src='/assets/images/slideSorter_full.png' alt="Slide sorter" />
-	  </button>
-  </div>
-  
-  <div class="content-sequence-content">
-  
-    <div class="content-sequence-index" ng-show="seqIndex < 0">
-	  <h1>{{ entry.title || 'Untitled sequence' }}</h1>
-	          
-	  <p>
-	    A content sequence of {{ entry.item.entries.length || 0 }} items.
-	  </p>
-	  <hr />
-	  <div>
-	    <list-entries entries="entries" view-mode="rows" ></list-entries>
-	  </div>
+  <div im-fill-height ng-style="{ height: fillHeight }" style="position: relative; top: 0;">
+
+    <div class="left-edge">
+  	  <div class="v-center">
+  	    <button class="btn-command thin" type="button" ng-click="goToPrevEntry()" ng-disabled="!hasPrevEntry()">
+  	      <i class="icon-angle-left"></i>
+  	    </button>	  
+  	  </div>
+  	  <button class="btn-command thin" ng-click="goToStart()"> 
+  	    <img src='/assets/images/slideSorter_full.png' alt="Slide sorter" />
+  	  </button>
     </div>
     
-    <div ng-repeat="entry in entries" >
-      <div ng-show="seqIndex == $index" >
-      	<ce-render-entry-full entry="entry" ></ce-render-entry-full>
+    <div class="content-sequence-content">
+    
+      <div class="content-sequence-index" ng-show="seqIndex < 0">
+  	  <h1>{{ entry.title || 'Untitled sequence' }}</h1>
+  	          
+  	  <p>
+  	    A content sequence of {{ entry.item.entries.length || 0 }} items.
+  	  </p>
+  	  <hr />
+  	  <div>
+  	    <list-entries entries="entries" view-mode="rows" ></list-entries>
+  	  </div>
       </div>
+      
+      <div ng-repeat="entry in entries" >
+        <div ng-show="seqIndex == $index" >
+        	<ce-render-entry-full entry="entry" ></ce-render-entry-full>
+        </div>
+      </div>
+    
+    
     </div>
-  
-  
-  </div>
-  
-  <div class="right-edge">
-	  <div class="v-center">
-	    <button id="next-button" type="button"  class="btn-command thin" ng-disabled="!hasNextEntry()" ng-click="goToNextEntry()" >
-	      <i class="icon-angle-right"></i>
-	    </button>
-	  </div>
-  </div>
+    
+    <div class="right-edge">
+  	  <div class="v-center">
+  	    <button id="next-button" type="button"  class="btn-command thin" ng-disabled="!hasNextEntry()" ng-click="goToNextEntry()" >
+  	      <i class="icon-angle-right"></i>
+  	    </button>
+  	  </div>
+    </div>
 
+  </div>
 </div>

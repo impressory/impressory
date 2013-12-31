@@ -32,7 +32,9 @@ define(["lib/eventRoom"], (er) ->
       
       Viewing: {
       
-        Course: { }
+        Course: { 
+        
+        }
         
         Content: { 
           # The entry in MainContent
@@ -45,8 +47,9 @@ define(["lib/eventRoom"], (er) ->
           seqEntry: null
         }
         
-        Users: { 
-          cache: { }
+        Display: {
+          # Whether the chat pane, on the right side of many course screens, is open
+          chatOpen: false
         }
         
         EventRoom: {

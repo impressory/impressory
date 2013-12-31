@@ -1,5 +1,6 @@
 .content-sequence {
 
+  @controlWidth: 20px;
   @leftEdgeWidth: 20px;
   @rightEdgeWidth: 20px;
   
@@ -78,6 +79,9 @@
   .content-sequence-content {
     margin: 0 @rightEdgeWidth 0 @leftEdgeWidth;
     padding: 3px;
+    
+    height: 100%;
+    overflow-y: auto;
       
     .content-sequence-index {
 	    margin: 20px;

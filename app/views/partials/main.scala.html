@@ -5,7 +5,7 @@
 <div class="front-page">
 
   <div class="about-banner">
-    <div class="sidemargin">
+    <div class="container">
       <div class="news pull-right">
         <h3>We're in alpha...</h3>
         <p>
@@ -30,37 +30,41 @@
   </div>
 
   <div class="bookRow" ng-controller="Impressory.Controllers.Front.MyCourses">
-    <h2>My courses</h2>
-    <div class="books">
-
-      <span ng-repeat="course in courses">
-        @course.snipMiniCourse()
-      </span>
-
-      <p class="noBooks" ng-show="!courses.length && login.user">You haven't registered with any courses yet.</p>
-      <p class="noBooks" ng-show="!login.user">Log in to register for courses.</p>
-
-    </div>
-    <div>
-      <div class="center">
-        <a class="btn btn-primary" href="/createCourse">Create a new course </a>
+    <div class="container">
+      <h2>My courses</h2>
+      <div class="books">
+  
+        <span ng-repeat="course in courses">
+          @course.snipMiniCourse()
+        </span>
+  
+        <p class="noBooks" ng-show="!courses.length && login.user">You haven't registered with any courses yet.</p>
+        <p class="noBooks" ng-show="!login.user">Log in to register for courses.</p>
+  
+      </div>
+      <div>
+        <div class="center">
+          <a class="btn btn-primary" href="/createCourse">Create a new course </a>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="bookRow" ng-controller="Impressory.Controllers.Front.ListedCourses">
-    <h2>Publicly listed courses</h2>
-    <div class="books">
-    
-      <span ng-repeat="course in courses">
-        @course.snipMiniCourse()
-      </span>
-
-      <p class="noBooks" ng-show="!courses.length">
-      Hmm, all the courses have chosen to be private so far.
-      </p>
-
+    <div class="container">
+      <h2>Publicly listed courses</h2>
+      <div class="books">
+      
+        <span ng-repeat="course in courses">
+          @course.snipMiniCourse()
+        </span>
+  
+        <p class="noBooks" ng-show="!courses.length">
+        Hmm, all the courses have chosen to be private so far.
+        </p>
+  
+      </div>
+  
     </div>
-
   </div>
 </div>

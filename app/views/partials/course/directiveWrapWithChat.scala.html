@@ -1,0 +1,14 @@
+@()
+
+<div class="im-wrap-with-chat">
+  <div ng-class='{ "chat-open": chatOpen() }' class="im-wrapped">
+    <div ng-transclude class="transcluded"></div>
+  </div>
+  <div class="im-chat-wrap" ng-show="chatOpen()">
+    <div class="sidemargin chat-room" ng-if="chatOpen()">
+      <chat-form course-id="course.id"></chat-form>
+      <p>&nbsp;</p>
+      <chat-view-events course-id="course.id" ></chat-view-events>
+    </div>
+  </div>
+</div>

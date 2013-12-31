@@ -1,17 +1,21 @@
 @()
 
 <div class="book">
-  <div class="image thumbnail">
-    <img ng-src="{{ course.coverImageURL || 'http://placehold.it/100x150' }}" alt="cover image" />
+  <div>
+    <a ng-href="{{ '/course/' + course.id }}">
+      <course-cover-logo course="course" show-default="true"></course-cover-logo>
+    </a>
   </div>
+  
   <div class="details">
     <span id="listEntryShortname">{{course.shortName}}</span><br>
     <span class="bookTitle">
       <a ng-href="{{ '/course/' + course.id }}" class="title">{{ course.title }}</a>
     </span>
     <div class="bookSummary">{{ course.shortDescription }}</div>
-    <span class="mayRead">
-      <a class="title" ng-href="/course/{{course.id}}/activity">(go to newsfeed)</a>
-    </span>
   </div>
+  <div>
+    <a class="title" ng-show="course.permissions.read" ng-href="/course/{{course.id}}/activity">(go to newsfeed)</a>
+  </div>
+
 </div>

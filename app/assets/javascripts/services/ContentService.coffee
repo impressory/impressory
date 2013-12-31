@@ -90,7 +90,9 @@ define(["modules/base"], () ->
           angular.copy(res.data, entry)
         )
         
-      allEntries: (courseId) -> $http.get("/course/#{courseId}/allEntries").then((res) -> res.data.entries)
+      allEntries: (courseId) -> $http.get("/course/#{courseId}/allEntries").then((res) -> res.data)
+      
+      entriesForTopic: (courseId, topic) -> $http.get("/course/#{courseId}/entriesForTopic", { params: { topic : topic } }).then((res) -> res.data)
         
       activity: (courseId) -> $http.get("/course/#{courseId}/activity").then((res) -> res.data)
       

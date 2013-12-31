@@ -1,14 +1,12 @@
 @() 
-
+<course-wrap-with-chat course="course">
 <header-front></header-front>
 <subheader-course course="course"></subheader-course>
 
-<div class="course-cover-page" >
+<div class="course-cover-page container" >
   <div class="row" >
-    <div class="col-sm-9">
-	    <div class="coverImage">
-	      <img ng-src="{{ course.coverImageURL || 'http://placehold.it/200x300' }}" alt="cover image" />
-	    </div>
+    <div class="col-sm-8">
+      <course-cover-logo course="course" show-default="true"></course-cover-logo>
 	  
 	    <div class="bookDetails">
 	      <p>
@@ -34,10 +32,10 @@
 	    </div>
     </div>
     
-    <div class="col-sm-3 pull-right">
+    <div class="col-sm-4">
       @snipFrontControls()
     </div>
   </div>
   
-  <div class="contentTypes"></div>
 </div>
+</course-wrap-with-chat>

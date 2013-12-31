@@ -3,20 +3,25 @@
 <div class="subheader-course" >
 
   <div class="course-navbar">
-    <div class="book-image">
-      <img ng-src="{{ course.coverImageURL || 'http://placehold.it/100x150' }}" alt="cover image"/>
+    <div class="container">
+      <div class="book-title">
+        <div class="media">
+          <span class="pull-left">
+            <course-cover-logo course="course" class="media-object" im-default="true"></course-cover-logo>
+          </span>
+          <div class="media-body">
+            <h1 class="media-heading">{{ course.title || 'Untitled Course' }}</h1>
+          </div>
+        </div>
+      </div>
+      <ul class="course-nav">
+        <li><a ng-href='{{ "/course/" + course.id }}'>Cover &amp; membership</a></li>
+        <li><a ng-href='{{ "/course/" + course.id + "/activity" }}'>Newsfeed</a></li>      
+        <li><a ng-href='{{ "/course/" + course.id + "/view/lookup?topic=page one" }}'>Page one</a></li> 
+        <li><a ng-href='{{ "/course/" + course.id + "/chatRoom" }}'>Chat Stream</a></li>
+        <li class="pull-right"><button class="btn-command" course-chat-toggle ng-click="toggleChat()"><img src='/assets/images/sq_chat.png' alt="Chat pane" /></button></li>
+      </ul>
     </div>
-    <div class="book-title">
-      <h1>{{ course.title || 'Untitled Course' }}</h1>
-    </div>
-    <ul class="course-nav">
-      <li><a ng-href='{{ "/course/" + course.id }}'>Cover &amp; membership</a></li>
-      <li><a ng-href='{{ "/course/" + course.id + "/activity" }}'>Newsfeed</a></li>      
-      <li><a ng-href='{{ "/course/" + course.id + "/view/lookup?topic=page one" }}'>Page one</a></li> 
-      <li><a ng-href='{{ "/course/" + course.id + "/chatRoom" }}'>Chat Stream</a></li>
-
-    </ul>
-
   </div>
 
 

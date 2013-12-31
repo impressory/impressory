@@ -1,55 +1,59 @@
 @() 
 
+<course-wrap-with-chat course="course">
 <header-front></header-front>
 <subheader-course course="course"></subheader-course>
 
-<div class="course-cover-page" >
-  <div class="topHalf" >
-    @snipFrontControls()
+<div class="course-cover-page container" >
+  <div class="row" >
+    <div class="col-sm-8">
   
-    <div class="coverImage">
-      <img ng-src="{{ course.coverImageURL || 'http://placehold.it/200x300' }}" alt="cover image" />
-    </div>
-  
-    <div class="bookDetails">
+      <course-cover-logo course="course" show-default="true"></course-cover-logo>
     
-      <div class="form" style="float: left">
-        <div class="form-group">
-          <label>Title</label>
-          <input type="text" class="form-control" ng-model="course.title" required />
-        </div>
-
-        <div class="form-group">
-          <label>Short name</label>
-          <input type="text" class="form-control" ng-model="course.shortName" placeholder="Optional" />
-        </div>
-        
-        <div class="form-group">
-          <label>Cover image</label>
-          <input type="text" class="form-control" ng-model="course.coverImageURL" placeholder="Optional" />
-        </div>
-
-        <div class="form-group">
-          <label>Short description</label>
-          <textarea class="form-control" ng-model="course.shortDescription" placeholder="Optional"></textarea>
-        </div>
-        
-        <div class="form-group">      
-          <label>Long description</label>
-          <textarea class="form-control" ng-model="course.longDescription" placeholder="Optional"></textarea>
-        </div>
+      <div class="bookDetails">
       
-        <div class="form-group">
-          <label class="checkbox-inline"><input type="checkbox" ng-model="course.listed" /> List publicly</label>
-        </div>
+        <div class="form">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" class="form-control" ng-model="course.title" required />
+          </div>
+  
+          <div class="form-group">
+            <label>Short name</label>
+            <input type="text" class="form-control" ng-model="course.shortName" placeholder="Optional" />
+          </div>
+          
+          <div class="form-group">
+            <label>Cover image</label>
+            <input type="text" class="form-control" ng-model="course.coverImageURL" placeholder="Optional" />
+          </div>
+  
+          <div class="form-group">
+            <label>Short description</label>
+            <textarea class="form-control" ng-model="course.shortDescription" placeholder="Optional"></textarea>
+          </div>
+          
+          <div class="form-group">      
+            <label>Long description</label>
+            <textarea class="form-control" ng-model="course.longDescription" placeholder="Optional"></textarea>
+          </div>
         
-        <div>
-          <a class="btn btn-default" ng-href="/course/{{course.id}}">Cancel</a>
-          <button class="btn btn-primary" ng-click="saveCourse(course)" >Save</button>
+          <div class="form-group">
+            <label class="checkbox-inline"><input type="checkbox" ng-model="course.listed" /> List publicly</label>
+          </div>
+          
+          <div>
+            <a class="btn btn-default" ng-href="/course/{{course.id}}">Cancel</a>
+            <button class="btn btn-primary" ng-click="saveCourse(course)" >Save</button>
+          </div>
         </div>
+      </div>
     </div>
-  
+
+    <div class="col-sm-4">
+      @snipFrontControls()
+    </div>
+
   </div>
-  
-  <div class="contentTypes"></div>
 </div>
+</course-wrap-with-chat>

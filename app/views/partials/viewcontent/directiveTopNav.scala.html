@@ -1,6 +1,6 @@
 @()
 
-<div class="viewer-top-nav" ng-controller="Impressory.Controllers.ViewContent.TopNav">
+<div class="viewer-top-nav" >
 
   <div class="dont-print">
     <div ng-hide="panels.minimisedHeader">
@@ -38,7 +38,7 @@
           </button>
         </li>
         <li class="navli">
-          <button class="command" ng-click="panels.toggleRight()"> 
+          <button class="command" course-chat-toggle ng-click="toggleChat()"> 
             <img src='/assets/images/sq_chat.png' alt="Chat pane" />
           </button>
         </li>
@@ -64,7 +64,7 @@
             <span ng-repeat="noun in entry.tags.nouns" class="noun">{{ noun }}</span>           
           </span> 
           <span class="preposition">about</span> 
-          <span class="topics"> 
+          <span class="topics">
             <button ng-repeat="topic in entry.tags.topics" ng-class="{ 'active': (panels.top == 'contentForTopic') && (searchTopic == topic) }" ng-click="panels.toggleContentForTopic(topic)" class="topic command">{{ topic }}</button> 
           </span>
         </span>
@@ -93,7 +93,7 @@
           @views.html.partials.components.snipEntryComments()
         </div>
         <div ng-switch-when="contentForTopic" >
-          @snipContentForTopic()
+          <ce-content-for-topic topic="searchTopic" course="course"></ce-content-for-topic>
         </div>
         <div ng-switch-when="editContent" >
           <ce-edit-content-item entry="entry" on-close="panels.closeTop()"></ce-edit-content-item>

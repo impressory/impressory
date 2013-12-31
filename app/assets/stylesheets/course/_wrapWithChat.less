@@ -1,0 +1,29 @@
+
+.im-wrap-with-chat {
+  height: 100%;
+  width: 100%;
+  
+  .im-wrapped {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    
+    .transcluded {
+      height: 100%;
+      overflow: auto;
+    } 
+  }
+  .im-wrapped.chat-open {
+    width: ~"calc(100% - 300px)"; 
+    margin-right: 300px; 
+  }
+  
+  .im-chat-wrap {
+    overflow: auto; 
+    height: 100%; 
+    width: 300px; 
+    position: fixed; right: 0; 
+    background-color: #fcfcfc;
+  }
+}
+

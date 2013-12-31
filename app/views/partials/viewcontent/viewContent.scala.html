@@ -1,32 +1,11 @@
 @()
 
-<div class="impressory-content-viewer full-height">
-  
-  <div ng-controller="Impressory.Controllers.ViewContent.Layout" class="full-height">
+<course-wrap-with-chat course="course">
+  <div class="impressory-content-viewer full-height">
+    <ce-top-nav entry="display()" panels="panels" course="course"></ce-top-nav>
 
-    <div id="middle-wrap" ng-class="{ 'right-open': panels.right }">
-
-      <ce-top-nav entry="display()" panels="panels" course="course"></ce-top-nav>
-
-      <div id="middle">
-        <!-- The content -->
-        @snipMainContent()
-      </div>
-    </div>
-    
-    <div id="right-panel" ng-show="panels.right">
-      <div class="panel-inner">
-        @snipChatPane()
-      </div>
-    </div>
-    
+    <!-- The content -->
+    @snipMainContent()
   </div>
-
-
-  <div id="ib-bottom-panel-holder" class="dont-print">
-    <div id="ib-bottom-panel-controls"></div>
-    <div id="ib-bottom-panel"></div>
-  </div>
-
-</div>
+</course-wrap-with-chat>
 

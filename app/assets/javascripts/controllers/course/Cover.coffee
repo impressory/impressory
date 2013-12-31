@@ -17,4 +17,12 @@ define(["./base"], (l) ->
     ]
   }
 
+  Impressory.angularApp.directive("courseCoverLogo", () -> 
+    {
+      restrict: 'E'
+      scope: { course: '=course', showDefault: '@showDefault' }
+      templateUrl: "directive_course_coverLogo.html"
+    }
+  )
+
 )

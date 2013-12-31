@@ -22,6 +22,7 @@ require([
   "controllers/front/ListedCourses",
   "controllers/front/MyCourses",
   
+  "controllers/course/WrapWithChat",
   "controllers/course/Subheader",
   "controllers/course/Create",
   "controllers/course/Edit",
@@ -40,7 +41,6 @@ require([
   "controllers/components/SceTrustSrc",
 
   "controllers/viewContent/ViewContent",
-  "controllers/viewContent/Layout",
   "controllers/viewContent/TopNav",
   "controllers/viewContent/Voting",
   "controllers/viewContent/Comments",

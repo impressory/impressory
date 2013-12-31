@@ -42,10 +42,6 @@
   }
   
   .controls {
-      float: right;
-      margin-right: @sidePadD;
-      	
-  
       .basicActions, .adminActions, .yourRoles {
           .controlSect;
       }
@@ -60,16 +56,12 @@
   
   }
   
-  @imW: 200px;
+  @imW: 100%;
   @imH: 300px;
+
   .coverImage {
-      float: left;
       margin: 0 @sidePadD 0 @sidePadD;
-      .border-radius(5px);
-      border: 1px solid rgba(0,0,0,0.1);
-      padding: 5px;
-  
-  
+
       img {
           max-width: @imW;
           max-height: @imH;

@@ -2,7 +2,7 @@
 
 <div class="list-entries columns">
 
-  <div ng-repeat="entry in entries | orderBy:'created':true">
+  <div ng-repeat="entry in entries track by $index | orderBy:'created':true">
   
     <div class="entry" ng-show="applyFilter(entry)">
       

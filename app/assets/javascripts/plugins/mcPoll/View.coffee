@@ -32,10 +32,10 @@ define(["./base"], (l) ->
       vote = (i for selected, i in $scope.selection when selected)
       MCPollService.vote($scope.entry.id, vote)
     
+    $scope.selectedCount = () -> (i for selected, i in $scope.selection when selected).length
+    
     # Whether the user has selected the maximum number of entries
-    $scope.selectedMax = () -> 
-      optionsSelected = (i for selected, i in $scope.selection when selected).length
-      optionsSelected >= $scope.entry.item.pick
+    $scope.selectedMax = () -> $scope.selectedCount() >= $scope.entry.item.pick
     
     $scope.pushToStream = () -> MCPollService.pushToStream($scope.entry.id)
   

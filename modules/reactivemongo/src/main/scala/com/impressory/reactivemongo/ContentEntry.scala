@@ -76,7 +76,11 @@ object ContentEntryDAO extends DAO[ContentEntry] {
   def byKind(course:Ref[Course], kind:String) = {
     val query = BSONDocument("course" -> course, "kind" -> kind, "published" -> BSONDocument("$exists" -> true))
     findMany(query)
-  }  
+  }
+  
+  def myDrafts(user:Ref[User], course:Ref[Course]) = findMany(
+    BSONDocument("published" -> BSONDocument("$exists" -> false), "addedBy" -> user, "course" -> course)
+  )
   
   def inIndexByCourse(course:Ref[Course]) = {
     val query = BSONDocument("course" -> course, "settings.inIndex" -> true, "published" -> BSONDocument("$exists" -> true))

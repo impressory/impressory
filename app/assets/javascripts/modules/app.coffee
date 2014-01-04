@@ -32,7 +32,8 @@ define(["./base", "services/ContentService", "services/CourseService", "services
           when('/course/:courseId/activity', { templateUrl: '/partials/course/activityStream.html', resolve: Impressory.Controllers.Course.ActivityStream.resolve, controller: Impressory.Controllers.Course.ActivityStream }).
           when('/course/:courseId/editDetails', { templateUrl: '/partials/course/editDetails.html', resolve: Impressory.Controllers.Course.Edit.resolve, controller: Impressory.Controllers.Course.Edit }).
           when('/course/:courseId/invites', { templateUrl: '/partials/course/invites.html', resolve: Impressory.Controllers.Course.Invites.resolve, controller: Impressory.Controllers.Course.Invites  }).
-          when('/course/:courseId/index', { templateUrl: '/partials/course/index.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).
+          when('/course/:courseId/myDrafts', { templateUrl: '/partials/course/myDrafts.html', resolve: Impressory.Controllers.Course.MyDrafts.resolve, controller: Impressory.Controllers.Course.MyDrafts }).
+          when('/course/:courseId/index', { templateUrl: '/partials/course/index.html', resolve: Impressory.Controllers.Course.Index.resolve, controller: Impressory.Controllers.Course.Index }).
           when('/course/:courseId/chatRoom', { templateUrl: '/partials/course/chatRoom.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover  }).
           when('/course/:courseId/view/lookup', { templateUrl: '/partials/course/viewContent.html', resolve: Impressory.Controllers.ViewContent.ViewContent.resolveLookup, controller: Impressory.Controllers.ViewContent.ViewContent  }).
           when('/course/:courseId/view/:entryId', { templateUrl: '/partials/course/viewContent.html', resolve: Impressory.Controllers.ViewContent.ViewContent.resolveView, controller: Impressory.Controllers.ViewContent.ViewContent  }).
@@ -40,6 +41,10 @@ define(["./base", "services/ContentService", "services/CourseService", "services
           when('/course/:courseId/qna', { templateUrl: '/partials/qna/listQuestions.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).
           when('/course/:courseId/qna/new', { templateUrl: '/partials/qna/newQuestion.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).
           when('/course/:courseId/qna/:questionId', { templateUrl: '/partials/qna/viewQuestion.html', resolve: Impressory.Controllers.Course.Cover.resolve, controller: Impressory.Controllers.Course.Cover }).
+          
+          # This is here for content being rendered in the activity stream, that might have local links
+          when('/course/:courseId/:entryId', { redirectTo: (params) -> "/course/#{params.courseId}/view/#{params.entryId}"}).
+          
           otherwise({ redirectTo: '/' })
       ])
 

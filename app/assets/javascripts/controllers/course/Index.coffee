@@ -1,19 +1,22 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.Course.Index = ["$scope", "$routeParams", "$http", "viewingUsers", ($scope, $routeParams, $http, viewingUsers) ->
+  Impressory.Controllers.Course.Index = ["$scope", "course", "entries", ($scope, course, entries) ->
   
-    $scope.courseId = $routeParams.courseId
+    $scope.courseId = course.id
   
-    $scope.entries = $http.get("/course/" + $scope.courseId + "/allEntries").then((res) -> 
-      entries = res.data.entries 
-        
-      # Look up any users we haven't cached 
-      users = (entry.addedBy for entry in entries)
-      viewingUsers.request(users)
-        
-      entries
-    )
+    $scope.course = course
+    $scope.entries = entries
     
   ]
+
+  Impressory.Controllers.Course.Index.resolve = {
+    course: ['$route', 'CourseService', ($route, CourseService) -> 
+      CourseService.get($route.current.params.courseId)
+    ]
+    entries: ['$route', 'ContentService', ($route, ContentService) -> 
+      ContentService.allEntries($route.current.params.courseId)
+    ] 
+  }
+
 
 )

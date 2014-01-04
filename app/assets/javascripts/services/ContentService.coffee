@@ -56,6 +56,20 @@ define(["modules/base"], () ->
         , (errRes) =>
           errRes.data?.error || "Unexpected error looking up content"
         )
+        
+      myDrafts: (courseId) -> 
+        $http.get("/course/#{courseId}/myDrafts").then(
+          (res) -> 
+            for entry in res.data
+              do (entry) -> 
+                deferred = $q.defer()
+                cache.put(entry.id, deferred.promise)
+                deferred.resolve(entry)
+            res.data
+          ,
+          (res) -> $q.reject(res.data)
+        
+        )
     
       viewPath: (courseId, entryId) -> "/course/#{courseId}/view/#{entryId}"
       

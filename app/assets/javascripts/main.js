@@ -27,9 +27,10 @@ require([
   "controllers/course/Create",
   "controllers/course/Edit",
   "controllers/course/Cover",
-  "controllers/course/Index",
   "controllers/course/Invites",
   "controllers/course/ActivityStream",
+  "controllers/course/Index",
+  "controllers/course/MyDrafts",
   
   "controllers/qna/List",
   "controllers/qna/View",

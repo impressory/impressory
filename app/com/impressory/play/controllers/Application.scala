@@ -68,6 +68,7 @@ object Application extends Controller {
       case "course/invites.html" => Ok(views.html.partials.course.invites())
       case "course/activityStream.html" => Ok(views.html.partials.course.activityStream())
       case "course/index.html" => Ok(views.html.partials.course.index())
+      case "course/myDrafts.html" => Ok(views.html.partials.course.myDrafts())
       case "course/chatRoom.html" => Ok(views.html.partials.course.chatRoom())
       case "course/viewContent.html" => Ok(views.html.partials.viewcontent.viewContent())
       case "course/embedContent.html" => Ok(views.html.partials.viewcontent.embedContent())

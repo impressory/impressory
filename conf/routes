@@ -76,6 +76,7 @@ POST    /course/:courseId/entry/:entryId/editTags           com.impressory.play.
 POST    /course/:courseId/entry/:entryId/editItem           com.impressory.play.controllers.ContentController.editItem(courseId: String, entryId: String)
 GET     /course/:id/entriesForTopic                         com.impressory.play.controllers.ContentController.entriesForTopic(id: String, topic:Option[String] ?= None)
 GET     /course/:id/allEntries                              com.impressory.play.controllers.ContentController.allEntries(id: String)
+GET     /course/:id/myDrafts                                com.impressory.play.controllers.ContentController.myDrafts(id: String)
 GET     /course/:id/activity                                com.impressory.play.controllers.ContentController.recentEntries(id: String)
 POST    /course/:courseId/entry/:entryId/voteUp             com.impressory.play.controllers.ContentController.voteUp(courseId, entryId)
 POST    /course/:courseId/entry/:entryId/voteDown           com.impressory.play.controllers.ContentController.voteDown(courseId, entryId)

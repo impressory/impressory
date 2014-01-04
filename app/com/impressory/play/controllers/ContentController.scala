@@ -202,6 +202,9 @@ object ContentController extends Controller {
     ContentModel.recentEntries(refCourse(courseId), request.approval)
   }
   
+  def myDrafts(courseId: String) = DataAction.returning.many { implicit request => 
+    ContentEntryDAO.myDrafts(request.user, refCourse(courseId))
+  }
   
   /**
    * Votes an entry up. Returns JSON for the updated content entry

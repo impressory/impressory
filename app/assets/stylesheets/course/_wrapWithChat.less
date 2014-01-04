@@ -13,17 +13,25 @@
       overflow: auto;
     } 
   }
-  .im-wrapped.chat-open {
-    width: ~"calc(100% - 300px)"; 
-    margin-right: 300px; 
-  }
   
   .im-chat-wrap {
-    overflow: auto; 
-    height: 100%; 
-    width: 300px; 
-    position: fixed; right: 0; 
-    background-color: #fcfcfc;
+    display: none;
+  }
+  
+  @media(min-width:768px) {
+    .im-wrapped.chat-open {
+      width: ~"calc(100% - 300px)"; 
+      margin-right: 300px; 
+    }
+    
+    .im-chat-wrap {
+      display: block;
+      overflow: auto; 
+      height: 100%; 
+      width: 300px; 
+      position: fixed; right: 0; 
+      background-color: #fcfcfc;
+    }
   }
 }
 

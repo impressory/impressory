@@ -12,8 +12,10 @@ import Ref._
 import com.impressory.api._
 import com.wbillingsley.encrypt.Encrypt
 
-object CourseDAO extends DAO[Course] {
+object CourseDAO extends DAO {
     
+  type DataT = Course
+  
   val collName = "course"
     
   val db = DBConnector

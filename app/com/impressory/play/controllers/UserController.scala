@@ -15,6 +15,9 @@ import com.wbillingsley.handy.appbase.DataAction
 
 object UserController extends Controller {
 
+  import com.impressory.plugins.LookUps._
+  import com.impressory.plugins.RouteConfig._
+  
   implicit val utoj = com.impressory.json.UserToJson
   
   /**

@@ -11,9 +11,13 @@ import play.api.libs.concurrent.Execution.Implicits._
 import com.impressory.api._
 import com.impressory.api.enrol._
 
-object CourseInviteDAO extends DAO[CourseInvite] {
+
+object CourseInviteDAO extends DAO {
   
-  import Registration._
+  // Import the configuration to create RefByIds (where to look them up)
+  import com.impressory.plugins.LookUps._
+  
+  type DataT = CourseInvite
   
   val collName = "courseInvite"
     

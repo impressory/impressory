@@ -9,6 +9,9 @@ import com.impressory.api._
 
 object ContentSequenceHandler extends ContentItemBsonHandler {
   
+  // Import the configuration to create RefByIds (where to look them up)
+  import com.impressory.plugins.LookUps._
+  
   import UserDAO.RefManyByIdWriter
   
   def create = { case s:ContentSequence => BSONDocument("entries" -> s.entries) }

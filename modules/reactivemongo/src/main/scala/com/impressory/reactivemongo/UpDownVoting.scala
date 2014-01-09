@@ -7,6 +7,10 @@ import reactivemongo.bson._
 import com.impressory.api._
 
 object UpDownVotingReader extends BSONDocumentReader[UpDownVoting] {
+
+  // Import the configuration to create RefByIds (where to look them up)
+  import com.impressory.plugins.LookUps._
+  
   def read(doc:BSONDocument):UpDownVoting = {
     new UpDownVoting(
       up = new RefManyById(classOf[User], doc.getAs[Set[BSONObjectID]]("_up").getOrElse(Set.empty).toSeq.map(_.stringify)),

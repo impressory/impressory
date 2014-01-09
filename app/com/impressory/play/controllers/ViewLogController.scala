@@ -12,6 +12,9 @@ import com.wbillingsley.handy.appbase.DataAction
 
 object ViewLogController extends Controller {
   
+  import com.impressory.plugins.LookUps._
+  import com.impressory.plugins.RouteConfig._
+  
   val courseRegex = "/course/([^/?]+)".r
   val entryRegex = "/course/[^/?]+/entry/([^/?]+)".r
   

@@ -12,6 +12,8 @@ import play.api.libs.json._
 
 
 object CourseToJson extends JsonConverter[Course, User]{
+  
+  implicit val cctToJson = Json.writes[CourseContentTags]
 
   /**
    * Raw JSON for a course
@@ -23,6 +25,7 @@ object CourseToJson extends JsonConverter[Course, User]{
       "shortName" -> course.shortName,
       "shortDescription" -> course.shortDescription,
       "coverImage" -> course.coverImage,
+      "contentTags" -> course.contentTags,
       "listed" -> course.listed
     ).itself
   }
@@ -41,16 +44,17 @@ object CourseToJson extends JsonConverter[Course, User]{
     } yield j
 
     // Permissions.
-    val perms = for (
-      read <- optionally(appr ask Permissions.Read(course.itself));
-      chat <- optionally(appr ask Permissions.Chat(course.itself));
-      edit <- optionally(appr ask Permissions.EditCourse(course.itself));
-      add <- optionally(appr ask Permissions.AddContent(course.itself))
-    ) yield Json.obj(
-      "read" -> read.isDefined,
-      "add" -> add.isDefined,
-      "chat" -> chat.isDefined,
-      "edit" -> edit.isDefined)
+    val perms = for {
+      read <- appr askBoolean Permissions.Read(course.itself)
+      chat <- appr askBoolean Permissions.Chat(course.itself)
+      edit <- appr askBoolean Permissions.EditCourse(course.itself)
+      add <- appr askBoolean Permissions.AddContent(course.itself)
+    } yield Json.obj(
+      "read" -> read,
+      "add" -> add,
+      "chat" -> chat,
+      "edit" -> edit
+    )
 
     // Combine the JSON responses, noting that reg or perms might be RefNone
     for {

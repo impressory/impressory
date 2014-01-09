@@ -13,7 +13,11 @@ import play.api.libs.json._
 import scala.collection.mutable
 import com.wbillingsley.eventroom
 
+// Import the currently configured LookUps
+import com.impressory.plugins.LookUps._
+
 object MCPollEventHelper {
+  
   /**
    * Gets or initialises the event room's poll state (the set of responses so far)
    */

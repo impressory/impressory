@@ -10,7 +10,11 @@ import com.impressory.api._
 import com.impressory.security._
 import com.wbillingsley.handy.appbase.DataAction
 
+// Import the DataAction configuration
+import com.impressory.plugins.RouteConfig.dataActionConfig
 
+// Import the currently configured LookUps
+import com.impressory.plugins.LookUps._
 
 object MCPollController extends Controller {
   
@@ -21,7 +25,7 @@ object MCPollController extends Controller {
    * Called when a vote arrives by POST
    */
   def vote(pid:String) = DataAction.returning.one(parse.json) { implicit request =>
-    for (
+    val p = for (
         e <- new LazyId(classOf[ContentEntry], pid);
         answer <- Ref((request.body \ "options").asOpt[Set[Int]]) orIfNone UserError("No options in that vote");
         previous <- optionally(MCPollResponseDAO.byUserOrSession(e.itself, request.approval.who, Some(request.sessionKey)));
@@ -60,6 +64,8 @@ object MCPollController extends Controller {
       
       pr
     }
+    // TODO: We shouldn't need to do this
+    p
   }
   
   def getVote(pid:String) = DataAction.returning.one { implicit request =>

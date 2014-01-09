@@ -41,6 +41,9 @@ trait ListenToJsonHandler {
 
 object ChatStreamLTJH extends ListenToJsonHandler {
   
+  // Import the configuration to create RefByIds (where to look them up)
+  import com.impressory.plugins.LookUps._
+  
   def fromJson = { case ("course", j, appr) =>
     for {
       courseId <- (j \ "courseId").asOpt[String].toRef

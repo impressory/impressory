@@ -13,7 +13,13 @@ import Ref._
 import com.impressory.api._
 import com.impressory.json._
 import scala.util.Try
+
+// At the moment, we are hardcoded in many places to use the reactivemongo DB classes
 import com.impressory.reactivemongo.UserDAO
+
+// Import the application's configuration
+import com.impressory.plugins.LookUps._
+import com.impressory.plugins.RouteConfig._
 
 /**
  * Controller for the interstitial form confirming that a new account should be registered
@@ -21,8 +27,6 @@ import com.impressory.reactivemongo.UserDAO
 object InterstitialController extends Controller {
   
   val sessionVar = "interstitialMemory"
-    
-  import com.impressory.play.controllers.userProvider 
     
   /**
    * Handles the completion of OAuth authorisations
@@ -35,7 +39,7 @@ object InterstitialController extends Controller {
       user match {
         case Some(u) => {
           for (
-            updated <- userProvider.pushSession(u.itself, ActiveSession(request.sessionKey, ip = request.remoteAddress))
+            updated <- UserDAO.pushSession(u.itself, ActiveSession(request.sessionKey, ip = request.remoteAddress))
           ) yield Redirect(com.impressory.play.controllers.routes.Application.index)
         }         
         case None => {

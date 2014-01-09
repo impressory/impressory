@@ -1,12 +1,14 @@
 package com.impressory
 
-import com.wbillingsley.handy.{HasStringId, Ref, RefManyById, LazyId}
+import com.wbillingsley.handy._
 import play.api.libs.json._
 import com.impressory.api._
+import scala.language.implicitConversions;
 
 package object json {
   
-  import scala.language.implicitConversions;
+  import com.impressory.plugins.LookUps._
+  
   implicit def refToJson[T <: HasStringId](ref:Ref[T]) = Json.toJson(ref.getId)
   
   implicit object writesRef extends Writes[Ref[HasStringId]] {

@@ -50,7 +50,7 @@ class UserDAOSpec extends DatabaseSpec {
     
     "push registrations correctly" in {      
       val u = UserDAO.unsaved.copy(name=Some("Dahlia Travers"))
-      val fakeCourseRef = new LazyId(classOf[Course], CourseDAO.allocateId)
+      val fakeCourseRef = new LazyId(classOf[Course], CourseDAO.allocateId)(CourseDAO.LookUp)
       val reg = new Registration(course=fakeCourseRef, roles=Set(CourseRole.Reader, CourseRole.Chatter))
       
       val returnedReg = for {

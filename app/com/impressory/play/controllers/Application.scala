@@ -14,6 +14,9 @@ import com.wbillingsley.handy.appbase.AppbaseRequest
 
 object Application extends Controller {  
   
+  import com.impressory.plugins.LookUps._
+  import com.impressory.plugins.RouteConfig._
+  
   def inspectSession = Action { request =>    
     import play.api.libs.json._
     Ok(Json.toJson(request.session.data))

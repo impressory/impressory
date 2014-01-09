@@ -9,7 +9,9 @@ import com.impressory.api._
 import com.impressory.poll._
 import com.impressory.reactivemongo._
 
-object MCPollResponseDAO extends DAO[MCPollResponse] {
+object MCPollResponseDAO extends DAO {
+  
+  type DataT = MCPollResponse
   
   val collName = "mcPollResponse"
   

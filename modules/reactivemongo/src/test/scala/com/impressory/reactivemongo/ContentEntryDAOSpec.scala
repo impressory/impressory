@@ -15,8 +15,8 @@ class ContentEntryDAOSpec extends DatabaseSpec {
   "ContentEntryDAO" should {
     
     "save a new entry" in {  
-      val c = new LazyId(classOf[Course], CourseDAO.allocateId)
-      val u = new LazyId(classOf[User], UserDAO.allocateId)
+      val c = new LazyId(classOf[Course], CourseDAO.allocateId)(CourseDAO.LookUp)
+      val u = new LazyId(classOf[User], UserDAO.allocateId)(UserDAO.LookUp)
       
       val e = ContentEntryDAO.unsaved.copy(
         course=c, addedBy=u,

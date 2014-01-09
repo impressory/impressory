@@ -1,12 +1,12 @@
 package com.impressory.api
 
-import com.wbillingsley.handy.{RefManyById, Ref}
+import com.wbillingsley.handy._
 
 case class ContentSequence( 
     
-  entries:RefManyById[ContentEntry, String] = new RefManyById(classOf[ContentEntry], Seq.empty)
+  entries:RefManyById[ContentEntry, String] = RefManyById.empty(classOf[ContentEntry])
 
-) extends ContentItem {
+)(implicit lookupCE:LookUp[ContentEntry, String]) extends ContentItem {
   
   val itemType = ContentSequence.itemType
 

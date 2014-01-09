@@ -11,8 +11,10 @@ import com.impressory.api._
 import com.wbillingsley.handy.appbase.UserProvider
 
 
-object UserDAO extends DAO[User] with UserProvider[User] {
+object UserDAO extends DAO with UserProvider[User] {
 
+  type DataT = User
+  
   val honorifics = Seq("rev. ", "hon. ", "rt. hon. ", "h.r.h. ", "gen. ", "flt. lt. ", "adm. ", "dr. ", "prof. ")
 
   val defaultSiteRoles = Set(SiteRole.Reader, SiteRole.Author)

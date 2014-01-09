@@ -5,10 +5,10 @@ import play.api.test._
 import play.api.test.Helpers._
 import com.wbillingsley.handy._
 import Ref._
+import com.impressory.api._
 import com.impressory.play.model._
-import JsonConverters._
-import play.api.libs.json.Json
-import play.api.libs.json.JsObject
+import play.api.libs.json._
+import com.impressory.json._
 
 class UserToJsonTest extends Specification {
       
@@ -16,13 +16,12 @@ class UserToJsonTest extends Specification {
     
     "contain the identities" in {
       
-      val u = User.unsaved()
-      val i1 = Identity.unsaved(service="service1", value="value1", avatar=Some("avatar1"), username=Some("username1"))
-      val i2 = Identity.unsaved(service="service2", value="value2", avatar=Some("avatar2"), username=Some("username2"))
-      u.identities = Seq(i1, i2)
+      val i1 = new Identity(service="service1", value="value1", avatar=Some("avatar1"), username=Some("username1"))
+      val i2 = new Identity(service="service2", value="value2", avatar=Some("avatar2"), username=Some("username2"))
+      val u = new User(id="1", identities = Seq(i1, i2))
       
       val testsRan = for (
-          json <- u.toJsonFor(Approval(u.itself));
+          json <- UserToJson.toJsonFor(u, Approval(u.itself));
           i = (json \ "identities")
       ) yield {
 

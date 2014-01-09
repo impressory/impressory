@@ -11,6 +11,7 @@ import com.impressory.api.enrol._
 import com.impressory.security._
 import com.impressory.play.model._
 import com.wbillingsley.handy.appbase.DataAction
+
 import com.impressory.reactivemongo.{CourseDAO, CourseInviteDAO}
 
 
@@ -21,7 +22,8 @@ object CourseController extends Controller {
   implicit val citoj = com.impressory.json.CourseInviteToJson
   implicit val utoj = com.impressory.json.UserToJson
   
-  
+  import com.impressory.plugins.LookUps._
+  import com.impressory.plugins.RouteConfig._
     
   /**
    * Handler for creating a book
@@ -71,13 +73,13 @@ object CourseController extends Controller {
   /**
    * Invites for a specific course
    */
-  def invites(cid: String) = DataAction.returning.many { implicit request => 
+  def invites(cid: String) = { println("foo"); DataAction.returning.many { implicit request => 
     for (
       c <- refCourse(cid);
       approved <- request.approval ask Permissions.ManageCourseInvites(c.itself);
       i <- CourseInviteDAO.byCourse(c.itself)
     ) yield i
-  }
+  }}
   
   /**
    * Creates an invite that will allow someone to register for a course

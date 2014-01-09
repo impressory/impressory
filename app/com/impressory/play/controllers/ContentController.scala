@@ -23,6 +23,9 @@ object ContentController extends Controller {
   implicit val cetoj = com.impressory.json.ContentEditedToJson
   implicit val cptoj = com.impressory.json.ContentPublishedToJson
   
+  import com.impressory.plugins.LookUps._
+  import com.impressory.plugins.RouteConfig._
+  
   /**
    * Returns the JSON for the specified content entry
    */

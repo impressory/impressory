@@ -14,7 +14,12 @@ import com.impressory.api._
 import com.impressory.api.events._
 
 
-object ChatCommentDAO extends DAO[ChatComment] {
+object ChatCommentDAO extends DAO {
+  
+  // Import the configuration to create RefByIds (where to look them up)
+  import com.impressory.plugins.LookUps._
+  
+  type DataT = ChatComment
   
   val collName = "chatComment"
     

@@ -25,8 +25,9 @@ import play.api.mvc.EssentialAction
 
 
 object LTIAuthController extends Controller {
-  
-  import com.impressory.play.controllers.userProvider
+
+  // Import LookUp configuration
+  import com.impressory.plugins.LookUps._
   
   /**
    * Logs a user in 
@@ -39,11 +40,11 @@ object LTIAuthController extends Controller {
     println(request.body.asFormUrlEncoded)
     
     val resp = for {
-      course <- refCourse(courseId);
+      course <- refCourse(courseId) orIfNone Refused("No such course")
       valid <- validateOAuthSignature(request, course.lti.key, course.lti.secret);
-      params <- Ref(request.body.asFormUrlEncoded);
-      tool_consumer_instance_guid <- params.get("tool_consumer_instance_guid").flatMap(_.headOption) orIfNone RefFailed(Refused("The LTI data from your provider did not include a user id"));
-      user_id <- params.get("user_id").flatMap(_.headOption) orIfNone RefFailed(Refused("The LTI data from your provider did not include a user id"))
+      params <- Ref(request.body.asFormUrlEncoded) orIfNone Refused("OAuth response had no parameters")
+      tool_consumer_instance_guid <- params.get("tool_consumer_instance_guid").flatMap(_.headOption) orIfNone Refused("The LTI data from your provider did not include a user id")
+      user_id <- params.get("user_id").flatMap(_.headOption) orIfNone Refused("The LTI data from your provider did not include a user id")
       oauthDetails = OAuthDetails(
         userRecord = UserRecord(
             service=tool_consumer_instance_guid, 
@@ -61,8 +62,16 @@ object LTIAuthController extends Controller {
       act = PlayAuth.onAuth(Success(oauthDetails))
       
     } yield act(request)
-      
-    DataAction.refEE(resp)
+    
+    import play.api.libs.iteratee._
+    import play.api.mvc._
+    import play.api.libs.concurrent.Execution.Implicits._
+    
+    val handled:Ref[Iteratee[Array[Byte], SimpleResult]] = resp recoverWith {
+      case x:Throwable => Done(Results.Forbidden(x.getMessage), Input.Empty).itself
+    }
+    
+    Iteratee.flatten(handled.toFuture.map(_.getOrElse(Done(Results.Forbidden("Computer says no"), Input.Empty))))
   })
   
   

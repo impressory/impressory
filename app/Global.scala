@@ -9,7 +9,7 @@ import com.impressory.poll.Plugin
 import play.api.mvc.Results
 import scala.concurrent.Future
 import play.api.libs.json.Json
-import com.wbillingsley.handy.appbase.AppbaseRequest
+import com.wbillingsley.handy.appbase._
 
 
 
@@ -46,23 +46,19 @@ object Global extends GlobalSettings with AcceptExtractors {
     com.wbillingsley.handy.playoauth.PlayAuth.onAuth = com.impressory.auth.controllers.InterstitialController.onOAuth
     
     // Set the home action for DataAction
-    com.wbillingsley.handy.appbase.DataAction.homeAction = com.impressory.play.controllers.Application.index
-    
-    RefById.lookUpMethod = new RefById.LookUp {
-      val pf = UserDAO.lookupPf orElse
-               CourseDAO.lookupPf orElse
-               ContentEntryDAO.lookupPf
+    com.impressory.plugins.RouteConfig.dataActionConfig = new DataActionConfig {
+      def homeAction = com.impressory.play.controllers.Application.index
       
-      def lookup[T](r: RefById[T, _]) = pf.apply(r).asInstanceOf[Ref[T]]
+      def errorCodeMap = Map(classOf[UserError] -> 400)
     }
     
-    RefManyById.lookUpMethod = new RefManyById.LookUp {
-      val pf = UserDAO.lookupManyPf orElse
-               CourseDAO.lookupManyPf orElse
-               ContentEntryDAO.lookupManyPf
-      
-      def lookup[T](r: RefManyById[T, _]) = pf.apply(r).asInstanceOf[RefMany[T]]
+    import com.wbillingsley.handy.reactivemongo.DAO
+    // Register the lookup mechanisms
+    for (dao <- Seq[DAO](UserDAO, CourseDAO, ContentEntryDAO)) {
+      com.impressory.plugins.LookUps.catalog.registerStringLookUp(dao.clazz, dao.LookUp)
     }
+    com.impressory.plugins.LookUps.userProvider = UserDAO
+    
     
     // Register plugins
     com.impressory.json.ContentItemToJson.registerHandler(com.impressory.play.model.MarkdownPageModel)

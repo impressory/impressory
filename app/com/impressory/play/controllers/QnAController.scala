@@ -17,6 +17,9 @@ import com.impressory.reactivemongo.QnAQuestionDAO
 
 object QnAController extends Controller {
 
+  import com.impressory.plugins.LookUps._
+  import com.impressory.plugins.RouteConfig._
+  
   implicit val cetoj = com.impressory.json.ContentEntryToJson
   
   /**

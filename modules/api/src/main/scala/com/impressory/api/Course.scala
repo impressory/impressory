@@ -31,12 +31,16 @@ case class Course (
   
   lti:LTIData = LTIData(),
   
+  contentTags: CourseContentTags = CourseContentTags(),
+  
   updated: Long = System.currentTimeMillis,
   
   created:Long = System.currentTimeMillis
   
 ) extends HasStringId
 
+
+case class CourseContentTags(nouns: Set[String] = Set.empty, topics:Set[String] = Set.empty)
 
 case class LTIData(key:String = Encrypt.genSaltB64, secret:String = Encrypt.genSaltB64)
 

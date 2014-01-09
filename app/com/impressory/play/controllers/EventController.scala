@@ -25,6 +25,9 @@ import com.impressory.eventroom.EventRoom
  */
 object EventController extends Controller {
   
+  import com.impressory.plugins.LookUps._
+  import com.impressory.plugins.RouteConfig._
+  
   implicit val cctoj = com.impressory.json.ChatCommentToJson
   
   def subscribe = DataAction.returning.result(parse.json) { implicit request => 

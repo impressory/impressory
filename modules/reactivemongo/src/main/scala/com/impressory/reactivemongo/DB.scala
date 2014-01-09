@@ -7,7 +7,7 @@ import reactivemongo.api._
 
 object DBConnector extends com.wbillingsley.handy.reactivemongo.DBConnector {
   
-  override var dbName = "impressory"
+  dbName = "impressory"
   
   /**
    * Implicit conversion that allows Ref[_] to be written as BSON
@@ -32,10 +32,4 @@ object DBConnector extends com.wbillingsley.handy.reactivemongo.DBConnector {
     }
   }  
 
-  implicit def RefManyReader[T <: HasStringId](clazz: Class[T]) = new BSONReader[BSONArray, RefManyById[T, String]] {
-    def read(a:BSONArray) = {
-      val arr = a.as[Seq[BSONObjectID]]
-      new RefManyById(clazz, arr.map(_.stringify))
-    }
-  }  
 }

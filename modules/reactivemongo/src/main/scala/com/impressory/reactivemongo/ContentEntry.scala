@@ -10,7 +10,12 @@ import com.wbillingsley.handy.reactivemongo.DAO
 
 import com.impressory.api._
 
-object ContentEntryDAO extends DAO[ContentEntry] {
+object ContentEntryDAO extends DAO {
+  
+  // Import the configuration to create RefByIds (where to look them up)
+  import com.impressory.plugins.LookUps._
+  
+  type DataT = ContentEntry
   
   val collName = "contentEntry"
     

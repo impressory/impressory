@@ -6,9 +6,9 @@ libraryDependencies += "com.wbillingsley" %% "handy-reactivemongo" % "0.5-SNAPSH
 
 libraryDependencies += "com.wbillingsley" %% "salt-encrypt" % "0.1-SNAPSHOT"
 
-libraryDependencies += "org.reactivemongo" %% "reactivemongo" % "0.10.0-SNAPSHOT" exclude("org.scala-stm", "scala-stm_2.10.0")
+libraryDependencies += "org.reactivemongo" %% "reactivemongo" % "0.10.0" exclude("org.scala-stm", "scala-stm_2.10.0")
 
-libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.10.0-SNAPSHOT" exclude("org.scala-stm", "scala-stm_2.10.0")
+libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.10.0" exclude("org.scala-stm", "scala-stm_2.10.0")
 
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 

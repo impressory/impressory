@@ -29,9 +29,6 @@ POST    /logOut                     com.impressory.play.controllers.UserControll
 # LTI
 POST    /course/:id/lti/launch       com.impressory.auth.controllers.LTIAuthController.ltiLaunch(id)
 
-# Home page
-GET     /                           com.impressory.play.controllers.Application.index
-
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
@@ -96,3 +93,7 @@ GET     /course/:id/chat/lastFew    com.impressory.play.controllers.EventControl
 
 # Plugins
 ->      /poll  com.impressory.poll.Routes
+
+# Home page
+GET     /                           com.impressory.play.controllers.Application.index
+

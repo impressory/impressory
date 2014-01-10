@@ -43,9 +43,8 @@ object ApplicationBuild extends Build {
         "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
       ),
 
-      requireJs ++= Seq(
-          "main.js" 
-      )
+      requireJs += "main.js", 
+      requireJsShim += "main.js"
     
         // Add your own project settings here      
     ).dependsOn(

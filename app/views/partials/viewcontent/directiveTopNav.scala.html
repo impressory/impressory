@@ -37,7 +37,14 @@
             <i class="icon-plus"></i>
           </button>
         </li>
-        <li class="navli">
+        
+        
+        <li class="navli visible-xs visible-sm">
+          <a class="btn btn-command" ng-href='{{ "/course/" + course.id + "/chatRoom" }}'>
+            <img src='/assets/images/sq_chat.png' alt="Chat pane" />
+          </a>
+        </li>
+        <li class="navli visible-md visible-lg">
           <button class="command" course-chat-toggle ng-click="toggleChat()"> 
             <img src='/assets/images/sq_chat.png' alt="Chat pane" />
           </button>

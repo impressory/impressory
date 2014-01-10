@@ -3,8 +3,14 @@ Impressory
 
 Making interactive social and connectivist teaching easy, both in-class and online. 
 
-[For users](http://impressory.github.io/for-users)
-(For developers coming soon)
+* [User documentation](http://impressory-for-users.readthedocs.org) (rough but gradually improving)
+* [Setting up your own server](http://impressory-for-users.readthedocs.org/en/latest/setup/index.html)
+* Developer documentation coming soon
+
+[![Newsfeed](http://farm8.staticflickr.com/7291/11680625563_25c6e3c8a3_c.jpg)](http://www.flickr.com/photos/13074671@N00/11680625563)
+
+[![Viewer](http://farm4.staticflickr.com/3726/11680379025_d00b86a826_c.jpg)](http://www.flickr.com/photos/13074671@N00/11680379025)
+
 
 ### Summary
 
@@ -16,7 +22,6 @@ A live chat stream (that can also handle other interactions, such as live polls)
 
 It's designed to work both in-class and on-line. It's fairly simple to set up, and designed with scalability in mind. And there's lots more features either written or planned.
 
-Come and visit the ["for users"](http://impressory.github.io/for-users) site to find out more.
 
 
 @wbillingsley

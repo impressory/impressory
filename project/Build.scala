@@ -23,13 +23,21 @@ object ApplicationBuild extends Build {
       "com.wbillingsley" %% "handy-play-oauth" % "0.2-SNAPSHOT"
     )
     
-    lazy val impressoryPolls = play.Project(appName + "-polls", appVersion, appDependencies, path=file("modules/polls")).dependsOn(
+    lazy val impressoryPolls = play.Project(
+        appName + "-polls", appVersion, 
+        appDependencies, 
+        path=file("modules/polls")
+    ).dependsOn(
       impressoryApi,            // For basic API classes
       impressoryModel,          // To register views, JSON converters, etc
       impressoryReactivemongo   // For database storage
     )
     
-    lazy val impressoryExternalContent = play.Project(appName + "-externalcontent", appVersion, appDependencies, path=file("modules/externalcontent")).dependsOn(
+    lazy val impressoryExternalContent = play.Project(
+      appName + "-externalcontent", appVersion, 
+      appDependencies ++ Seq("net.sourceforge.htmlcleaner" % "htmlcleaner" % "2.6"), 
+      path=file("modules/externalcontent")
+    ).dependsOn(
       impressoryApi,            // For basic API classes
       impressoryModel,          // To register views, JSON converters, etc
       impressoryReactivemongo   // For database storage

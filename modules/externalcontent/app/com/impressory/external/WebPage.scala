@@ -10,6 +10,10 @@ import Ref._
 case class WebPage (
     
   var url:Option[String] = None,
+  
+  var imageUrl:Option[String] = None,
+  
+  var summary:Option[String] = None,
 
   var noFrame:Boolean = false
   
@@ -23,14 +27,13 @@ object WebPage {
   
   val itemType = "web page"
   
-
   /**
    * Views
    */
   object ViewHandler extends ContentItemViewHandler {
     def main = { case "webPage.html" => views.html.com.impressory.external.webPage.main().body } 
   
-    def stream = PartialFunction.empty
+    def stream = { case "webPage.html" => views.html.com.impressory.external.webPage.stream().body }
   
     def edit = { case "webPage.html" => views.html.com.impressory.external.webPage.edit().body }  
   }
@@ -42,23 +45,10 @@ object WebPage {
 
     import play.api.libs.json._
     
-    def site(url: String):Option[String] = {
-      import java.net.{ URI, URISyntaxException }
-      try {
-        val uri = new URI(url);
-        if (uri.isAbsolute) {
-          val host = uri.getHost
-          if (host.startsWith("www.")) {
-            Some(host.substring(4))
-          } else Some(host)
-        } else {
-          None
-        }
-      } catch {
-        case ex: URISyntaxException => Some("(malformed url)")
-      }
-    }
+    // Auto-generated JSON format
+    val format = Json.format[WebPage]
     
+
     /**
      * Determines whether a piece of text is a URL or not
      */
@@ -66,21 +56,21 @@ object WebPage {
       val isUrl = url.startsWith("http://") || url.startsWith("https://")
     
       if (isUrl) {
-        import play.api.libs.ws.WS
-        import play.api.libs.concurrent.Execution.Implicits._
-      
-        val a = for (
-          res <- WS.url(url).withHeaders("Accept" -> "text/*").get();
-          title = "<title>([^<]+)</title>".r.findFirstMatchIn(res.body).map(_.group(1))
-        ) yield {
+        for (meta <- MetaExtractor.fetchAndExtract(url)) yield {
           blank.copy(
-            title = title,
-            tags = CETags(site=site(url)),
-            item = Some(new WebPage(url=Some(url)))  
+            title = meta.title,
+            tags = CETags(site=meta.siteName),
+            item = Some(new WebPage(
+                url=meta.canonicalUrl,
+                
+                imageUrl = meta.imageUrl,
+                
+                summary = meta.summary,
+                
+                noFrame = meta.noFrame
+            ))  
           )
         }
-      
-        new RefFuture(a)
       } else RefNone
     }
 
@@ -88,10 +78,7 @@ object WebPage {
       val url = (json \ "item" \ "url").asOpt[String]
       blank.setPublished(true)
       blank.copy(
-        tags = blank.tags.copy(site = url flatMap { s => site(s) }),
-        item = Some(WebPage(
-          url = url
-        ))
+        item = format.reads(json \ "item").asOpt
       ).itself
     }
 
@@ -99,18 +86,13 @@ object WebPage {
       val url = (json \ "item" \ "url").asOpt[String]
       before.setPublished(true)
       before.copy(
-        tags = before.tags.copy(site = url flatMap { s => site(s) }),
-        item = Some(WebPage(
-          url = url
-        ))
+        tags = before.tags.copy(site = url flatMap { s => MetaExtractor.site(s) }),
+        item = format.reads(json \ "item").asOpt
       ).itself
     }
 
     def toJsonFor = { case (entry, wp: WebPage, appr) => 
-      Json.obj(
-        "url" -> wp.url,
-        "noFrame" -> wp.noFrame
-      ).itself
+      Json.writes[WebPage].writes(wp).itself
     }
   }
     

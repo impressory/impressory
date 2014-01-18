@@ -151,6 +151,7 @@ define(["modules/base"], () ->
           when 'YouTube video' then '/partials/viewcontent/stream/youTubeVideo.html'
           when 'Markdown page' then '/partials/viewcontent/stream/markdownPage.html'
           when 'Multiple choice poll' then '/partials/viewcontent/stream/multipleChoicePoll.html'
+          when 'web page' then '/partials/viewcontent/stream/webPage.html'
           else '/partials/viewcontent/stream/default.html'
           
           

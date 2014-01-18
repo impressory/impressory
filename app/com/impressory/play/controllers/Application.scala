@@ -53,11 +53,6 @@ object Application extends Controller {
    * of all sources, which takes much longer than just recompiling this controller
    */
   def partial(templ:String) = Action { 
-    
-    val ciMainPrefix = "viewcontent/kinds/"
-    val ciEditPrefix = "editcontent/kinds/"
-    val ciStreamPrefix = "viewcontent/stream/"
-    val evtPrefix = "event/"
           
     templ match {
       case "main.html" => Ok(views.html.partials.main()) 
@@ -77,47 +72,29 @@ object Application extends Controller {
       case "course/embedContent.html" => Ok(views.html.partials.viewcontent.embedContent())
       
       case "user/self.html" => Ok(views.html.partials.user.self())
-      
-      case "qna/listQuestions.html" => Ok(views.html.partials.qna.listQuestions())
-      case "qna/newQuestion.html" => Ok(views.html.partials.qna.newQuestion())
-      case "qna/viewQuestion.html" => Ok(views.html.partials.qna.viewQuestion())
-      
-      case "viewcontent/kinds/contentSequence.html" => Ok(views.html.partials.viewcontent.kinds.contentSequence())
-      case "viewcontent/kinds/markdownPage.html" => Ok(views.html.partials.viewcontent.kinds.markdownPage())
-      case "viewcontent/kinds/noContent.html" => Ok(views.html.partials.viewcontent.kinds.noContent())
-      
-      /*
-       * Registered templates for viewing a content item in the viewer
-       */
-      case s if s.startsWith(ciMainPrefix) => ContentItemViews.main(s.stripPrefix(ciMainPrefix)) match {
-        case Some(s) => Ok(s).as("text/html")
-        case _ => NotFound("No suitable template was found")
-      }
-
-      case "viewcontent/stream/markdownPage.html" => Ok(views.html.partials.viewcontent.stream.markdownPage())
-      case "viewcontent/stream/default.html" => Ok(views.html.partials.viewcontent.stream.default())
-      
-      /*
-       * Registered templates for viewing a content item in the activity stream
-       */
-      case s if s.startsWith(ciStreamPrefix) => ContentItemViews.stream(s.stripPrefix(ciStreamPrefix)) match {
-        case Some(s) => Ok(s).as("text/html")
-        case _ => NotFound("No suitable template was found")
-      }
-
-      case "editcontent/kinds/contentSequence.html" => Ok(views.html.partials.editcontent.kinds.contentSequence())
-      case "editcontent/kinds/markdownPage.html" => Ok(views.html.partials.editcontent.kinds.markdownPage())
-      case "editcontent/kinds/default.html" => Ok(views.html.partials.editcontent.kinds.default())
-      
-      /*
-       * Registered templates for editing a content item
-       */
-      case s if s.startsWith(ciEditPrefix) => ContentItemViews.edit(s.stripPrefix(ciEditPrefix)) match {
-        case Some(s) => Ok(s).as("text/html")
-        case _ => NotFound("No suitable template was found")
-      }
 
       case _ => NotFound(s"No such partial template: $templ")
+    }
+  }
+
+  def editPartial(k:String) = Action {
+    ContentItemViews.edit(k) match {
+      case Some(s) => Ok(s).as("text/html")
+      case _ => NotFound("No suitable template was found")
+    }
+  }
+  
+  def mainPartial(k:String) = Action {
+    ContentItemViews.main(k) match {
+      case Some(s) => Ok(s).as("text/html")
+      case _ => Ok(views.html.partials.viewcontent.kinds.unrecognisedContent())
+    }
+  }
+  
+  def streamPartial(k:String) = Action {
+    ContentItemViews.stream(k) match {
+      case Some(s) => Ok(s).as("text/html")
+      case _ => Ok(views.html.partials.viewcontent.stream.default())
     }
   }
   

@@ -6,9 +6,14 @@
 # Partials
 
 GET     /partials/*template         com.impressory.play.controllers.Application.partial(template:String)
+
+# Partial template for rendering an event
 GET     /eventPartial               com.impressory.play.controllers.Application.eventPartial(kind:String)
 
-
+# Partial templates for rendering content items
+GET     /mainPartial                com.impressory.play.controllers.Application.mainPartial(kind:String)
+GET     /streamPartial              com.impressory.play.controllers.Application.streamPartial(kind:String)
+GET     /editPartial                com.impressory.play.controllers.Application.editPartial(kind:String)
 
 # Debugging
 GET     /session                    com.impressory.play.controllers.Application.inspectSession

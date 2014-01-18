@@ -10,6 +10,7 @@ import play.api.mvc.Results
 import scala.concurrent.Future
 import play.api.libs.json.Json
 import com.wbillingsley.handy.appbase._
+import com.impressory.plugins.ContentItemViewHandler
 
 
 
@@ -61,11 +62,12 @@ object Global extends GlobalSettings with AcceptExtractors {
     
     
     // Register plugins
-    com.impressory.json.ContentItemToJson.registerHandler(com.impressory.play.model.MarkdownPageModel)
-    com.impressory.json.ContentItemToJson.registerHandler(com.impressory.play.model.SequenceModel)
+    com.impressory.json.ContentItemToJson.registerHandler(com.impressory.play.model.MarkdownPageModel.JsonHandler)
+    com.impressory.plugins.ContentItemViews.registerHandler(com.impressory.play.model.MarkdownPageModel.ViewHandler)
+    com.impressory.json.ContentItemToJson.registerHandler(com.impressory.play.model.SequenceModel.JsonHandler)
+    com.impressory.plugins.ContentItemViews.registerHandler(com.impressory.play.model.SequenceModel.ViewHandler)
     com.impressory.external.Plugin.onStart()
     com.impressory.poll.Plugin.onStart()
-
   }
   
   /**

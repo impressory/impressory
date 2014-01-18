@@ -24,11 +24,11 @@ object GoogleSlides {
    * Views
    */
   object ViewHandler extends ContentItemViewHandler {
-    def main = { case "googleSlides.html" => views.html.com.impressory.external.googleSlides.main().body } 
+    def main = { case GoogleSlides.itemType => views.html.com.impressory.external.googleSlides.main().body } 
   
     def stream = PartialFunction.empty
   
-    def edit = { case "googleSlides.html" => views.html.com.impressory.external.googleSlides.edit().body }  
+    def edit = { case GoogleSlides.itemType => views.html.com.impressory.external.googleSlides.edit().body }  
   }
     
   /**

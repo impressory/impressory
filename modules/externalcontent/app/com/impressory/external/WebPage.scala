@@ -31,11 +31,11 @@ object WebPage {
    * Views
    */
   object ViewHandler extends ContentItemViewHandler {
-    def main = { case "webPage.html" => views.html.com.impressory.external.webPage.main().body } 
+    def main = { case WebPage.itemType => views.html.com.impressory.external.webPage.main().body } 
   
-    def stream = { case "webPage.html" => views.html.com.impressory.external.webPage.stream().body }
+    def stream = { case WebPage.itemType => views.html.com.impressory.external.webPage.stream().body }
   
-    def edit = { case "webPage.html" => views.html.com.impressory.external.webPage.edit().body }  
+    def edit = { case WebPage.itemType => views.html.com.impressory.external.webPage.edit().body }  
   }
     
   /**

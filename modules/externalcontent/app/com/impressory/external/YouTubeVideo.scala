@@ -24,11 +24,11 @@ object YouTubeVideo {
    * Views
    */
   object ViewHandler extends ContentItemViewHandler {
-    def main = { case "youTubeVideo.html" => views.html.com.impressory.external.youtubeVideo.main().body } 
+    def main = { case YouTubeVideo.itemType => views.html.com.impressory.external.youtubeVideo.main().body } 
   
-    def stream = { case "youTubeVideo.html" => views.html.com.impressory.external.youtubeVideo.stream().body }  
+    def stream = { case YouTubeVideo.itemType => views.html.com.impressory.external.youtubeVideo.stream().body }  
   
-    def edit = { case "youTubeVideo.html" => views.html.com.impressory.external.youtubeVideo.edit().body }  
+    def edit = { case YouTubeVideo.itemType => views.html.com.impressory.external.youtubeVideo.edit().body }  
   }
     
   /**

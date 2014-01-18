@@ -26,7 +26,7 @@ object CourseModel {
       saved <- CourseDAO.saveNew(course);
       
       p1 = ContentEntryDAO.unsaved.copy(course=saved.itself, addedBy=approval.who, tags=CETags(topics=Set("page one")), published=Some(System.currentTimeMillis()));
-      page <- MarkdownPageModel.createFromJson((MarkdownPage.itemType, Json.obj("item" -> Json.obj("text" -> defaultPageOneText)), p1));
+      page <- MarkdownPageModel.JsonHandler.createFromJson((MarkdownPage.itemType, Json.obj("item" -> Json.obj("text" -> defaultPageOneText)), p1));
       p1saved <- ContentEntryDAO.saveNew(page)
       
       reg = Registration(course=course.itself, roles=CourseRole.values.toSet)

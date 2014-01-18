@@ -36,7 +36,7 @@
               <p class="help-block" ng-hide="share.item">Supports web pages, images, YouTube, Google Slides, and more.</p>
             </div>
           </div>
-          <div ng-show="share.item">
+          <div ng-if="share.item">
             <div class="form-group">
               <label class="" ng-hide="shareEditTitle">
                 {{ share.title || 'Untitled' }} 

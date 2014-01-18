@@ -4,7 +4,7 @@ define(["./base"], (l) ->
 
     $scope.viewerPartialUrl = ContentService.viewerPartialUrl($scope.entry?.kind)
 
-    $scope.activityStreamPartialUrl = ContentService.streamPartialUrl($scope.entry?.kind)
+    $scope.streamPartialUrl = ContentService.streamPartialUrl($scope.entry?.kind)
     
   ]
 
@@ -22,9 +22,7 @@ define(["./base"], (l) ->
       restrict: 'E'
       controller: Impressory.Controllers.ViewContent.MainContent
       scope: { entry: '=entry', viewMode: '@' }
-      template: """
-        <div ng-include='activityStreamPartialUrl'></div>  
-      """ 
+      templateUrl: "directive_ce_render_entry_stream.html" 
     }
   )  
 

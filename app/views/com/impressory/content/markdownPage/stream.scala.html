@@ -5,7 +5,7 @@
   <div ng-bind-html="madeHtml" ng-class="{ 'limit-height': entry.item.text.length > 1000 && !expanded }"></div>
 
   <div class="activity-stream-buttons">
-    <btn-open-in-viewer entry="entry"></btn-open-in-viewer>
+    <btn-open-in-viewer ng-show="entry.item.text.length > 1000" entry="entry"></btn-open-in-viewer>
     <button class="btn btn-small btn-default" ng-show="entry.item.text.length > 1000 && !expanded" ng-click="expanded=true">Expand</button>
     <button class="btn btn-small btn-default" ng-show="expanded" ng-click="expanded=false">Contract</button>
   </div>  

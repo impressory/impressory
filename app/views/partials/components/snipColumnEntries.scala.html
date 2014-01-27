@@ -2,9 +2,9 @@
 
 <div class="list-entries columns">
 
-  <div ng-repeat="entry in entries track by $index | orderBy:'created':true">
+  <div ng-repeat="entry in entries | orderBy:orderBy || '-published' track by $index ">
   
-    <div class="entry row" ng-show="applyFilter(entry)">
+    <div class="column-entry row" ng-show="applyFilter(entry)">
       
       <div class="header">
         <div class="who">

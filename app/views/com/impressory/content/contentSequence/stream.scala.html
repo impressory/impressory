@@ -7,12 +7,12 @@
   </p>
 
   <ol ng-if="!expanded">
-    <li ng-repeat="entry in entries">
+    <li ng-repeat="entry in entries track by $index">
       {{ entry.title || ('Untitled ' + entry.kind) }} 
     </li>
   </ol>
   <div ng-if="expanded">
-    <list-entries entries="entries" view-mode="columns" ></list-entries>
+    <list-entries entries="entries" view-mode="columns" order-by="$index"></list-entries>
   </div>
 
   <div class="activity-stream-buttons">

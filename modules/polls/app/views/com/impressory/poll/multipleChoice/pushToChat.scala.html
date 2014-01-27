@@ -2,6 +2,14 @@
 
 <ce-load-entry course-id="{{ courseId }}" entry-id="{{ event.poll }}" on-load="entry = loaded">
   <div ng-if="entry">
-    <ce-render-entry-stream entry="entry"></ce-render-entry-stream>
+  
+    <div ng-controller="Impressory.Controllers.MCPoll.View" class="multiple-choice-poll">
+      <!-- markdownService takes care of sanitization -->
+      <div ng-bind-html="madeHtml" class="question"></div>
+      
+      @snipRenderPollOptions()
+      
+      <button type="button" class="btn btn-sm btn-primary" ng-click="vote()">Submit</button>
+    </div>
   </div>
 </ce-load-entry>

@@ -19,7 +19,7 @@ define(["./base"], (l) ->
     # reset the selection to the old vote
     $scope.$watch("oldVote()", (vote) ->
       $scope.selection = (false for option in $scope.entry.item.options)
-      for index in vote.answer
+      for index in vote?.answer || []
         do (index) -> $scope.selection[index] = true
     )
 

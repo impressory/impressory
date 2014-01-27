@@ -7,16 +7,7 @@ define(["./base", "services/ContentService"], () ->
   #
   Impressory.angularApp.service('viewingContent', ['$location', '$rootScope', '$window', ($location, $rootScope, $window) ->
       
-    $(window).on('resize', () ->
-      $rootScope.$apply(() -> $rootScope.wh = $window.innerHeight)
-    )
-
-    $rootScope.wh = $window.innerHeight    
-   
     {
-      refreshHeight: () -> 
-        $rootScope.wh = $window.innerHeight
-        
       # Tries to find the entry with this id in the currently viewed entry or (if
       # it's a sequence) in its entries. Always sets goToSeqIndex.
       tryToVisitInViewing: (entryId) ->

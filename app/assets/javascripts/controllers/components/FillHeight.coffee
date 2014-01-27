@@ -1,6 +1,6 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.Components.FillHeight = ["$scope", "$rootScope", "$element", "$window", "viewingContent", ($scope, $rootScope, $element, $window, viewingContent) ->
+  Impressory.Controllers.Components.FillHeight = ["$scope", "$rootScope", "$element", "$window", "DimensionsService", ($scope, $rootScope, $element, $window, DimensionsService) ->
     
     $scope.refreshHeight = (nv) -> 
       $scope.fillHeight = $window.innerHeight - $element.offset().top
@@ -17,6 +17,9 @@ define(["./base"], (l) ->
 
     $scope.refreshHeight()
     
+    $scope.window = $window
+    $scope.element = $element
+    
   ]
 
   Impressory.angularApp.directive("imFillHeight", () -> 
@@ -25,5 +28,5 @@ define(["./base"], (l) ->
       controller: Impressory.Controllers.Components.FillHeight
     }
   )
-
+  
 )

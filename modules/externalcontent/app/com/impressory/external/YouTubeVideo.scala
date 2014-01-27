@@ -9,7 +9,15 @@ import Ref._
 
 case class YouTubeVideo (
   var embedCode:Option[String] = None,
-  var videoId:Option[String] = None  
+  var videoId:Option[String] = None,
+
+  var title:Option[String] = None,
+
+  var url:Option[String] = None,
+  
+  var imageUrl:Option[String] = None,
+  
+  var summary:Option[String] = None
 ) extends ContentItem {
   
   val itemType = YouTubeVideo.itemType
@@ -53,10 +61,31 @@ object YouTubeVideo {
      * Determines whether a URL or embed code is a YouTube video
      */
     def urlChecker(blank: ContentEntry, url: String) = {
-      val videoId = extractYouTubeId(url)
-      for (vid <- videoId) yield {
+      val videoId = extractYouTubeId(url).toRef
+      for {
+        vid <- videoId
+        
+        // If we just fetch and extract data from the web page version, we don't have to be signed up to Google APIs
+        meta <- MetaExtractor.fetchAndExtract(s"http://www.youtube.com/watch?v=${vid}")
+      } yield {
+        val title = meta.title
+        
         blank.copy(
-          item = Some(YouTubeVideo(embedCode = Some(url), videoId = Some(vid))))
+          title = title,
+          tags = CETags(site=meta.siteName),
+          item = Some(new YouTubeVideo(
+              embedCode = Some(url), 
+              
+              videoId = Some(vid),
+              
+              title = title,
+              
+              url=meta.canonicalUrl,
+              
+              imageUrl = meta.imageUrl,
+              
+              summary = meta.summary
+          )))
       }
     }
 
@@ -70,10 +99,7 @@ object YouTubeVideo {
         val ec = (json \ "item" \ "embedCode").asOpt[String]
         val presId = for (str <- ec; id <- extractYouTubeId(str)) yield id
         before.copy(
-          tags = before.tags.copy(site = Some("youtube.com")),
-          item = Some(YouTubeVideo(
-            embedCode = ec,
-            videoId = presId))
+          item = format.reads(json \ "item").asOpt
         ).itself
     }
 
@@ -88,7 +114,7 @@ object YouTubeVideo {
     import reactivemongo.bson._
     val format = Macros.handler[YouTubeVideo]
     
-    def create = { case p:YouTubeVideo => format.write(p) }
+    def create = { case p:YouTubeVideo => format.write(p)  }
     
     def update = { case p:YouTubeVideo => BSONDocument("item" -> format.write(p)) }
   

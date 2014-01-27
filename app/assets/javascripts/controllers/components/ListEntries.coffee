@@ -45,5 +45,18 @@ define(["./base"], (l) ->
       templateUrl: "directive_listEntries.html"
     }
   )
+  
+  Impressory.Controllers.Components.BtnOpenInViewer = ["$scope", "ContentService", ($scope, ContentService) ->
+    $scope.viewPath = (entry) -> ContentService.viewEntryPath(entry)
+  ]  
+  
+  Impressory.angularApp.directive("btnOpenInViewer", () -> 
+    {
+      restrict: 'E'
+      controller: Impressory.Controllers.Components.BtnOpenInViewer
+      scope: { entry: '=entry' }
+      template: "<a class='btn btn-default btn-small' ng-href='{{viewPath(entry)}}'>Open in viewer</a>"
+    }
+  )  
 
 )

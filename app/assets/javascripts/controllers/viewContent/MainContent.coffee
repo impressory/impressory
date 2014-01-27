@@ -21,7 +21,7 @@ define(["./base"], (l) ->
     {
       restrict: 'E'
       controller: Impressory.Controllers.ViewContent.MainContent
-      scope: { entry: '=entry', viewMode: '@' }
+      scope: { entry: '=entry', expanded: '=' }
       templateUrl: "directive_ce_render_entry_stream.html" 
     }
   )  

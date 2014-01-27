@@ -52,7 +52,7 @@ object SequenceModel {
   object ViewHandler extends ContentItemViewHandler {
     def main = { case ContentSequence.itemType => views.html.com.impressory.content.contentSequence.main().body } 
   
-    def stream = PartialFunction.empty
+    def stream = { case ContentSequence.itemType => views.html.com.impressory.content.contentSequence.stream().body } 
   
     def edit = { case ContentSequence.itemType => views.html.com.impressory.content.contentSequence.edit().body }  
   }  

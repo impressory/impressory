@@ -1,0 +1,24 @@
+@()
+
+<div ng-controller="Impressory.Controllers.ViewContent.Sequence">
+
+  <p>
+    A content sequence of {{ entry.item.entries.length || 0 }} items.
+  </p>
+
+  <ol ng-if="!expanded">
+    <li ng-repeat="entry in entries">
+      {{ entry.title || ('Untitled ' + entry.kind) }} 
+    </li>
+  </ol>
+  <div ng-if="expanded">
+    <list-entries entries="entries" view-mode="columns" ></list-entries>
+  </div>
+
+  <div class="activity-stream-buttons">
+    <btn-open-in-viewer entry="entry"></btn-open-in-viewer>
+    <button class="btn btn-small btn-default" ng-show="!expanded" ng-click="expanded=true">Expand</button>
+    <button class="btn btn-small btn-default" ng-show="expanded" ng-click="expanded=false">Contract sequence</button>
+  </div> 
+</div>
+

@@ -83,5 +83,10 @@ case class CETags(
 trait ContentItem { 
   
   val itemType:String
-   
+  
+  /** 
+   *  Whether or not the content can be embedded on third party sites.
+   */
+  def embeddable:Boolean = true
+  
 }

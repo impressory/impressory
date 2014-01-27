@@ -1,3 +1,17 @@
 @()
 
-<p>{{ entry.kind }}</p>
+<div>
+  <div ng-hide="expanded" class="media">
+    <p>{{ entry.kind }}</p>
+  </div>
+  
+  <div ng-if="expanded">
+    <ce-render-entry-full entry="entry"></ce-render-entry-full>
+  </div>
+  
+  <div class="activity-stream-buttons">
+    <btn-open-in-viewer entry="entry"></btn-open-in-viewer>
+    <button class="btn btn-small btn-default" ng-show="!expanded && entry.item.embeddable" ng-click="expanded=true">Expand</button>
+    <button class="btn btn-small btn-default" ng-show="expanded" ng-click="expanded=false">Contract</button>
+  </div>
+</div>

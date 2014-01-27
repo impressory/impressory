@@ -4,7 +4,7 @@
 
   <div ng-repeat="entry in entries track by $index | orderBy:'created':true">
   
-    <div class="entry" ng-show="applyFilter(entry)">
+    <div class="entry row" ng-show="applyFilter(entry)">
       
       <div class="header">
         <div class="who">
@@ -14,21 +14,14 @@
       </div>
 
       <div class="body">    
-        <h3 ng-show="entry.title"><a ng-href="{{viewPath(entry)}}">{{ entry.title || 'Untitled' }}</a></h3>
+        <h3 class="media-heading" ng-show="entry.title"><a ng-href="{{viewPath(entry)}}" ng-bind-html="entry.title"></a></h3>
         <p>{{ entry.note }}</p>
         
       
         <ce-render-entry-stream entry="entry"></ce-render-entry-stream>
-      
-        <p style="margin-top: 5px;">
-			<a ng-href="{{viewPath(entry)}}">Open in viewer</a>
-		</p>	
-      
-      
         <div class="pull-right">
           <ce-show-tags entry="entry" on-adj-click="onTagClick(tag)" on-noun-click="onTagClick(tag)" on-topic-click="onTagClick(tag)" ></ce-show-tags>
         </div>
-        
         
         <span style="border: 1px solid #eee; padding-bottom: 5px;">
           <entry-vote entry="entry"></entry-vote>

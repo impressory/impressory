@@ -45,6 +45,16 @@ object MetaExtractor {
       
       val metas = html.getElementsByName("meta", true)
       
+      def metaName(n:TagNode) = {
+        Option(n.getAttributeByName("name")) orElse Option(n.getAttributeByName("property"))
+      }
+      
+      def findMetaByName(nodes:Seq[TagNode], name:String) = {
+        metas.find { n => 
+          n.hasAttribute("name") && n.getAttributeByName("name") == name
+        } flatMap { n => Option(n.getAttributeByName("content")) }
+      }
+      
       def findMetaProperty(nodes:Seq[TagNode], property:String) = {
         metas.find { n => 
           n.hasAttribute("property") && n.getAttributeByName("property") == property
@@ -54,33 +64,44 @@ object MetaExtractor {
       def findTagContent(t:TagNode, tagName:String) = {
         val el = t.getElementsByName(tagName, true).headOption
         for (e <- el) yield e.getText().toString
-      }
+      }      
+      
+      val pairs = for {
+          m <- metas
+          n <- metaName(m)
+          lc = n.toLowerCase()
+          c <- Option(m.getAttributeByName("content"))
+        } yield (lc, c)
+      
+      val metaMap = Map(pairs:_*)
             
-      MetaData(
+      val m = MetaData(
         title = {
-          findMetaProperty(metas, "og:title") orElse findTagContent(html, "title")
+          metaMap.get("og:title") orElse findTagContent(html, "title")
         },
         
         canonicalUrl = {
-          findMetaProperty(metas, "og:url") orElse Some(url)
+          metaMap.get("og:url") orElse Some(url)
         },
           
         imageUrl = {
-          findMetaProperty(metas, "og:image")
+          metaMap.get("og:image")
         },
         
         siteName = {
-          findMetaProperty(metas, "og:site_name") orElse site(url)
+          metaMap.get("og:site_name") orElse site(url)
         },
         
         summary = {
-          findMetaProperty(metas, "Description") 
+          metaMap.get("description") 
         },
         
         noFrame = {
           res.header("X-Frame-Options").isDefined
         }
       )
+      println(m)
+      m
       
     }).toRef
   

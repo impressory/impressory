@@ -9,6 +9,8 @@ import Ref._
 
 case class WebPage (
     
+  var title:Option[String] = None,
+
   var url:Option[String] = None,
   
   var imageUrl:Option[String] = None,
@@ -21,6 +23,7 @@ case class WebPage (
   
   val itemType = WebPage.itemType
   
+  override def embeddable = !noFrame
 }
 
 object WebPage {
@@ -57,10 +60,14 @@ object WebPage {
     
       if (isUrl) {
         for (meta <- MetaExtractor.fetchAndExtract(url)) yield {
+          val title = meta.title
+          
           blank.copy(
-            title = meta.title,
+            title = title,
             tags = CETags(site=meta.siteName),
             item = Some(new WebPage(
+                title = title,
+                
                 url=meta.canonicalUrl,
                 
                 imageUrl = meta.imageUrl,

@@ -1,9 +1,13 @@
 @()
 
-<div style="max-height: 360px; overflow: auto;">
-		<div ng-controller="Impressory.Controllers.MarkdownPage.View" class="markdown-page">
-	  <!-- markdownService takes care of sanitization -->
-	  <div ng-bind-html="madeHtml" >
-	  </div>
-	</div>
-</div>
+<div ng-controller="Impressory.Controllers.MarkdownPage.View" class="markdown-page" >
+  <!-- markdownService takes care of sanitization -->
+  <div ng-bind-html="madeHtml" ng-class="{ 'limit-height': entry.item.text.length > 1000 && !expanded }"></div>
+
+  <div class="activity-stream-buttons">
+    <btn-open-in-viewer entry="entry"></btn-open-in-viewer>
+    <button class="btn btn-small btn-default" ng-show="entry.item.text.length > 1000 && !expanded" ng-click="expanded=true">Expand</button>
+    <button class="btn btn-small btn-default" ng-show="expanded" ng-click="expanded=false">Contract</button>
+  </div>  
+</div> 
+

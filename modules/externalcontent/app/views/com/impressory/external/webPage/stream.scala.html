@@ -1,10 +1,32 @@
 @()
 
-<div class="media">
-  <a class="pull-left" href="#">
-    <img class="media-object" ng-src="{{entry.item.imageUrl}}" ng-show="entry.item.imageUrl" alt="...">
-  </a>
-  <div class="media-body">
-    
+<div>
+  <div ng-hide="expanded" class="media">
+    <a class="pull-left" href="#" style="max-width: 40%" >
+      <img class="media-object" ng-src="{{entry.item.imageUrl}}" ng-show="entry.item.imageUrl" alt="..." style="max-width: 100%;">
+    </a>
+    <div class="media-body">
+      <h3 class="media-heading" ng-show="{{ entry.item.title && (entry.item.title != entry.title) }}" ng-bind-html="entry.item.title"></h3>
+      <p ng-bind-html="entry.item.summary"></p>
+      <p class="site">{{ entry.tags.site }}</p>
+  
+      <div class="" ng-show="{{ entry.item.noFrame }}">
+        This site doesn't like to be framed. <a ng-href="{{ entry.item.url }}" target="_blank">Open it in a new tab.</a>
+      </div>
+    </div>
   </div>
+  
+  <div ng-if="expanded">
+    <div ng-controller="Impressory.Controllers.Components.SceTrustSrc">
+      <iframe ng-src="{{ trustAsResourceUrl(entry.item.url) }}" style="border: none; width:100%; height: 600px;">
+      </iframe>
+    </div>
+  </div>
+  
+  <div class="activity-stream-buttons">
+    <btn-open-in-viewer entry="entry"></btn-open-in-viewer>
+    <button class="btn btn-small btn-default" ng-show="!expanded" ng-click="expanded=true">Expand</button>
+    <button class="btn btn-small btn-default" ng-show="expanded" ng-click="expanded=false">Contract</button>
+  </div>
+  
 </div>

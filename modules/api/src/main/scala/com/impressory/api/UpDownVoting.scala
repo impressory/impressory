@@ -4,9 +4,9 @@ import com.wbillingsley.handy.{Ref, RefNone, RefManyById, HasStringId}
 
 case class UpDownVoting(
     
-  up:RefManyById[User, String] = RefManyById.empty(classOf[User]),
+  up:RefManyById[User, String] = RefManyById.empty,
   
-  down:RefManyById[User, String] = RefManyById.empty(classOf[User]),
+  down:RefManyById[User, String] = RefManyById.empty,
   
   score: Int = 0
     

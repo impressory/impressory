@@ -16,10 +16,10 @@ package object model {
    */  
   implicit def userProvider = com.impressory.plugins.LookUps.userProvider
 
-  implicit def genLookUp[T, K] = com.impressory.plugins.LookUps.genLookUp[T, K]
-    
-  def refUser(id:String) = new LazyId(classOf[User], id)
-  def refCourse(id:String) = new LazyId(classOf[Course], id)
-  def refContentEntry(id:String) = new LazyId(classOf[ContentEntry], id)
-  
+  import com.impressory.plugins.LookUps._
+
+  def refUser(id:String) = LazyId(id).of[User]
+  def refCourse(id:String) = LazyId(id).of[Course]
+  def refContentEntry(id:String) = LazyId(id).of[ContentEntry]
+
 }

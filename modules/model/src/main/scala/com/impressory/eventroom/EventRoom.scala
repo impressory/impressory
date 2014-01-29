@@ -47,7 +47,7 @@ object ChatStreamLTJH extends ListenToJsonHandler {
   def fromJson = { case ("course", j, appr) =>
     for {
       courseId <- (j \ "courseId").asOpt[String].toRef
-      approved <- appr ask Permissions.Read(new LazyId(classOf[Course], courseId))
+      approved <- appr ask Permissions.Read(LazyId(courseId).of[Course])
     } yield ChatStream(courseId)
     
   }

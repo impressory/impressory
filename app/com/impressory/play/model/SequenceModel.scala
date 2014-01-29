@@ -9,6 +9,8 @@ import com.impressory.security.Permissions._
 import com.impressory.json._
 import com.impressory.plugins._
 
+import LookUps._
+
 /**
  * From PresentationModel in the previous version
  */
@@ -24,9 +26,9 @@ object SequenceModel {
     }
   
     def createFromJson= { case (ContentSequence.itemType, json, blank) =>
-      val including = Ref.fromOptionId(classOf[ContentEntry], (json \ "item" \ "including").asOpt[String]) 
+      val including = Ref.fromOptionId[ContentEntry, String]((json \ "item" \ "including").asOpt[String])
       val s = new ContentSequence(
-        entries = new RefManyById(classOf[ContentEntry], including.getId.toSeq)
+        entries = RefManyById.of[ContentEntry](including.getId.toSeq)
       )
       blank.setPublished(true)
       blank.copy(
@@ -44,7 +46,7 @@ object SequenceModel {
       for { 
         entryIds <- (json \ "item" \ "entries").asOpt[Seq[String]].toRef orIfNone UserError("Content entries was missing")
       } yield {
-        before.copy(item = Some(ContentSequence(entries = new RefManyById(classOf[ContentEntry], entryIds))))
+        before.copy(item = Some(ContentSequence(entries = RefManyById.of[ContentEntry](entryIds))))
       }
     }
   }

@@ -24,6 +24,8 @@ object ChatCommentDAO extends DAO {
   val collName = "chatComment"
     
   val db = DBConnector
+
+  val executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
     
   implicit val clazz = classOf[ChatComment]
   
@@ -43,8 +45,8 @@ object ChatCommentDAO extends DAO {
       
       val cc = new ChatComment(
         anonymous = doc.getAs[Boolean]("anon").getOrElse(false),
-        course = doc.getRef(classOf[Course], "course"),
-        addedBy = doc.getRef(classOf[User], "addedBy"),
+        course = doc.getRef[Course]("course"),
+        addedBy = doc.getRef[User]("addedBy"),
         session = doc.getAs[String]("session"),
         text = doc.getAs[String]("text").getOrElse("(no text)"),
         topics = doc.getAs[Set[String]]("topics").getOrElse(Set.empty),

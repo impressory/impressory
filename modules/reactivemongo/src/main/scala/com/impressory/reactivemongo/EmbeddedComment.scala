@@ -7,6 +7,9 @@ import reactivemongo.bson._
 
 import com.impressory.api._
 
+// Import the configuration to create RefByIds (where to look them up)
+import com.impressory.plugins.LookUps._
+
   
 object EmbeddedCommentReader extends BSONDocumentReader[EmbeddedComment] {
 
@@ -17,7 +20,7 @@ object EmbeddedCommentReader extends BSONDocumentReader[EmbeddedComment] {
     new EmbeddedComment(
       id = doc.getAs[BSONObjectID]("_id").get.stringify,
       text = doc.getAs[String]("text").get,
-      addedBy = doc.getAs[Ref[User]]("addedBy").getOrElse(RefNone),
+      addedBy = doc.getRef[User]("addedBy"),
       voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting),
       created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
     )

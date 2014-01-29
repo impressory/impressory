@@ -20,7 +20,7 @@ object ContentSequenceHandler extends ContentItemBsonHandler {
   
   def read = { case (ContentSequence.itemType, doc) => 
     new ContentSequence(
-      entries = doc.getAs[RefManyById[ContentEntry, String]]("entries").getOrElse(new RefManyById(classOf[ContentEntry], Seq.empty))
+      entries = doc.getAs[RefManyById[ContentEntry, String]]("entries").getOrElse(RefManyById.empty)
     )
   }
   

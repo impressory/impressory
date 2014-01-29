@@ -9,6 +9,8 @@ import com.wbillingsley.handy.{Ref, RefNone}
 
 import com.impressory.api._
 import com.impressory.api.qna._
+// Import the configuration to create RefByIds (where to look them up)
+import com.impressory.plugins.LookUps._
 
 object QnAQuestionDAO  {  
     
@@ -43,7 +45,7 @@ object QnAQuestionDAO  {
       new QnAAnswer(
         id = doc.getAs[BSONObjectID]("_id").get.stringify,
         text = doc.getAs[String]("text").get,
-        addedBy = doc.getAs[Ref[User]]("addedBy").getOrElse(RefNone),
+        addedBy = doc.getRef[User]("addedBy"),
         session  = doc.getAs[String]("session"),
         voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting),
         comments = doc.getAs[Seq[EmbeddedComment]]("comments").getOrElse(Seq.empty),

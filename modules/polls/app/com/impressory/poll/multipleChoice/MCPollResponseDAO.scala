@@ -9,6 +9,8 @@ import com.impressory.api._
 import com.impressory.poll._
 import com.impressory.reactivemongo._
 
+import com.impressory.plugins.LookUps._
+
 object MCPollResponseDAO extends DAO {
   
   type DataT = MCPollResponse
@@ -18,7 +20,9 @@ object MCPollResponseDAO extends DAO {
   val db = DBConnector
   
   val clazz = classOf[MCPollResponse]
-  
+
+  val executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
+
   def unsaved = MCPollResponse(id=allocateId)
 
   implicit val pastRespHandler = Macros.handler[PastResponse]
@@ -26,8 +30,8 @@ object MCPollResponseDAO extends DAO {
     def read(doc:BSONDocument):MCPollResponse = {
       new MCPollResponse(
         id = doc.getAs[BSONObjectID]("_id").get.stringify,
-        poll = doc.getAs[Ref[ContentEntry]]("poll").getOrElse(RefNone),
-        addedBy = doc.getAs[Ref[User]]("addedBy").getOrElse(RefNone),
+        poll = doc.getRef[ContentEntry]("poll"),
+        addedBy = doc.getRef[User]("addedBy"),
         session = doc.getAs[String]("session"),
         answer = doc.getAs[Set[Int]]("answer").getOrElse(Set.empty),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),

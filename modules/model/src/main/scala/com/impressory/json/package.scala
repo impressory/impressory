@@ -20,10 +20,8 @@ package object json {
   }
   
   
-  def readsRef[T <: HasStringId](c:Class[T]) = new Reads[Ref[T]] {
-    def reads(j:JsValue) = Reads.StringReads.reads(j).map(s => new LazyId(c, s))
+  implicit def readsRef[T <: HasStringId](implicit lu:LookUp[T, String]) = new Reads[Ref[T]] {
+    def reads(j:JsValue) = Reads.StringReads.reads(j).map(s => LazyId(s).of(lu))
   }
-  
-  implicit val readsRefUser = readsRef(classOf[User])
-  
+
 }

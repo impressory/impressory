@@ -53,12 +53,15 @@ object Global extends GlobalSettings with AcceptExtractors {
       def errorCodeMap = Map(classOf[UserError] -> 400)
     }
     
-    import com.wbillingsley.handy.reactivemongo.DAO
+    import com.impressory.plugins.LookUps
+    import com.impressory.reactivemongo._
+
     // Register the lookup mechanisms
-    for (dao <- Seq[DAO](UserDAO, CourseDAO, ContentEntryDAO)) {
-      com.impressory.plugins.LookUps.catalog.registerStringLookUp(dao.clazz, dao.LookUp)
-    }
-    com.impressory.plugins.LookUps.userProvider = UserDAO
+    LookUps.courseLookUp = CourseDAO.LookUp
+    LookUps.userLookUp = UserDAO.LookUp
+    LookUps.userProvider = UserDAO
+    LookUps.entryLookUp = ContentEntryDAO.LookUp
+
     
     
     // Register plugins
@@ -76,7 +79,7 @@ object Global extends GlobalSettings with AcceptExtractors {
   override def onHandlerNotFound(request:play.api.mvc.RequestHeader) = {
     request match {
       case Accepts.Html() => {
-        val fo = com.impressory.play.controllers.Application.indexInner(request).toFuture
+        val fo = com.impressory.play.controllers.Application.indexInner(request).toFutOpt
         fo.map(_ getOrElse Results.NotFound)(RefFuture.executionContext)
       }
       case Accepts.Json() => Future.successful(Results.NotFound(Json.obj("error" -> "not found")))

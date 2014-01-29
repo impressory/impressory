@@ -11,30 +11,30 @@ import com.impressory.plugins.LookUps._
 package object reactivemongo {
   
   
-  def refReader[T <: HasStringId](c:Class[T])(implicit lu:LookUp[T, String]) = new BSONReader[BSONObjectID, Ref[T]] {
-    def read(id:BSONObjectID) = new LazyId(c, id.stringify)
+  implicit def refReader[T <: HasStringId](implicit lu:LookUp[T, String]) = new BSONReader[BSONObjectID, Ref[T]] {
+    def read(id:BSONObjectID) = LazyId(id.stringify).of(lu)
   }
     
-  def refManyReader[T <: HasStringId](c:Class[T])(implicit lu:LookUp[T, String]) = new BSONReader[BSONArray, RefManyById[T, String]] {
+  implicit def refManyReader[T <: HasStringId](implicit lu:LookUp[T, String]) = new BSONReader[BSONArray, RefManyById[T, String]] {
     def read(ids:BSONArray) = {
       val arr = ids.as[Seq[BSONObjectID]].map(_.stringify)
-      new RefManyById(c, arr)
+      RefManyById(arr).of(lu)
     }
   }
-  implicit val refCourseReader = refReader(classOf[Course])
-  implicit val refManyCourseReader = refManyReader(classOf[Course])
-  implicit val refUserReader = refReader(classOf[User])
-  implicit val refContentEntryReader = refReader(classOf[ContentEntry])
-  implicit val refManyUserReader = refManyReader(classOf[User])
-  implicit val refManyEntryReader = refManyReader(classOf[ContentEntry])
-  
+
   implicit class DocRefGetter(val doc: BSONDocument) extends AnyVal {
-    def getRef[T](c:Class[T], key:String)(implicit lu:LookUp[T, String]) = {
+    def getRef[T](key:String)(implicit lu:LookUp[T, String]) = {
       val o:Option[BSONObjectID] = doc.getAs[BSONObjectID](key)
       o match {
-        case Some(id) => new LazyId(c, id.stringify)
+        case Some(id) => LazyId(id.stringify).of(lu)
         case None => RefNone
       }
+    }
+
+    def getRefMany[T](key:String)(implicit lu:LookUp[T, String]):RefManyById[T, String] = {
+      val arr = doc.getAs[Seq[BSONObjectID]](key).getOrElse(Seq.empty)
+      val strings = arr.map(_.stringify)
+      RefManyById(strings).of(lu)
     }
   }
   

@@ -71,7 +71,7 @@ object LTIAuthController extends Controller {
       case x:Throwable => Done(Results.Forbidden(x.getMessage), Input.Empty).itself
     }
     
-    Iteratee.flatten(handled.toFuture.map(_.getOrElse(Done(Results.Forbidden("Computer says no"), Input.Empty))))
+    Iteratee.flatten(handled.toFutOpt.map(_.getOrElse(Done(Results.Forbidden("Computer says no"), Input.Empty))))
   })
   
   

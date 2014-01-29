@@ -1,6 +1,6 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy.Ref
+import com.wbillingsley.handy.{RefFuture, Ref}
 import Ref._
 
 import reactivemongo.api._
@@ -22,6 +22,8 @@ object ContentEntryDAO extends DAO {
   val db = DBConnector
   
   val clazz = classOf[ContentEntry]
+
+  val executionContext = RefFuture.executionContext
   
   def unsaved = ContentEntry(id=allocateId)
     
@@ -55,8 +57,8 @@ object ContentEntryDAO extends DAO {
       
       val entry = new ContentEntry(
         id = doc.getAs[BSONObjectID]("_id").get.stringify,
-        course = doc.getRef(classOf[Course], "course"),
-        addedBy = doc.getRef(classOf[User], "addedBy"),
+        course = doc.getRef[Course]("course"),
+        addedBy = doc.getRef[User]("addedBy"),
         item = item,
         tags = doc.getAs[CETags]("tags").getOrElse(CETags()),
         title = doc.getAs[String]("title"),

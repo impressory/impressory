@@ -52,7 +52,7 @@ object CourseController extends Controller {
         println(u.registrations)
         for (r <- u.registrations; id <- r.course.getId) yield id
       }
-      c <- new RefManyById(classOf[Course], courseIds)      
+      c <- RefManyById.of[Course](courseIds)
     } yield c
   }
   

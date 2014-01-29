@@ -47,16 +47,16 @@ object QnAController extends Controller {
     
   /**
    * Handle submission of the form to add an answer
-   */
+   *
   def handleAddAnswerComment(cid:String, qid:String, ansId:String) = DataAction.returning.one(parse.json) { implicit request =>
       val approval = request.approval
       for {
         question <- refContentEntry(qid);
         approved <- approval ask Permissions.Read(question.course)
-        answer = RefById(classOf[QnAAnswer], ansId)
+        answer = RefById.of[QnAAnswer](ansId)
         text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("We need some text in that comment")
         updated <- QnAQuestionDAO.addAnsComment(question.itself, answer, new EmbeddedComment(id=ContentEntryDAO.allocateId, text=text, addedBy=request.user))
       } yield updated
-  }
+  }*/
   
 }

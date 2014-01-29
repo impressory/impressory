@@ -5,6 +5,8 @@ import com.wbillingsley.handy.Ref._
 import com.impressory.api._
 import com.wbillingsley.handy.Approval.wrapApproval
 
+import com.impressory.plugins.LookUps._
+
 /**
  * Translates from SecurityModel in the previous version
  */
@@ -25,14 +27,13 @@ object Permissions {
   case class EditCourse(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
     def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Administrator, prior.cache)
   }
-  
+
   /**
    * Read a book or an entry in a book
-   * @param bookRef
    */
   case class Read(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
     def resolve(prior:Approval[User]) = {
-      prior.cache(course, classOf[Course]) flatMap { b =>
+      prior.cache[Course, String](course) flatMap { b =>
         b.signupPolicy match {
 	        case CourseSignupPolicy.open => Approved("Anyone may read this book").itself
 	        case CourseSignupPolicy.loggedIn => {
@@ -48,11 +49,10 @@ object Permissions {
   
   /**
    * Read a book or an entry in a book
-   * @param bookRef
    */
   case class Chat(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
     def resolve(prior:Approval[User]) = {
-      prior.cache(course, classOf[Course]) flatMap { c =>
+      prior.cache[Course, String](course) flatMap { c =>
 	    c.chatPolicy match {
 	      case CourseChatPolicy.allReaders => prior ask Read(c.itself)
 	      case _ => hasRole(c.itself, prior.who, CourseRole.Chatter, prior.cache)
@@ -63,7 +63,6 @@ object Permissions {
 
   /**
    * Up or Down vote an entry in a course
-   * @param bookRef
    */
   case class VoteOnEntry(entry:Ref[ContentEntry]) extends PermOnIdRef[User, ContentEntry](entry) {
     def resolve(prior:Approval[User]) = {
@@ -83,7 +82,6 @@ object Permissions {
   
   /**
    * Up or Down vote an entry in a course
-   * @param bookRef
    */
   case class CommentOnEntry(entry:Ref[ContentEntry]) extends PermOnIdRef[User, ContentEntry](entry) {
     def resolve(prior:Approval[User]) = {
@@ -97,7 +95,7 @@ object Permissions {
   case class ReadEntry(entry:Ref[ContentEntry]) extends PermOnIdRef[User, ContentEntry](entry) {
     def resolve(prior:Approval[User]) = {      
       for (
-        e <- prior.cache(entry, classOf[ContentEntry]);
+        e <- prior.cache[ContentEntry, String](entry);
         p <- prior ask Read(e.course)
       ) yield p
     }
@@ -105,7 +103,6 @@ object Permissions {
   
   /**
    * Add content to a course
-   * @param bookRef
    */
   case class AddContent(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
     def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Author, prior.cache)
@@ -113,7 +110,6 @@ object Permissions {
   
   /**
    * Protect content or edit protected content in a book
-   * @param bookRef
    */
   case class ProtectContent(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
     def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Moderator, prior.cache)
@@ -121,7 +117,6 @@ object Permissions {
   
   /**
    * Protect content or edit protected content in a book
-   * @param bookRef
    */
   case class EditUnprotectedContent(course:Ref[Course]) extends PermOnIdRef[User, Course](course) {
     def resolve(prior:Approval[User]) = hasRole(course, prior.who, CourseRole.Author, prior.cache)
@@ -132,7 +127,7 @@ object Permissions {
    */
   case class EditContent(entry:Ref[ContentEntry]) extends PermOnIdRef[User, ContentEntry](entry) {
     def resolve(prior:Approval[User]) = {
-      prior.cache(entry, classOf[ContentEntry]) flatMap { e =>
+      prior.cache[ContentEntry, String](entry) flatMap { e =>
         if (e.settings.protect) {
           prior ask ProtectContent(e.course)
         } else {
@@ -180,7 +175,7 @@ object Permissions {
   def hasRole(course:Ref[Course], user:Ref[User], role:CourseRole, cache:LookUpCache):Ref[Approved] = {
     (
       for (
-        roles <- getRoles(cache(course, classOf[Course]), user) if roles.contains(role)
+        roles <- getRoles(cache(course), user) if roles.contains(role)
       ) yield Approved(s"You have role $role for this course")
     ) orIfNone Refused(s"You do not have role $role for this course")
   }

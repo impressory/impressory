@@ -30,7 +30,7 @@ object MCPollEventHelper {
         /**
          * We need to sum up the responses so far
          */
-        val poll = RefById(classOf[ContentEntry], pollId)
+        val poll = LazyId.of[ContentEntry](pollId)
         val res = MCPollResponseDAO.byPoll(poll).fold(mutable.Map.empty[Int, Int]){(rmap,pr) =>
           for (ans <- pr.answer) {
             rmap(ans) = rmap.getOrElse(ans, 0) + 1
@@ -57,14 +57,14 @@ object MCPollEventHelper {
 import MCPollEventHelper._
 
 case class PollStream(pollId: String) extends eventroom.ListenTo {
-    override def onSubscribe(listenerName:String, room:eventroom.EventRoom) = broadcastState(room, RefById(classOf[ContentEntry], pollId))
+    override def onSubscribe(listenerName:String, room:eventroom.EventRoom) = broadcastState(room, LazyId.of[ContentEntry](pollId))
 }
 
 object MCPollStreamLTJH extends ListenToJsonHandler {
   def fromJson = { case ("Multiple choice poll results", j, appr) =>
     for {
       pollId <- (j \ "id").asOpt[String].toRef
-      approved <- appr ask Permissions.ReadEntry(new LazyId(classOf[ContentEntry], pollId))
+      approved <- appr ask Permissions.ReadEntry(LazyId.of[ContentEntry](pollId))
     } yield PollStream(pollId)
     
   }
@@ -91,7 +91,7 @@ case class Vote(pollId:String, pr: Map[Int, Int]) extends eventroom.EREvent {
         for ((idx, diff) <- pr) {
           state.counts(idx) = state.counts.getOrElse(idx, 0) + diff
         }
-        broadcastState(room, RefById(classOf[ContentEntry], pollId))
+        broadcastState(room, LazyId.of[ContentEntry](pollId))
       }
     }
 }

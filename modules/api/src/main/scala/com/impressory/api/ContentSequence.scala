@@ -4,7 +4,7 @@ import com.wbillingsley.handy._
 
 case class ContentSequence( 
     
-  entries:RefManyById[ContentEntry, String] = RefManyById.empty(classOf[ContentEntry])
+  entries:RefManyById[ContentEntry, String] = RefManyById.empty
 
 )(implicit lookupCE:LookUp[ContentEntry, String]) extends ContentItem {
   

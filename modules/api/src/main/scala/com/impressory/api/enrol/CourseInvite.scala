@@ -19,7 +19,7 @@ case class CourseInvite(
 
   remaining:Int = 1,
 
-  usedBy:RefManyById[User, String] =  RefManyById.empty(classOf[User]),
+  usedBy:RefManyById[User, String] =  RefManyById.empty,
   
   updated: Long = System.currentTimeMillis,
 

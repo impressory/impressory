@@ -40,7 +40,7 @@ object ContentController extends Controller {
     val ids = (request.body \ "ids").asOpt[Set[String]].getOrElse(Set.empty)
     for {
       approved <- request.approval ask Permissions.Read(refCourse(courseId)) 
-      e <- new RefManyById(classOf[ContentEntry], ids.toSeq)
+      e <- RefManyById.of[ContentEntry](ids.toSeq)
     } yield e
   }  
   

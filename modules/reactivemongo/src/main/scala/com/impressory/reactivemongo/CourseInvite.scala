@@ -1,6 +1,6 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy.{Ref, RefNone, RefManyById}
+import com.wbillingsley.handy.{RefFuture, Ref, RefNone, RefManyById}
 import com.wbillingsley.handy.reactivemongo.DAO
 
 import reactivemongo.api._
@@ -24,6 +24,8 @@ object CourseInviteDAO extends DAO {
   val db = DBConnector
   
   val clazz = classOf[CourseInvite]
+
+  val executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
   
   def unsaved = CourseInvite(id=allocateId, course=RefNone, code=java.util.UUID.randomUUID().toString())
     
@@ -37,13 +39,13 @@ object CourseInviteDAO extends DAO {
     def read(doc:BSONDocument):CourseInvite = {
       val ci = new CourseInvite(
           id = doc.getAs[BSONObjectID]("_id").get.stringify,
-          course = doc.getRef(classOf[Course], "course"),
+          course = doc.getRef[Course]("course"),
           code = doc.getAs[String]("code").get,
           roles = doc.getAs[Set[CourseRole]]("roles").getOrElse(Set(CourseRole.Reader)),
-          addedBy = doc.getRef(classOf[User], "addedBy"),
+          addedBy = doc.getRef[User]("addedBy"),
           limitedNumber = doc.getAs[Boolean]("limitedNumber").getOrElse(false),
           remaining = doc.getAs[Int]("remaining").getOrElse(1),
-          usedBy = doc.getAs[RefManyById[User, String]]("usedBy").getOrElse(new RefManyById(classOf[User], Seq.empty)),
+          usedBy = doc.getRefMany[User]("usedBy"),
           updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
           created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
       )

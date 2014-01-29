@@ -26,7 +26,7 @@ object MCPollController extends Controller {
    */
   def vote(pid:String) = DataAction.returning.one(parse.json) { implicit request =>
     val p = for (
-        e <- new LazyId(classOf[ContentEntry], pid);
+        e <- LazyId.of[ContentEntry](pid);
         answer <- Ref((request.body \ "options").asOpt[Set[Int]]) orIfNone UserError("No options in that vote");
         previous <- optionally(MCPollResponseDAO.byUserOrSession(e.itself, request.approval.who, Some(request.sessionKey)));
         pr <- previous match {
@@ -69,7 +69,7 @@ object MCPollController extends Controller {
   }
   
   def getVote(pid:String) = DataAction.returning.one { implicit request =>
-    val poll = new LazyId(classOf[ContentEntry], pid)
+    val poll = LazyId.of[ContentEntry](pid)
     MCPollResponseDAO.byUserOrSession(poll, request.user, Some(request.sessionKey))
   }
   
@@ -79,7 +79,7 @@ object MCPollController extends Controller {
   def pushMCPollToStream(pid:String) = DataAction.returning.result { implicit request =>
     
     val resp = for (
-        poll <- new LazyId(classOf[ContentEntry], pid);
+        poll <- LazyId.of[ContentEntry](pid);
         approved <- request.approval ask Permissions.Chat(poll.course)
     ) yield {
       com.impressory.eventroom.EventRoom.default ! PushPollToChat(poll)

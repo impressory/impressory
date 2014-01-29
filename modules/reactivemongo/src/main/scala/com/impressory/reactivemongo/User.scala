@@ -4,12 +4,14 @@ import reactivemongo.api._
 import reactivemongo.bson._
 import reactivemongo.core.commands.LastError
 import com.wbillingsley.encrypt.Encrypt
-import com.wbillingsley.handy.Ref
+import com.wbillingsley.handy.{RefFuture, Ref}
 import com.wbillingsley.handy.reactivemongo.DAO
 import Ref._
 import com.impressory.api._
 import com.wbillingsley.handy.appbase.UserProvider
 
+// Import the configuration to create RefByIds (where to look them up)
+import com.impressory.plugins.LookUps._
 
 object UserDAO extends DAO with UserProvider[User] {
 
@@ -74,6 +76,8 @@ object UserDAO extends DAO with UserProvider[User] {
   val db = DBConnector
   
   val clazz = classOf[User]
+
+  val executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
 
   def createByEmail(email: String, password: String) = {
     val u = unsaved

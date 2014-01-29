@@ -4,7 +4,7 @@ import reactivemongo.api._
 import reactivemongo.bson._
 import reactivemongo.core.commands.LastError
 
-import com.wbillingsley.handy.Ref
+import com.wbillingsley.handy.{RefFuture, Ref}
 import com.wbillingsley.handy.reactivemongo.DAO
 import com.wbillingsley.handyplay.RefEnumIter
 import Ref._
@@ -21,6 +21,8 @@ object CourseDAO extends DAO {
   val db = DBConnector
   
   val clazz = classOf[Course]
+
+  val executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
   
   def unsaved = Course(id=allocateId)
     

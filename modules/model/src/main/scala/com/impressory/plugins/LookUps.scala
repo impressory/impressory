@@ -8,7 +8,18 @@ object LookUps {
   
   val catalog = new LookUpCatalog
   
-  implicit def genLookUp[T,K] = catalog.genLookUp[T, K]
+  implicit def genLookUp[T,K](clazz:Class[T]) = catalog.genLookUp[T, K](clazz)
+
+  def lookUpFails[T] = new LookUp[T, Any] {
+    def lookUpOne[K <: Any](r:RefById[T, K]) = RefFailed(new IllegalStateException("No look up method for this type has been configured"))
+
+    def lookUpMany[K <: Any](r:RefManyById[T, K]) = RefFailed(new IllegalStateException("No look up method for this type has been configured"))
+  }
+
+  implicit var courseLookUp:LookUp[Course,String] = lookUpFails[Course]
+  implicit var userLookUp:LookUp[User,String] = lookUpFails[User]
+  implicit var entryLookUp:LookUp[ContentEntry,String] = lookUpFails[ContentEntry]
+
 
   /**
    * How the application figures out which user is making a request

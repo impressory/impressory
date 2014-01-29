@@ -39,7 +39,7 @@ object UserController extends Controller {
   
   def findUsersById = DataAction.returning.many(parse.json) { implicit request =>
     val ids = (request.body \ "ids").asOpt[Set[String]].getOrElse(Set.empty)
-    new RefManyById(classOf[User], ids.toSeq)
+    RefManyById.of[User](ids.toSeq)
   }
   
   /**

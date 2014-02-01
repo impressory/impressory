@@ -1,10 +1,10 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy.{RefFuture, Ref}
-import Ref._
-
 import reactivemongo.api._
 import reactivemongo.bson._
+
+import com.wbillingsley.handy.{Ref, RefWithId, RefFuture}
+import Ref._
 
 import com.wbillingsley.handy.reactivemongo.DAO
 
@@ -75,21 +75,26 @@ object ContentEntryDAO extends DAO {
     }
   }  
   
-  def byTopic(course:Ref[Course], topic:String) = {
+  def byTopic(course:RefWithId[Course], topic:String) = {
     val query = BSONDocument("course" -> course, "tags.topics" -> topic, "settings.inIndex" -> true, "published" -> BSONDocument("$exists" -> true))
     findMany(query)
   }
   
-  def byKind(course:Ref[Course], kind:String) = {
+  def byKind(course:RefWithId[Course], kind:String) = {
     val query = BSONDocument("course" -> course, "kind" -> kind, "published" -> BSONDocument("$exists" -> true))
     findMany(query)
   }
   
-  def myDrafts(user:Ref[User], course:Ref[Course]) = findMany(
-    BSONDocument("published" -> BSONDocument("$exists" -> false), "addedBy" -> user, "course" -> course)
-  )
+  def myDrafts(user:Ref[User], course:RefWithId[Course]) = {
+    val query = for {
+      userId <- user.refId
+    } yield BSONDocument(
+      "published" -> BSONDocument("$exists" -> false), "addedBy" -> userId, "course" -> course
+    )
+    query flatMap findMany
+  }
   
-  def inIndexByCourse(course:Ref[Course]) = {
+  def inIndexByCourse(course:RefWithId[Course]) = {
     val query = BSONDocument("course" -> course, "settings.inIndex" -> true, "published" -> BSONDocument("$exists" -> true))
     findMany(query)
   }
@@ -97,7 +102,7 @@ object ContentEntryDAO extends DAO {
   /**
    * Recently published entries that are listed as being in the news feed
    */
-  def recentInNewsByCourse(course:Ref[Course]) = {
+  def recentInNewsByCourse(course:RefWithId[Course]) = {
     val query = BSONDocument("course" -> course, "settings.inNews" -> true, "published" -> BSONDocument("$exists" -> true))
     val sort = BSONDocument("published" -> 1)
     findSorted(query, sort)
@@ -106,13 +111,13 @@ object ContentEntryDAO extends DAO {
   /**
    * Updates the Item in a ContentEntry
    */
-  def setItem(ce:Ref[ContentEntry], item:ContentItem):Ref[ContentEntry] = {
+  def setItem(ce:RefWithId[ContentEntry], item:ContentItem):Ref[ContentEntry] = {
     val query = BSONDocument("_id" -> ce)
     val update = BSONDocument("$set" -> (BSONDocument("updated" -> System.currentTimeMillis()) ++ ContentItemToBson.update(Some(item))))
     updateAndFetch(query, update)
   }
   
-  def sequencesContaining(ce:Ref[ContentEntry]) = {
+  def sequencesContaining(ce:RefWithId[ContentEntry]) = {
     findMany(BSONDocument("kind" -> ContentSequence.itemType, "item.entries" -> ce))
   }
   
@@ -147,7 +152,7 @@ object ContentEntryDAO extends DAO {
   /**
    * Votes up
    */
-  def voteUp(ce:ContentEntry, who:Ref[User]) = {
+  def voteUp(ce:ContentEntry, who:RefWithId[User]) = {
     if (!ce.voting.hasVoted(who)) {
       val query = BSONDocument(idIs(ce.id))
       val update = BSONDocument(
@@ -163,7 +168,7 @@ object ContentEntryDAO extends DAO {
   /**
    * Votes down
    */
-  def voteDown(ce:ContentEntry, who:Ref[User]) = {
+  def voteDown(ce:ContentEntry, who:RefWithId[User]) = {
     if (!ce.voting.hasVoted(who)) {
       val query = BSONDocument(idIs(ce.id))
       val update = BSONDocument(
@@ -176,7 +181,7 @@ object ContentEntryDAO extends DAO {
     }
   }
   
-  def addComment(ce:ContentEntry, who:Ref[User], text:String) = {
+  def addComment(ce:ContentEntry, who:RefWithId[User], text:String) = {
     val query = BSONDocument(idIs(ce.id))
     val update = BSONDocument(
         "$push" -> BSONDocument("comments" -> EmbeddedCommentWriter.writeNew(new EmbeddedComment(id=allocateId, text=text, addedBy=who))),

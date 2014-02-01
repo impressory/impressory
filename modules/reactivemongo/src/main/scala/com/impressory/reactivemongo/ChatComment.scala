@@ -57,7 +57,7 @@ object ChatCommentDAO extends DAO {
     }
   }  
   
-  def byTopic(course:Ref[Course], topic:String):RefMany[ChatComment] = {
+  def byTopic(course:RefWithId[Course], topic:String):RefMany[ChatComment] = {
     findMany(BSONDocument("course" -> course, "topics" -> topic))
   }
   
@@ -67,7 +67,7 @@ object ChatCommentDAO extends DAO {
   def saveNew(cc:ChatComment) = saveSafe(bsonWriter.write(cc), cc)
   
   
-  def lastFew(course:Ref[Course]) = {
+  def lastFew(course:RefWithId[Course]) = {
     findSorted(BSONDocument("course" -> course), BSONDocument("_id" -> -1))
   }
 }

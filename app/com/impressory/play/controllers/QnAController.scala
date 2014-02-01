@@ -37,12 +37,13 @@ object QnAController extends Controller {
    * Handle submission of the form to add an answer
    */
   def handleAddAnswer(cid:String, qid:String) = DataAction.returning.one(parse.json) { implicit request =>      
-      for (
+      for {
         question <- refContentEntry(qid);
+        user <- request.approval.who
         approved <- request.approval ask Permissions.Read(question.course);
         text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("We need some text in that answer");
-        updated <- QnAQuestionDAO.addAnswer(question.itself, new QnAAnswer(id=ContentEntryDAO.allocateId, text=text, addedBy=request.user, session=Some(request.sessionKey)))
-      ) yield updated
+        updated <- QnAQuestionDAO.addAnswer(question.itself, new QnAAnswer(id=ContentEntryDAO.allocateId, text=text, addedBy=user.itself, session=Some(request.sessionKey)))
+      } yield updated
   }
     
   /**

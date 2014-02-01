@@ -1,6 +1,6 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy.{HasStringId, Ref, RefManyById }
+import com.wbillingsley.handy.{HasStringId, Ref, RefManyById, RefWithId }
 
 import reactivemongo.bson._
 import reactivemongo.api._
@@ -12,8 +12,8 @@ object DBConnector extends com.wbillingsley.handy.reactivemongo.DBConnector {
   /**
    * Implicit conversion that allows Ref[_] to be written as BSON
    */
-  implicit def RefWriter[T <: HasStringId] = new BSONWriter[Ref[T], BSONValue] {
-    def write(r:Ref[T]) = {
+  implicit def RefWriter[T <: HasStringId] = new BSONWriter[RefWithId[T], BSONValue] {
+    def write(r:RefWithId[T]) = {
       if (useBSONIds) {
         r.getId.map(new BSONObjectID(_)).getOrElse(BSONNull)
       } else {

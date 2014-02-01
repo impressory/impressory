@@ -1,6 +1,6 @@
 package com.impressory.api.events
 
-import com.wbillingsley.handy.{Ref, RefNone, HasStringId}
+import com.wbillingsley.handy._
 import com.impressory.api._
 
 trait RecordedChatEvent {
@@ -18,9 +18,9 @@ case class ChatComment (
 
   anonymous:Boolean = true,
 
-  course:Ref[Course] = None,
+  course:RefWithId[Course] = LazyId.empty,
 
-  addedBy:Ref[User] = None,
+  addedBy:RefWithId[User] = LazyId.empty,
 
   session:Option[String] = None,
 

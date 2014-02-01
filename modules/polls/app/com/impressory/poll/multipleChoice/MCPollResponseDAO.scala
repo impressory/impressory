@@ -1,6 +1,7 @@
 package com.impressory.poll.multipleChoice
 
-import com.wbillingsley.handy.{Ref, RefNone}
+import com.wbillingsley.handy.{Ref, RefNone, RefWithId}
+import Ref._
 import com.wbillingsley.handy.reactivemongo.DAO
 import reactivemongo.bson._
 import reactivemongo.api._
@@ -53,15 +54,19 @@ object MCPollResponseDAO extends DAO {
   /**
    * Finds a poll response by user (if one is provided) or by session key
    */
-  def byUserOrSession(poll:Ref[ContentEntry], u:Ref[User], session:Option[String]) = {
-    val query = u.getId match {
-      case Some(uid) => BSONDocument("poll" -> poll, "addedBy" -> u)
-      case None => BSONDocument("poll" -> poll, "session" -> session)
+  def byUserOrSession(poll:RefWithId[ContentEntry], u:Ref[User], session:Option[String]) = {
+    val rQuery = for {
+      uid <- optionally(u.refId)
+    } yield {
+      uid match {
+        case Some(id) => BSONDocument("poll" -> poll, "addedBy" -> id)
+        case None => BSONDocument("poll" -> poll, "session" -> session)
+      }
     }
-    findOne(query)
+    rQuery flatMap findOne
   }
   
-  def byPoll(poll:Ref[ContentEntry]) ={
+  def byPoll(poll:RefWithId[ContentEntry]) ={
     findMany(BSONDocument("poll" -> poll))
   }
   

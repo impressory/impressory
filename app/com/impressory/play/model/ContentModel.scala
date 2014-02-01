@@ -58,7 +58,7 @@ object ContentModel {
    * New style lookup now that we have Presentations.
    * @return
    */
-  def recommendCE(course:Ref[Course], tok:Approval[User], topic:Option[String], filters:Map[String,String]):Ref[ContentEntry] = {
+  def recommendCE(course:RefWithId[Course], tok:Approval[User], topic:Option[String], filters:Map[String,String]):Ref[ContentEntry] = {
     (for (approved <- tok ask Read(course)) yield {
       val all = ContentEntryDAO.byTopic(course, topic.getOrElse(defaultTopic))
       val filtered = all.withFilter(applyFilters(_, filters))
@@ -66,7 +66,7 @@ object ContentModel {
     }).flatten 
   }  
 
-  def entriesForTopic(course:Ref[Course], tok:Approval[User], topic:Option[String]):RefMany[ContentEntry] = {
+  def entriesForTopic(course:RefWithId[Course], tok:Approval[User], topic:Option[String]):RefMany[ContentEntry] = {
     (for (approved <- tok ask Read(course)) yield {
       val all = ContentEntryDAO.byTopic(course, topic.getOrElse(defaultTopic))
       all
@@ -74,18 +74,18 @@ object ContentModel {
   }  
   
   
-  def filteredEntriesForTopic(course:Ref[Course], tok:Approval[User], topic:Option[String], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
+  def filteredEntriesForTopic(course:RefWithId[Course], tok:Approval[User], topic:Option[String], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
     entriesForTopic(course, tok, topic).withFilter(applyFilters(_, filters))
   }  
   
-  def allEntries(course:Ref[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
+  def allEntries(course:RefWithId[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
     (for (approved <- tok ask Read(course)) yield {
       val all = ContentEntryDAO.inIndexByCourse(course)
       all
     }).flatten 
   }
 
-  def recentEntries(course:Ref[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
+  def recentEntries(course:RefWithId[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
     for {
       approved <- tok ask Read(course)
       e <- ContentEntryDAO.recentInNewsByCourse(course)
@@ -95,7 +95,7 @@ object ContentModel {
   /**
    * Pairs a ContentEntry wth a containing sequence
    */
-  def entryInSequence(entry:Ref[ContentEntry], seq:Ref[ContentEntry] = RefNone):Ref[EntryInSequence] = {
+  def entryInSequence(entry:RefWithId[ContentEntry], seq:RefWithId[ContentEntry] = RefNone):Ref[EntryInSequence] = {
     
     val rr:Ref[Ref[EntryInSequence]] = for (eOpt <- optionally(entry)) yield {
       // Look at the entry first.

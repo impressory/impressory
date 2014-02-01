@@ -25,10 +25,11 @@ object MCPollController extends Controller {
    * Called when a vote arrives by POST
    */
   def vote(pid:String) = DataAction.returning.one(parse.json) { implicit request =>
-    val p = for (
+    val p = for {
         e <- LazyId.of[ContentEntry](pid);
+        u <- request.approval.who
         answer <- Ref((request.body \ "options").asOpt[Set[Int]]) orIfNone UserError("No options in that vote");
-        previous <- optionally(MCPollResponseDAO.byUserOrSession(e.itself, request.approval.who, Some(request.sessionKey)));
+        previous <- optionally(MCPollResponseDAO.byUserOrSession(e.itself, u.itself, Some(request.sessionKey)));
         pr <- previous match {
           case Some(v) => {
             val now = System.currentTimeMillis()
@@ -45,7 +46,7 @@ object MCPollController extends Controller {
             val v = MCPollResponseDAO.unsaved
             val updated = v.copy(
               poll = e.itself,
-              addedBy = request.user,
+              addedBy = u.itself,
               answer = answer,
               session = Some(request.sessionKey),
               responses = v.responses :+ PastResponse(answer, Some(request.sessionKey), updated=now),
@@ -54,7 +55,7 @@ object MCPollController extends Controller {
             MCPollResponseDAO.newVote(updated)
           }
         } 
-    ) yield {
+    } yield {
       val adjustments = scala.collection.mutable.Map[Int,Int]()
       
       for (idx <- pr.answer) adjustments(idx) = 1

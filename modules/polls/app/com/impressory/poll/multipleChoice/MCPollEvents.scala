@@ -47,7 +47,7 @@ object MCPollEventHelper {
   }
 
 
-  def broadcastState(room: eventroom.EventRoom, poll:Ref[ContentEntry]) {
+  def broadcastState(room: eventroom.EventRoom, poll:RefWithId[ContentEntry]) {
     for (pollId <- poll.getId; state <- getPollState(room, pollId)) {
       room.broadcast(PollStream(pollId), state)
     }

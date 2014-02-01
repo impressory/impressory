@@ -13,14 +13,14 @@ case class ContentSequence(
   /**
    * Whether this Content Sequence includes the given ContentEntry
    */
-  def contains(entry:Ref[ContentEntry]) = {
+  def contains(entry:RefWithId[ContentEntry]) = {
     entry.getId match {
       case Some(id) => entries.rawIds.contains(id)
       case _ => false
     }
   }
   
-  def indexOf(entry:Ref[ContentEntry]) = {
+  def indexOf(entry:RefWithId[ContentEntry]) = {
     entry.getId match {
       case Some(id) => entries.rawIds.indexOf(id)
       case _ => -1

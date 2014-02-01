@@ -1,19 +1,19 @@
 package com.impressory.api.enrol
 
-import com.wbillingsley.handy.{Ref, RefManyById, RefNone, HasStringId}
+import com.wbillingsley.handy._
 import com.impressory.api._
 
 case class CourseInvite(
     
   id: String,
     
-  course:Ref[Course],
+  course:RefWithId[Course],
 
   code:String,
 
   roles:Set[CourseRole] = Set(CourseRole.Reader),
 
-  addedBy:Ref[User] = RefNone,
+  addedBy:RefWithId[User] = RefNone,
 
   limitedNumber:Boolean = false,
 

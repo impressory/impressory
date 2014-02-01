@@ -23,27 +23,27 @@ object ViewLogController extends Controller {
    */
   def addView = DataAction.returning.result(parse.json) { implicit request => 
     
-    val user = request.user
     val session = request.sessionKey
     val template = (request.body \ "template").asOpt[String] 
     val courseId = (request.body \ "params" \ "courseId").asOpt[String]
     val entryId = (request.body \ "params" \ "entryId").asOpt[String]
     val params = (request.body \ "params").as[Map[String, String]]
     
-    val res = for (
+    val res = for {
+      userId <- request.user.refId
       cId <- Ref(courseId);
       e <- optionally { for (eId <- Ref(entryId); e <- refContentEntry(eId)) yield e }; 
       record = ViewLog.Record(
         course = refCourse(cId),
         entry = e,
-        user = user,
+        user = LazyId(userId).whichIs(request.user),
         session = Some(request.sessionKey),
         template = template,
         params = params,
         how = Some("webapp")
       );
       fr <- ViewLog.log(record)
-    ) yield NoContent  
+    } yield NoContent
     
     res 
     

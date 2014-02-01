@@ -4,7 +4,7 @@ import reactivemongo.api._
 import reactivemongo.bson._
 import reactivemongo.core.commands.LastError
 
-import com.wbillingsley.handy.{RefFuture, Ref}
+import com.wbillingsley.handy.{RefFuture, Ref, RefWithId}
 import com.wbillingsley.handy.reactivemongo.DAO
 import com.wbillingsley.handyplay.RefEnumIter
 import Ref._
@@ -99,12 +99,12 @@ object CourseDAO extends DAO {
     updateSafe(query, update, course)
   }
   
-  def pushNoun(course:Ref[Course], noun:String) = {
+  def pushNoun(course:RefWithId[Course], noun:String) = {
     val query = BSONDocument("_id" -> course)
     val update = BSONDocument("$addToSet" -> BSONDocument("contentTags.nouns" -> noun))
   }
   
-  def pushTopic(course:Ref[Course], topic:String) = {
+  def pushTopic(course:RefWithId[Course], topic:String) = {
     val query = BSONDocument("_id" -> course)
     val update = BSONDocument("$addToSet" -> BSONDocument("contentTags.topics" -> topic))
   }

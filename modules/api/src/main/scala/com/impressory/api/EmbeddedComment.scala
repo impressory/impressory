@@ -1,6 +1,6 @@
 package com.impressory.api
 
-import com.wbillingsley.handy.{Ref, RefNone, HasStringId}
+import com.wbillingsley.handy._
 
 case class EmbeddedComment (
   
@@ -8,7 +8,7 @@ case class EmbeddedComment (
     
   text:String = "",
 
-  addedBy:Ref[User] = RefNone,
+  addedBy:RefWithId[User] = RefNone,
   
   created:Long = System.currentTimeMillis,
   

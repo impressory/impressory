@@ -14,7 +14,11 @@ package object reactivemongo {
   implicit def refReader[T <: HasStringId](implicit lu:LookUp[T, String]) = new BSONReader[BSONObjectID, Ref[T]] {
     def read(id:BSONObjectID) = LazyId(id.stringify).of(lu)
   }
-    
+
+  implicit def refWithStringIdReader[T <: HasStringId](implicit lu:LookUp[T, String]) = new BSONReader[BSONObjectID, RefWithId[T]] {
+    def read(id:BSONObjectID) = LazyId(id.stringify).of(lu)
+  }
+
   implicit def refManyReader[T <: HasStringId](implicit lu:LookUp[T, String]) = new BSONReader[BSONArray, RefManyById[T, String]] {
     def read(ids:BSONArray) = {
       val arr = ids.as[Seq[BSONObjectID]].map(_.stringify)

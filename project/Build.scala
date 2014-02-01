@@ -17,9 +17,9 @@ object ApplicationBuild extends Build {
     )
       
     val appDependencies = Seq(
-      "com.wbillingsley" %% "handy" % "0.5-SNAPSHOT",
-      "com.wbillingsley" %% "handy-play" % "0.5-SNAPSHOT",
-      "com.wbillingsley" %% "eventroom" % "0.1-SNAPSHOT",
+      "com.wbillingsley" %% "handy" % "0.5.0-RC1",
+      "com.wbillingsley" %% "handy-play" % "0.5.0-RC1",
+      "com.wbillingsley" %% "eventroom" % "0.1.0-RC1",
       "com.wbillingsley" %% "handy-play-oauth" % "0.2-SNAPSHOT"
     )
     

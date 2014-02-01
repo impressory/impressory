@@ -1,6 +1,6 @@
 package com.impressory.api
 
-import com.wbillingsley.handy.{Ref, RefNone, HasStringId, Approval}
+import com.wbillingsley.handy._
 import com.wbillingsley.handy.appbase.JsonConverter
 import com.wbillingsley.encrypt.Encrypt
 
@@ -8,9 +8,9 @@ case class ContentEntry (
     
   id:String,
     
-  course: Ref[Course] = RefNone,
+  course: RefWithId[Course] = RefNone,
   
-  addedBy: Ref[User] = RefNone,
+  addedBy: RefWithId[User] = RefNone,
   
   item: Option[ContentItem] = None,
   

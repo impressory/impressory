@@ -86,15 +86,15 @@ object ContentController extends Controller {
    * Creates a new content entry and fills it in with the appropriate item.
    * TODO: This is a big ugly method; tidy it up.
    */
-  def newContentEntry(course:Ref[Course], approval:Approval[User], requestBody:JsValue) = {
+  def newContentEntry(course:RefWithId[Course], approval:Approval[User], requestBody:JsValue) = {
     
     import Permissions._
-    
-    
+
     val protect = (requestBody \ "entry" \ "settings" \ "protect").asOpt[Boolean].getOrElse(false)
 
-    
     for {
+      user <- approval.who
+
       kind <- (requestBody \ "kind").asOpt[String].toRef orIfNone UserError("Attempted to create a content item with no kind")
         
       // Resolve the references now, to save resolving them multiple times later
@@ -110,7 +110,7 @@ object ContentController extends Controller {
       };
       
       // Create a ContentEntry (without its item) from the data
-      blank = ContentEntryDAO.unsaved.copy(course=c.itself, addedBy=approval.who, settings=CESettings(protect=protect));
+      blank = ContentEntryDAO.unsaved.copy(course=c.itself, addedBy=user.itself, settings=CESettings(protect=protect));
       
       // Updated the metadata, as some settings might be changed (eg, published)
       metaUpdated = ContentEntryToJson.update(blank, requestBody);   
@@ -213,31 +213,34 @@ object ContentController extends Controller {
    * Votes an entry up. Returns JSON for the updated content entry
    */
   def voteUp(courseId:String, entryId:String) = DataAction.returning.one { implicit request =>
-    for (
+    for {
       entry <- refContentEntry(entryId);
+      user <- request.user
       approved <- request.approval ask Permissions.VoteOnEntry(entry.itself);
-      updated <- ContentEntryDAO.voteUp(entry, request.approval.who)
-    ) yield updated
+      updated <- ContentEntryDAO.voteUp(entry, user.itself)
+    } yield updated
   }
   
   /**
    * Votes an entry down. Returns JSON for the updated content entry
    */
   def voteDown(courseId:String, entryId:String) = DataAction.returning.one { implicit request =>
-    for (
+    for {
       entry <- refContentEntry(entryId);
+      user <- request.user
       approved <- request.approval ask Permissions.VoteOnEntry(entry.itself);
-      updated <- ContentEntryDAO.voteDown(entry, request.approval.who)
-    ) yield updated
+      updated <- ContentEntryDAO.voteDown(entry, user.itself)
+    } yield updated
   }
   
   def addComment(courseId:String, entryId:String) = DataAction.returning.one(parse.json) { implicit request => 
-    for (
+    for {
       text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("The message contained no text");
       entry <- refContentEntry(entryId);
+      user <- request.user
       approved <- request.approval ask Permissions.CommentOnEntry(entry.itself);
-      updated <- ContentEntryDAO.addComment(entry, request.approval.who, text)
-    ) yield updated
+      updated <- ContentEntryDAO.addComment(entry, user.itself, text)
+    } yield updated
   }
   
   /**

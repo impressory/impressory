@@ -9,10 +9,8 @@ package object json {
   
   import com.impressory.plugins.LookUps._
   
-  implicit def refToJson[T <: HasStringId](ref:Ref[T]) = Json.toJson(ref.getId)
-  
-  implicit object writesRef extends Writes[Ref[HasStringId]] {
-    def writes(r:Ref[HasStringId]) = Json.toJson(r.getId)
+  implicit def writesRef[T <: HasStringId, _] = new Writes[RefWithId[T]] {
+    def writes(r:RefWithId[T]) = Json.toJson(r.getId)
   }
 
   implicit def writesRefMany[T <: HasStringId, K] = new Writes[RefManyById[T, K]] {

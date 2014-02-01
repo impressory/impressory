@@ -45,10 +45,12 @@ object UserToJson extends JsonConverter[User, User] {
     }   
     
     def toJsonFor(user:User, appr:Approval[User]) = {
-      if (appr.who.getId == Some(user.id)) {
-        toJsonForSelf(user)
-      } else {
-        toJson(user)
+      appr.who.refId flatMap { id =>
+        if (id == user.id) {
+          toJsonForSelf(user)
+        } else {
+          toJson(user)
+        }
       }
     }
     

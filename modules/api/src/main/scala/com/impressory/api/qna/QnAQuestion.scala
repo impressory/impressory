@@ -1,6 +1,6 @@
 package com.impressory.api.qna
 
-import com.wbillingsley.handy.{Ref, RefNone, HasStringId}
+import com.wbillingsley.handy._
 import com.impressory.api._
 
 case class QnAQuestion(
@@ -29,7 +29,7 @@ case class QnAAnswer(
 
   id:String,
   
-  addedBy:Ref[User] = RefNone,
+  addedBy:RefWithId[User] = RefNone,
 
   val session:Option[String] = None,
 

@@ -8,8 +8,6 @@ object LookUps {
   
   val catalog = new LookUpCatalog
   
-  implicit def genLookUp[T,K](clazz:Class[T]) = catalog.genLookUp[T, K](clazz)
-
   def lookUpFails[T] = new LookUp[T, Any] {
     def lookUpOne[K <: Any](r:RefById[T, K]) = RefFailed(new IllegalStateException("No look up method for this type has been configured"))
 

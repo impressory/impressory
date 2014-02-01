@@ -11,13 +11,12 @@ object UpDownVotingToJson extends JsonConverter[UpDownVoting, User]{
   def toJson(udv:UpDownVoting) = Json.obj("score" -> udv.score).itself
     
   def toJsonFor(udv:UpDownVoting, a: Approval[User]) = {
-    a.who.getId match {
-      case Some(id) => Json.obj(
-        "score" -> udv.score,
-        "voted" -> (udv.up.rawIds.contains(id) || udv.down.rawIds.contains(id))
-      ).itself
-      case None => toJson(udv)
-    }
-  }  
+    (for {
+      id <- a.who.refId
+    } yield Json.obj(
+      "score" -> udv.score,
+      "voted" -> (udv.up.rawIds.contains(id) || udv.down.rawIds.contains(id))
+    )) orIfNone toJson(udv)
+  }
   
 }

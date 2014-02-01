@@ -1,6 +1,6 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy.{Ref, RefItself, RefFailed}
+import com.wbillingsley.handy.{Ref, RefItself, RefFailed, RefWithId}
 
 import reactivemongo.api._
 import reactivemongo.bson._
@@ -15,9 +15,9 @@ object ViewLog {
   import DBConnector._
 
   case class Record(
-    course: Ref[Course],
+    course: RefWithId[Course],
       
-    user: Ref[User],
+    user: RefWithId[User],
     
     session: Option[String],
     

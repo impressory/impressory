@@ -30,7 +30,7 @@ object EmbeddedCommentReader extends BSONDocumentReader[EmbeddedComment] {
 /* Note that when we write an answer we do not write the votes, comments, or answers */
 object EmbeddedCommentWriter extends BSONDocumentWriter[EmbeddedComment] {
   
-  import UserDAO.RefWriter
+  import UserDAO.RefWithStringIdWriter
   import UserDAO.idIs
   
   def write(c: EmbeddedComment) = BSONDocument(

@@ -56,14 +56,15 @@ object EventController extends Controller {
   
   def postChatMessage(courseId:String) = DataAction.returning.result(parse.json) { implicit request => 
         
-    for (
+    for {
       c <- refCourse(courseId);
+      user <- request.approval.who
       approved <- request.approval ask Permissions.Chat(c.itself);
       text <- Ref((request.body \ "text").asOpt[String].map(_.trim)) if (!text.isEmpty);
       anon <- Ref((request.body \ "anonymous").asOpt[Boolean].orElse(Some(false)));
-      cm = ChatCommentDAO.unsaved.copy(text=text, course=c.itself, addedBy=request.user, anonymous=anon);
+      cm = ChatCommentDAO.unsaved.copy(text=text, course=c.itself, addedBy=user.itself, anonymous=anon);
       saved <- ChatCommentDAO.saveNew(cm)
-    ) yield {
+    } yield {
       EventRoom.notifyEventRoom(BroadcastStandard(courseId, saved))
       Ok("")
     }

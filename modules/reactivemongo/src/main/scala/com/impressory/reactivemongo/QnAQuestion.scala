@@ -5,7 +5,7 @@ import com.wbillingsley.handy.Ref
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import com.wbillingsley.handy.{Ref, RefNone}
+import com.wbillingsley.handy.{Ref, RefNone, RefWithId}
 
 import com.impressory.api._
 import com.impressory.api.qna._
@@ -24,7 +24,7 @@ object QnAQuestionDAO  {
   implicit val udvr = UpDownVotingReader
   implicit val ecr = EmbeddedCommentReader
   
-  import ContentEntryDAO.RefWriter
+  import ContentEntryDAO.RefWithStringIdWriter
   import ContentEntryDAO.idIs
   
   implicit object bsonReader extends BSONDocumentReader[QnAQuestion] {
@@ -73,7 +73,7 @@ object QnAQuestionDAO  {
   /**
    * Adds an answer to the question, returning an updated question
    */
-  def addAnswer(q:Ref[ContentEntry], ans:QnAAnswer) = {
+  def addAnswer(q:RefWithId[ContentEntry], ans:QnAAnswer) = {
     val query = BSONDocument("_id" -> q, "kind" -> QnAQuestion.itemType)
     val update = BSONDocument(
         "$inc" -> BSONDocument("answerCount" -> 1),
@@ -82,7 +82,7 @@ object QnAQuestionDAO  {
     ContentEntryDAO.updateAndFetch(query, update)
   }
 
-  def addAnsComment(q:Ref[ContentEntry], a:Ref[QnAAnswer], ec:EmbeddedComment) = {
+  def addAnsComment(q:RefWithId[ContentEntry], a:RefWithId[QnAAnswer], ec:EmbeddedComment) = {
     val query = BSONDocument("_id" -> q, "answers._id" -> a)
     val update = BSONDocument(
         "$inc" -> BSONDocument("answers.$.commentCount" -> 1),

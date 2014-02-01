@@ -14,9 +14,9 @@ case class MCPollResponse (
   
   id: String,
   
-  poll: Ref[ContentEntry] = RefNone,
+  poll: RefWithId[ContentEntry] = LazyId.empty,
   
-  addedBy: Ref[User] = RefNone,
+  addedBy: RefWithId[User] = LazyId.empty,
   
   session: Option[String] = None,
   

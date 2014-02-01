@@ -1,6 +1,6 @@
 package com.impressory.api
 
-import com.wbillingsley.handy.{Ref, RefNone, HasStringId}
+import com.wbillingsley.handy._
 import com.wbillingsley.encrypt.Encrypt
 
 case class Course (
@@ -21,7 +21,7 @@ case class Course (
   /** The image to use for this course */
   coverImage:Option[String] = None,
 
-  addedBy:Ref[User] = RefNone,
+  addedBy:RefWithId[User] = RefNone,
     
   signupPolicy:CourseSignupPolicy = CourseSignupPolicy.open,
 
@@ -47,7 +47,7 @@ case class LTIData(key:String = Encrypt.genSaltB64, secret:String = Encrypt.genS
 
 case class Registration(
 
-  course: Ref[Course],
+  course: RefWithId[Course],
 
   roles: Set[CourseRole] = Set(CourseRole.Reader),
   

@@ -1,6 +1,6 @@
 package com.impressory.api
 
-import com.wbillingsley.handy.{Ref, RefNone, RefManyById, HasStringId}
+import com.wbillingsley.handy._
 
 case class UpDownVoting(
     
@@ -12,7 +12,7 @@ case class UpDownVoting(
     
 ) {
 
-  def hasVoted(u:Ref[User]) = {
+  def hasVoted(u:RefWithId[User]) = {
     u.getId match {
       case Some(id) => up.rawIds.contains(id) || down.rawIds.contains(id)
       case _ => false

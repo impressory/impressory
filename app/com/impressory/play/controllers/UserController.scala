@@ -156,8 +156,9 @@ object UserController extends Controller {
    */
   def usernameAvailable(username:String) = DataAction.returning.json { implicit request =>     
     val taken = for {
+      userId <- optionally(request.user.refId)
       u <- UserDAO.byUsername(username)
-    } yield Json.obj("available" -> (u.itself.getId == request.user.getId))
+    } yield Json.obj("available" -> (u.itself.getId == userId))
     taken orIfNone Json.obj("available" -> true).itself
   }
 
@@ -166,8 +167,9 @@ object UserController extends Controller {
    */
   def emailAvailable(email:String) = DataAction.returning.json { implicit request => 
     val taken = for {
+      userId <- optionally(request.user.refId)
       u <- UserDAO.byEmail(email)
-    } yield Json.obj("available" -> (u.itself.getId == request.user.getId))
+    } yield Json.obj("available" -> (u.itself.getId == userId))
     taken orIfNone Json.obj("available" -> true).itself
   }
   

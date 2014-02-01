@@ -1,6 +1,6 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy.{RefFuture, Ref, RefNone, RefManyById}
+import com.wbillingsley.handy.{RefFuture, Ref, RefNone, RefManyById, RefWithId}
 import com.wbillingsley.handy.reactivemongo.DAO
 
 import reactivemongo.api._
@@ -53,7 +53,7 @@ object CourseInviteDAO extends DAO {
     }    
   }  
   
-  def use(invite:Ref[CourseInvite], user:Ref[User]) = {
+  def use(invite:RefWithId[CourseInvite], user:RefWithId[User]) = {
     val query = BSONDocument("_id" -> invite)
     val update = BSONDocument(
       "$push" -> BSONDocument("usedBy" -> user),
@@ -62,7 +62,7 @@ object CourseInviteDAO extends DAO {
     updateAndFetch(query, update)
   }
   
-  def availableByCode(c:Ref[Course], code:String) = {
+  def availableByCode(c:RefWithId[Course], code:String) = {
     val query = BSONDocument("course" -> c, "code" -> code, "$or" -> BSONArray(
         BSONDocument("limitedNumber" -> false),
         BSONDocument("remaining" -> BSONDocument("$gt" -> 0))
@@ -70,7 +70,7 @@ object CourseInviteDAO extends DAO {
     findOne(query)
   }
   
-  def byCourse(c:Ref[Course]) = {
+  def byCourse(c:RefWithId[Course]) = {
     val query = BSONDocument("course" -> c)
     findMany(query)
   }

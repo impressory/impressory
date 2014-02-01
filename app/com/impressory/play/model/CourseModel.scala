@@ -21,11 +21,13 @@ object CourseModel {
   
   def createCourse(approval:Approval[User], config: JsValue, pageOneContent:String):Ref[Course] = {
     for {
+      user <- approval.who
+
       a <- approval ask Permissions.CreateCourse;
       course = CourseToJson.update(CourseDAO.unsaved, config);
       saved <- CourseDAO.saveNew(course);
       
-      p1 = ContentEntryDAO.unsaved.copy(course=saved.itself, addedBy=approval.who, tags=CETags(topics=Set("page one")), published=Some(System.currentTimeMillis()));
+      p1 = ContentEntryDAO.unsaved.copy(course=saved.itself, addedBy=user.itself, tags=CETags(topics=Set("page one")), published=Some(System.currentTimeMillis()));
       page <- MarkdownPageModel.JsonHandler.createFromJson((MarkdownPage.itemType, Json.obj("item" -> Json.obj("text" -> defaultPageOneText)), p1));
       p1saved <- ContentEntryDAO.saveNew(page)
       
@@ -48,8 +50,9 @@ object CourseModel {
   def createInvite(approval:Approval[User], course:Ref[Course], config: JsValue):Ref[CourseInvite] = {
     for (
       c <- course;
+      u <- approval.who;
       a <- approval ask Permissions.ManageCourseInvites(c.itself);
-      invite = CourseInviteDAO.unsaved.copy(course=course, addedBy=approval.who);
+      invite = CourseInviteDAO.unsaved.copy(course=c.itself, addedBy=u.itself);
       upd = CourseInviteToJson.update(invite, config);
       saved <- CourseInviteDAO.saveNew(upd)
     ) yield saved
@@ -59,11 +62,12 @@ object CourseModel {
   def useInvite(approval:Approval[User], course:Ref[Course], code: String) = {
     for {
       c <- course
+      user <- approval.who
       approved <- approval ask Permissions.RegisterUsingInvite(course)
       invite <- CourseInviteDAO.availableByCode(c.itself, code)
-      used <- CourseInviteDAO.use(invite.itself, approval.who)
-      reg = Registration(course=course, roles=invite.roles)
-      updated <- UserDAO.pushRegistration(approval.who, reg)
+      used <- CourseInviteDAO.use(invite.itself, user.itself)
+      reg = Registration(course=c.itself, roles=invite.roles)
+      updated <- UserDAO.pushRegistration(user.itself, reg)
     } yield updated
   }
   

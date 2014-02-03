@@ -40,16 +40,20 @@ object LTIAuthController extends Controller {
 
     def getParam(params:Map[String, Seq[String]], name:String) = params.get(name).flatMap(_.headOption)
 
+
     
     val resp = for {
       course <- refCourse(courseId) orIfNone Refused("No such course")
       valid <- validateOAuthSignature(request, course.lti.key, course.lti.secret);
       params <- Ref(request.body.asFormUrlEncoded) orIfNone Refused("OAuth response had no parameters")
-      tool_consumer_instance_guid <- params.get("tool_consumer_instance_guid").flatMap(_.headOption) orIfNone Refused("The LTI data from your provider did not include a user id")
+      tool_consumer_instance_guid <- {
+        getParam(params, "oauth_consumer_key") orElse
+        getParam(params, "tool_consumer_instance_guid") orIfNone Refused("The LTI data from your provider did not include a user id")
+      }
       user_id <- params.get("user_id").flatMap(_.headOption) orIfNone Refused("The LTI data from your provider did not include a user id")
       oauthDetails = OAuthDetails(
         userRecord = UserRecord(
-            service=tool_consumer_instance_guid, 
+            service=tool_consumer_instance_guid,
             id=user_id,
             name=getParam(params, "lis_person_name_full"),
             username=Some(user_id),

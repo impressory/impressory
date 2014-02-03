@@ -3,19 +3,12 @@
 <div class="viewer-top-nav" >
 
   <div class="dont-print">
-    <div ng-hide="panels.minimisedHeader">
-      <header-front ></header-front>
-      <subheader-course course="course" />
-    </div>
     <div class="top-nav-menu">
     
       <ul class="bookNav">
         <li class="navli">
-          <button title="Menu" class="command" ng-show="panels.minimisedHeader" ng-class="{ 'active': panels.top == 'menu' }" ng-click="panels.toggleTopMenu()">
+          <button title="Menu" class="command" ng-class="{ 'active': panels.top == 'menu' }" ng-click="panels.toggleTopMenu()">
             <b>|||</b>
-          </button>
-          <button title="Hide menu" class="command" ng-hide="panels.minimisedHeader" ng-click="panels.minimiseHeader()">
-            <i class="icon-resize-full"></i>
           </button>
         </li>
       </ul>
@@ -31,13 +24,8 @@
           <button class="command require-edit" ng-disabled="!entry.permissions.edit" ng-class="{ 'active': panels.top == 'editContent' }" ng-click="panels.toggleEditContent()"
             id="edit-button" title="Edit content">
             <i class="icon-edit"></i>
-          </button></li>
-        <li class="navli">
-          <button class="command" ng-disabled="!entry.permissions.add" ng-class="{ 'active': panels.top == 'addContent' }" ng-click="panels.toggleAddContent()">
-            <i class="icon-plus"></i>
           </button>
         </li>
-        
         
         <li class="navli visible-xs visible-sm">
           <a class="btn btn-command" ng-href='{{ "/course/" + course.id + "/chatRoom" }}'>
@@ -86,12 +74,6 @@
         <div ng-switch-when="menu" >
           <header-front ></header-front>
           <subheader-course course="course" />
-        </div>
-        <div ng-switch-when="addContent" >
-          <div class="container">
-            <h3>Add a reply</h3>
-            <ce-add-content course="course"></ce-add-content>
-          </div>
         </div>
         <div ng-switch-when="editDetails" >
           @snipEditDetails()

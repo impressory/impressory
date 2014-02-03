@@ -37,7 +37,9 @@ object LTIAuthController extends Controller {
   }
     
   def ltiBodyAction(courseId:String) = new BodyAction(BodyParsers.parse.anyContent)({ implicit request =>
-    println(request.body.asFormUrlEncoded)
+
+    def getParam(params:Map[String, Seq[String]], name:String) = params.get(name).flatMap(_.headOption)
+
     
     val resp = for {
       course <- refCourse(courseId) orIfNone Refused("No such course")
@@ -49,10 +51,10 @@ object LTIAuthController extends Controller {
         userRecord = UserRecord(
             service=tool_consumer_instance_guid, 
             id=user_id,
-            name=None,
-            username=None,
-            nickname=None,
-            avatar=None
+            name=getParam(params, "lis_person_name_full"),
+            username=Some(user_id),
+            nickname=getParam(params, "lis_person_name_full") orElse Some(user_id),
+            avatar=getParam(params, "user_image")
         ),
         raw = Some(Json.obj(
           "tool_consumer_instance_guid" -> tool_consumer_instance_guid,

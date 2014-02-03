@@ -158,7 +158,7 @@ object UserDAO extends DAO with UserProvider[User] {
     for {
       id <- ru.refId
       updated <- updateAndFetch(
-        query = BSONDocument("_id" -> id),
+        query = BSONDocument(idIs(id)),
         update = BSONDocument("$pull" -> BSONDocument("identities" -> BSONDocument("service" -> service, "id" -> id)))
       )
     } yield updated
@@ -174,7 +174,7 @@ object UserDAO extends DAO with UserProvider[User] {
     for {
       userId <- ru.refId
       updated <- updateAndFetch(
-        query = BSONDocument("_id" -> userId),
+        query = BSONDocument(idIs(userId)),
         update = BSONDocument("$pull" -> BSONDocument("activeSessions" -> BSONDocument("key" -> as.key)))
       )
     } yield updated
@@ -217,7 +217,7 @@ object UserDAO extends DAO with UserProvider[User] {
     for {
       userId <- ru.refId
       updated <- updateAndFetch(
-        query=BSONDocument("_id" -> userId, "registrations.course" -> r.course),
+        query=BSONDocument(idIs(userId), "registrations.course" -> r.course),
         update=BSONDocument("$addToSet" -> BSONDocument("registrations.$.roles" -> BSONDocument("$each" -> r.roles)))
       ) orIfNone updateAndFetch(
         query=BSONDocument("_id" -> userId),

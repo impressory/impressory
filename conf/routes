@@ -21,6 +21,7 @@ POST    /printit                    com.impressory.play.controllers.Application.
 
 
 # Auth
+GET     /oauth/services             com.impressory.play.controllers.Application.loginServices
 ->      /oauth                      handyplayoauth.Routes
 
 POST    /auth/interstitial/register com.impressory.auth.controllers.InterstitialController.registerUser

@@ -8,7 +8,7 @@ define(["./base"], (l) ->
     # These flags are set within a referenced object, so that subscopes (prototypical inheritance)
     # will update the value rather than hide it
     $scope.show = {}
-  
+
     $scope.login = Impressory.Model.Login
     
     $scope.logout = () -> 

@@ -57,9 +57,22 @@
 	          <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" >
 	          Add <span class="caret"></span>
 	          </button>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dlabel">
-              <li><a href="/auth/addTwitter" target="_self"><i class="icon-twitter"></i> Twitter</a></li>
-              <li><a href="/auth/github" target="_self"><i class="icon-github"></i> GitHub</a></li>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dlabel" ng-controller="Impressory.Controllers.LogIn.LogInForm">
+              <li>
+                  <form action="/oauth/twitter" ng-show="loginServiceEnabled('Twitter')" method="POST">
+                      <button class="btn btn-link" type="submit"><i class="icon-twitter"></i> <b>Twitter</b></button>
+                  </form>
+              </li>
+              <li>
+                  <form action="/oauth/twitter" ng-show="loginServiceEnabled('Google Plus')" method="POST">
+                      <button class="btn btn-link" type="submit"><i class="icon-google-plus"></i> <b>Google</b></button>
+                  </form>
+              </li>
+              <li>
+                  <form action="/oauth/twitter" ng-show="loginServiceEnabled('Github')" method="POST">
+                      <button class="btn btn-link" type="submit"><i class="icon-github"></i> <b>GitHub</b></button>
+                  </form>
+              </li>
             </ul>
 	        </div>
 	      

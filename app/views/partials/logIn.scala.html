@@ -1,11 +1,11 @@
 <header-front></header-front>
 
-<div class="container">
+<div class="container" ng-controller="Impressory.Controllers.LogIn.LogInForm">
 <div class="row">
 	
 	<div class="col-sm-6">
 		<h1>Log In</h1>
-		  <div class="well" ng-controller="Impressory.Controllers.LogIn.LogInForm">
+		  <div class="well">
 		    <form name="signup" role="form" class="form">
 		      <div class="form-group">
 		        <label>Email address</label>
@@ -30,14 +30,20 @@
 	  
 	  <div>
 	    <p>
-	      <form action="/oauth/twitter" method="POST">
+	      <form action="/oauth/twitter" ng-show="loginServiceEnabled('Twitter')" method="POST">
 	        <button class="btn btn-default" type="submit"><i class="icon-twitter"></i> Sign in with <b>Twitter</b></button>
 	      </form>
+        </p>
 	    <p>
-        <form action="/oauth/github" method="POST">
-	        <button class="btn btn-default" type="submit"><i class="icon-github"></i> Sign in with <b>GitHub</b></button>
-        </form>
+          <form action="/oauth/google"  ng-show="loginServiceEnabled('Google Plus')" method="POST">
+	        <button class="btn btn-default" type="submit"><i class="icon-google-plus"></i> Sign in with <b>Google</b></button>
+          </form>
 	    </p>
+        <p>
+          <form action="/oauth/github"  ng-show="loginServiceEnabled('Github')" method="POST">
+              <button class="btn btn-default" type="submit"><i class="icon-github"></i> Sign in with <b>GitHub</b></button>
+          </form>
+        </p>
 	  </div>
 	</div>
 

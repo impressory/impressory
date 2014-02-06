@@ -220,7 +220,7 @@ object UserDAO extends DAO with UserProvider[User] {
         query=BSONDocument(idIs(userId), "registrations.course" -> r.course),
         update=BSONDocument("$addToSet" -> BSONDocument("registrations.$.roles" -> BSONDocument("$each" -> r.roles)))
       ) orIfNone updateAndFetch(
-        query=BSONDocument("_id" -> userId),
+        query=BSONDocument(idIs(userId)),
         update=BSONDocument("$addToSet" -> BSONDocument("registrations" -> r))
       )
     } yield updated

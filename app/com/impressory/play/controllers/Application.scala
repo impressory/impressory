@@ -107,5 +107,13 @@ object Application extends Controller {
       case _ => NotFound("No suitable template was found")
     }
   }
-  
+
+  def loginServices = DataAction.returning.json { implicit request =>
+    play.api.libs.json.Json.toJson(
+      for {
+        service <- com.wbillingsley.handy.playoauth.PlayAuth.enabledServices
+      } yield service.name
+    ).itself
+  }
+
 }

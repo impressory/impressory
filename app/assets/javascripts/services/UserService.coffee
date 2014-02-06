@@ -11,6 +11,9 @@ define(["modules/base"], () ->
     Impressory.Caches["userServiceCache"] = cache
     
     Impressory.Caches["users"] = unwrappedCache
+
+    # Remember the login services that are available
+    loginServices = null
    
     {
       # return the unwrapped cache for immediate lookups from within templates
@@ -73,6 +76,12 @@ define(["modules/base"], () ->
             res.data
           ,
           (res) -> $q.reject(res.data.error || "Unexpected error")
+        )
+
+      loginServicesList: () ->
+        loginServices || (
+          loginServices = $http.get("/oauth/services").then((res) -> res.data)
+          loginServices
         )
     }
   ])

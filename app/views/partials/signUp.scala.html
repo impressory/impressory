@@ -28,10 +28,23 @@
 	  
   <div class="col-sm-6">
     <h1>or</h1>
-	  
-    <div>
-      <p><a class="btn btn-default" href="/auth/twiiter" target="_self"><i class="icon-twitter"></i> Sign in with <b>Twitter</b></a></p>
-      <p><a class="btn btn-default" href="/auth/github" target="_self"><i class="icon-github"></i> Sign in with <b>GitHub</b></a></p>
+
+    <div ng-controller="Impressory.Controllers.LogIn.LogInForm">
+      <p>
+      <form action="/oauth/twitter" ng-show="loginServiceEnabled('Twitter')" method="POST">
+          <button class="btn btn-default" type="submit"><i class="icon-twitter"></i> Sign in with <b>Twitter</b></button>
+      </form>
+      </p>
+      <p>
+      <form action="/oauth/google"  ng-show="loginServiceEnabled('Google Plus')" method="POST">
+          <button class="btn btn-default" type="submit"><i class="icon-google-plus"></i> Sign in with <b>Google</b></button>
+      </form>
+      </p>
+      <p>
+      <form action="/oauth/github"  ng-show="loginServiceEnabled('Github')" method="POST">
+          <button class="btn btn-default" type="submit"><i class="icon-github"></i> Sign in with <b>GitHub</b></button>
+      </form>
+      </p>
     </div>
   </div>
   

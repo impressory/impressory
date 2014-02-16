@@ -5,6 +5,13 @@ define(["modules/base"], () ->
     cache = $cacheFactory('contentServiceCache')
     
     Impressory.Caches["contentServiceCache"] = cache
+
+    # Wraps an HTTP call, so that we just get the data (or the error data) rather than the HTTP response
+    wrapHttpCall = (call) ->
+      call.then(
+        (res) -> res.data,
+        (errRes) -> $q.reject(errRes.data || { error: "Unexpected error" } )
+      )
    
     {
       # Returns a promise containing the JSON of a content entry
@@ -109,8 +116,11 @@ define(["modules/base"], () ->
       entriesForTopic: (courseId, topic) -> $http.get("/course/#{courseId}/entriesForTopic", { params: { topic : topic } }).then((res) -> res.data)
         
       activity: (courseId) -> $http.get("/course/#{courseId}/activity").then((res) -> res.data)
-      
-      whatIsIt: (code) -> $http.get("/whatIsIt", { params: { code : code } })
+
+      # Asks the server what the pasted URL is
+      whatIsIt: (code) -> wrapHttpCall(
+        $http.get("/whatIsIt", { params: { code : code } })
+      )
       
       addContent: (courseId, entry) -> $http.post("/course/#{courseId}/addContent", entry).then((res) -> res.data)
 

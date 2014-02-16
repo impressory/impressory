@@ -39,6 +39,7 @@ require([
   "controllers/components/EditTags",
   "controllers/components/FillHeight",
   "controllers/components/ListEntries",
+  "controllers/components/RequestSpinner",
   "controllers/components/SceTrustSrc",
 
   "controllers/viewContent/ViewContent",

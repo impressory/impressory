@@ -19,9 +19,9 @@ define(["./base"], (l) ->
       $scope.share = { }
       $scope.errors = [ ]
       $scope.inFlight = true
-      ContentService.whatIsIt(code).then(
-        (res) -> $scope.share = res.data,
-        (res) -> $scope.errors = [ res.data.error ]
+
+      $scope.whatIsItPromise = ContentService.whatIsIt(code).then(
+        (data) -> $scope.share = data
       )
       
     $scope.remove = () ->

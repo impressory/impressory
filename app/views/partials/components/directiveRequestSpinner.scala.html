@@ -1,0 +1,13 @@
+@()
+
+<div class="im-request-spinner">
+  <div ng-show="loading">
+      loading...
+  </div>
+  <div ng-show="error">
+    <div class="alert alert-danger">
+      {{ error.error }}
+    </div>
+  </div>
+  <div ng-if="success" ng-transclude></div>
+</div>

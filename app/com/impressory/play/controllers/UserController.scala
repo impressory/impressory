@@ -4,13 +4,15 @@ import com.wbillingsley.handy._
 import Ref._
 import com.wbillingsley.handyplay._
 import com.wbillingsley.handyplay.RefConversions._
+
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
+
 import com.impressory.api._
+import com.impressory.plugins._
 import com.impressory.json._
 import com.impressory.reactivemongo.UserDAO
-import com.wbillingsley.handy.appbase.DataAction
 
 
 object UserController extends Controller {
@@ -57,11 +59,12 @@ object UserController extends Controller {
       email <- Ref((request.body \ "email").asOpt[String]) orIfNone UserError("Email must not be blank");
       password <- Ref((request.body \ "password").asOpt[String]) orIfNone UserError("Password must not be blank");
       user <- {
-        val u = UserDAO.unsaved  
-        val set = u.copy(
-            nickname=Some(email.takeWhile(_ != '@')),
-            pwlogin=u.pwlogin.copy(email=Some(email), pwhash=u.pwlogin.hash(password)),
-            activeSessions=Seq(ActiveSession(request.sessionKey, ip=request.remoteAddress))
+        val p = new PasswordLogin(email=Some(email))
+        val set = User(
+          id = LookUps.allocateId,
+          nickname=Some(email.takeWhile(_ != '@')),
+          pwlogin=p.copy(pwhash=Some(p.hash(password))),
+          activeSessions=Seq(ActiveSession(request.sessionKey, ip=request.remoteAddress))
         )
         UserDAO.saveNew(set)
       }      
@@ -138,7 +141,7 @@ object UserController extends Controller {
     for {
       u <- request.user
       newPassword <- (request.body \ "newPassword").asOpt[String].toRef orIfNone UserError("No new password!")
-      oldHash = (request.body \ "oldPassword").asOpt[String].flatMap(u.pwlogin.hash(_))
+      oldHash = (request.body \ "oldPassword").asOpt[String].map(u.pwlogin.hash(_))
       matches <- u.pwlogin.pwhash match {
         case Some(hash) => if (Some(hash) == oldHash) {
           true.itself

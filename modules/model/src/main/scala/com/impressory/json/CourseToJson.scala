@@ -2,18 +2,43 @@ package com.impressory.json
 
 import com.impressory.api._
 import com.impressory.api.enrol._
+import com.impressory.plugins.LookUps
 import com.impressory.security._
 
 import com.wbillingsley.handy._
 import com.wbillingsley.handy.Ref._
 import com.wbillingsley.handy.RefMany._
-import com.wbillingsley.handy.appbase.JsonConverter
+import com.wbillingsley.handyplay.JsonConverter
 import play.api.libs.json._
 
 
 object CourseToJson extends JsonConverter[Course, User]{
-  
+
+  implicit object signupPolicyFormat extends Format[CourseSignupPolicy] {
+    def reads(j:JsValue) = {
+      JsSuccess(CourseSignupPolicy.valueOf(j.as[String]))
+    }
+
+    def writes(csp:CourseSignupPolicy) = JsString(csp.toString)
+  }
+
+  implicit object chatPolicyFormat extends Format[CourseChatPolicy] {
+    def reads(j:JsValue) = {
+      JsSuccess(CourseChatPolicy.valueOf(j.as[String]))
+    }
+
+    def writes(csp:CourseChatPolicy) = JsString(csp.toString)
+  }
+
   implicit val cctToJson = Json.writes[CourseContentTags]
+
+  implicit val cmFormat = Json.format[CoverMatter]
+
+  implicit val ltiFormat = Json.format[LTIData]
+
+  implicit val settingsFormat = Json.format[CourseSettings]
+
+
 
   /**
    * Raw JSON for a course
@@ -21,12 +46,9 @@ object CourseToJson extends JsonConverter[Course, User]{
   def toJson(course: Course) = {
     Json.obj(
       "id" -> course.id,
-      "title" -> course.title,
-      "shortName" -> course.shortName,
-      "shortDescription" -> course.shortDescription,
-      "coverImage" -> course.coverImage,
+      "coverMatter" -> course.coverMatter,
       "contentTags" -> course.contentTags,
-      "listed" -> course.listed
+      "settings" -> course.settings
     ).itself
   }
 
@@ -39,16 +61,16 @@ object CourseToJson extends JsonConverter[Course, User]{
     // Registrations. Note, can produce RefNone
     val reg = for {
       u <- appr.who
-      r <- u.registrations.find(_.course.getId == Some(course.id)).toRef
+      r <- LookUps.registrationProvider.find(u.id, course.id)
       j <- RegistrationToJson.toJson(r)
     } yield j
 
     // Permissions.
     val perms = for {
-      read <- appr askBoolean Permissions.Read(course.itself)
-      chat <- appr askBoolean Permissions.Chat(course.itself)
-      edit <- appr askBoolean Permissions.EditCourse(course.itself)
-      add <- appr askBoolean Permissions.AddContent(course.itself)
+      read <- appr askBoolean Permissions.readCourse(course.itself)
+      chat <- appr askBoolean Permissions.chat(course.itself)
+      edit <- appr askBoolean Permissions.editCourse(course.itself)
+      add <- appr askBoolean Permissions.addContent(course.itself)
     } yield Json.obj(
       "read" -> read,
       "add" -> add,
@@ -70,11 +92,8 @@ object CourseToJson extends JsonConverter[Course, User]{
   
   def update(course:Course, jsVal: JsValue) = {
     course.copy(
-      title = (jsVal \ "title").asOpt[String] orElse course.title,
-      shortName = (jsVal \ "shortName").asOpt[String] orElse course.shortName,
-      shortDescription = (jsVal \ "shortDescription").asOpt[String] orElse course.shortDescription,
-      coverImage = (jsVal \ "coverImage").asOpt[String] orElse course.coverImage,
-      listed = (jsVal \ "listed").asOpt[Boolean] getOrElse course.listed
+      coverMatter = (jsVal \ "coverMatter").asOpt[CoverMatter] getOrElse course.coverMatter,
+      settings = (jsVal \ "settings").asOpt[CourseSettings] getOrElse course.settings
     )
   }    
 }
@@ -83,7 +102,7 @@ object CourseInviteToJson extends JsonConverter[CourseInvite, User] {
   
   def toJson(ci: CourseInvite) = Json.obj(
     "code" -> ci.code,
-    "used" -> ci.usedBy.rawIds.length,
+    "used" -> ci.usedBy.ids.length,
     "limitedNumber" -> ci.limitedNumber,
     "remaining" -> ci.remaining,
     "roles" -> ci.roles.map(_.toString())

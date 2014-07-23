@@ -1,6 +1,6 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy.{Ref, RefItself, RefFailed, RefWithId}
+import com.wbillingsley.handy.{Id, Ref, RefItself, RefFailed, RefWithId}
 
 import reactivemongo.api._
 import reactivemongo.bson._
@@ -10,14 +10,16 @@ import com.impressory.api._
 import play.api.libs.concurrent.Execution.Implicits._
 import reactivemongo.core.commands.GetLastError
 
+import CommonFormats._
+
 object ViewLog {
   
   import DBConnector._
 
   case class Record(
-    course: RefWithId[Course],
+    course: Id[Course, String],
       
-    user: RefWithId[User],
+    user: Id[User,String],
     
     session: Option[String],
     
@@ -53,7 +55,7 @@ object ViewLog {
     val incTotal = (
       s"hourly.${hour}.total" -> BSONInteger(1)
     )
-    val incUser:Seq[(String, BSONInteger)] = for (id <- record.user.getId.toSeq) yield (s"hourly.${hour}.user.${id}" -> BSONInteger(1))
+    val incUser:Seq[(String, BSONInteger)] = Seq(s"hourly.${hour}.user.${record.user.id}" -> BSONInteger(1))
     val incSession:Seq[(String, BSONInteger)] = for (id <- record.session.toSeq) yield (s"hourly.${hour}.session.${escapeFieldName(id)}" -> BSONInteger(1))
     val incTemplate:Seq[(String, BSONInteger)] = for (id <- record.template.toSeq) yield (s"hourly.${hour}.template.${escapeFieldName(id)}" -> BSONInteger(1))
     val incHow:Seq[(String, BSONInteger)] = for (id <- record.how.toSeq) yield (s"hourly.${hour}.how.${escapeFieldName(id)}" -> BSONInteger(1))

@@ -4,6 +4,9 @@ import org.htmlcleaner._
 import com.wbillingsley.handy._
 import Ref._
 
+import play.api.Play.current
+import play.api.libs.ws.ning.NingWSResponse
+
 /**
  * Pulls OpenGraph and other data from a web page
  */
@@ -40,7 +43,7 @@ object MetaExtractor {
     } yield {
       
       // Just take the first 10k to avoid parsing very long responses
-      val excerpt = res.ahcResponse.getResponseBodyExcerpt(10000)
+      val excerpt = res.underlying[NingWSResponse].ahcResponse.getResponseBodyExcerpt(10000)
       val html = htmlCleaner.clean(excerpt)
       
       val metas = html.getElementsByName("meta", true)

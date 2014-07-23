@@ -59,8 +59,10 @@ object GoogleSlides {
     }
 
     def createFromJson= { case (GoogleSlides.itemType, json, blank) =>
-      blank.setPublished(true)
-      updateFromJson(GoogleSlides.itemType, json, blank)
+      updateFromJson(
+        GoogleSlides.itemType, json,
+        blank.copy(settings=blank.settings.copy(published=Some(System.currentTimeMillis())))
+      )
     }
 
     def updateFromJson = { case (GoogleSlides.itemType, json, before) =>

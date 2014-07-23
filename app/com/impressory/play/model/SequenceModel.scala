@@ -2,6 +2,7 @@ package com.impressory.play.model
 
 import com.wbillingsley.handy._
 import Ref._
+import Ids._
 import play.api.libs.json._
 
 import com.impressory.api._
@@ -21,19 +22,19 @@ object SequenceModel {
     
     def toJsonFor = { case (entry, cs: ContentSequence, appr) => 
       Json.obj(
-        "entries" -> cs.entries.rawIds
+        "entries" -> cs.entries
       ).itself
     }
   
     def createFromJson= { case (ContentSequence.itemType, json, blank) =>
-      val including = Ref.fromOptionId[ContentEntry, String]((json \ "item" \ "including").asOpt[String])
+      val including = (json \ "item" \ "including").asOpt[String]
       val s = new ContentSequence(
-        entries = RefManyById.of[ContentEntry](including.getId.toSeq)
+        entries = including.toSeq.asIds[ContentEntry]
       )
-      blank.setPublished(true)
       blank.copy(
         tags = blank.tags.copy(nouns=blank.tags.nouns + "Sequence", site=None),
-        item = Some(s)
+        item = Some(s),
+        settings = blank.settings.copy(published=Some(System.currentTimeMillis))
       ).itself
     }
 
@@ -46,7 +47,7 @@ object SequenceModel {
       for { 
         entryIds <- (json \ "item" \ "entries").asOpt[Seq[String]].toRef orIfNone UserError("Content entries was missing")
       } yield {
-        before.copy(item = Some(ContentSequence(entries = RefManyById.of[ContentEntry](entryIds))))
+        before.copy(item = Some(ContentSequence(entries = entryIds.asIds[ContentEntry])))
       }
     }
   }

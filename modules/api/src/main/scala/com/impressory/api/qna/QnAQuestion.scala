@@ -27,9 +27,9 @@ object QnAQuestion {
 
 case class QnAAnswer(
 
-  id:String,
+  id:Id[QnAAnswer,String],
   
-  addedBy:RefWithId[User] = RefNone,
+  addedBy:Id[User,String],
 
   val session:Option[String] = None,
 
@@ -37,7 +37,7 @@ case class QnAAnswer(
   
   voting:UpDownVoting = new UpDownVoting,
   
-  var comments:Seq[EmbeddedComment] = Seq.empty,
+  comments:Comments = new Comments,
     
   var accepted:Boolean = false,
   
@@ -45,4 +45,4 @@ case class QnAAnswer(
   
   var updated:Long = System.currentTimeMillis
 
-) extends HasStringId
+) extends HasStringId[QnAAnswer]

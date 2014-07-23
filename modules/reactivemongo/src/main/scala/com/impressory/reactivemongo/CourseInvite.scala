@@ -1,6 +1,6 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy.{RefFuture, Ref, RefNone, RefManyById, RefWithId}
+import com.wbillingsley.handy.{Id, Ids, RefFuture, Ref, RefNone, RefManyById, RefWithId}
 import com.wbillingsley.handy.reactivemongo.DAO
 
 import reactivemongo.api._
@@ -27,25 +27,23 @@ object CourseInviteDAO extends DAO {
 
   val executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
   
-  def unsaved = CourseInvite(id=allocateId, course=RefNone, code=java.util.UUID.randomUUID().toString())
-    
   import UserDAO.bsonCourseRoleWriter
   import UserDAO.bsonCourseRoleReader
-  import DBConnector.RefManyWriter
+  import CommonFormats._
     
   implicit val writer = Macros.writer[CourseInvite]
   
   implicit object bsonReader extends BSONDocumentReader[CourseInvite] {    
     def read(doc:BSONDocument):CourseInvite = {
       val ci = new CourseInvite(
-          id = doc.getAs[BSONObjectID]("_id").get.stringify,
-          course = doc.getRef[Course]("course"),
+          id = doc.getAs[Id[CourseInvite, String]]("_id").get,
+          course = doc.getAs[Id[Course,String]]("course").get,
           code = doc.getAs[String]("code").get,
           roles = doc.getAs[Set[CourseRole]]("roles").getOrElse(Set(CourseRole.Reader)),
-          addedBy = doc.getRef[User]("addedBy"),
+          addedBy = doc.getAs[Id[User,String]]("addedBy").get,
           limitedNumber = doc.getAs[Boolean]("limitedNumber").getOrElse(false),
           remaining = doc.getAs[Int]("remaining").getOrElse(1),
-          usedBy = doc.getRefMany[User]("usedBy"),
+          usedBy = doc.getAs[Ids[User,String]]("usedBy").getOrElse(new Ids(Seq.empty)),
           updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
           created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
       )
@@ -54,16 +52,16 @@ object CourseInviteDAO extends DAO {
   }  
   
   def use(invite:RefWithId[CourseInvite], user:RefWithId[User]) = {
-    val query = BSONDocument("_id" -> invite)
+    val query = BSONDocument("_id" -> invite.getId)
     val update = BSONDocument(
-      "$push" -> BSONDocument("usedBy" -> user),
+      "$push" -> BSONDocument("usedBy" -> user.getId),
       "$inc" -> BSONDocument("remaining" -> -1)
     )
     updateAndFetch(query, update)
   }
   
   def availableByCode(c:RefWithId[Course], code:String) = {
-    val query = BSONDocument("course" -> c, "code" -> code, "$or" -> BSONArray(
+    val query = BSONDocument("course" -> c.getId, "code" -> code, "$or" -> BSONArray(
         BSONDocument("limitedNumber" -> false),
         BSONDocument("remaining" -> BSONDocument("$gt" -> 0))
     ))
@@ -71,7 +69,7 @@ object CourseInviteDAO extends DAO {
   }
   
   def byCourse(c:RefWithId[Course]) = {
-    val query = BSONDocument("course" -> c)
+    val query = BSONDocument("course" -> c.getId)
     findMany(query)
   }
   

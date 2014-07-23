@@ -5,8 +5,8 @@ import com.wbillingsley.handy._
 import com.wbillingsley.handy.Ref._
 import com.wbillingsley.handy.RefMany._
 import play.api.libs.json._
-import com.wbillingsley.handy.appbase.JsonConverter
-import com.wbillingsley.handy.appbase.JsonConverter._
+import com.wbillingsley.handyplay.JsonConverter
+import com.wbillingsley.handyplay.JsonConverter._
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 
 object UserToJson extends JsonConverter[User, User] {

@@ -71,7 +71,7 @@ object YouTubeVideo {
         val title = meta.title
         
         blank.copy(
-          title = title,
+          message = blank.message.copy(title=title),
           tags = CETags(site=meta.siteName),
           item = Some(new YouTubeVideo(
               embedCode = Some(url), 
@@ -90,8 +90,12 @@ object YouTubeVideo {
     }
 
     def createFromJson= { case (YouTubeVideo.itemType, json, blank) =>
-      blank.setPublished(true)
-      updateFromJson(YouTubeVideo.itemType, json, blank)
+      updateFromJson(
+        YouTubeVideo.itemType, json,
+        blank.copy(
+          settings=blank.settings.copy(published=Some(System.currentTimeMillis()))
+        )
+      )
     }
 
     def updateFromJson = {

@@ -1,6 +1,6 @@
 package com.impressory.poll.multipleChoice
 
-import com.wbillingsley.handy.{Ref, RefNone, RefWithId}
+import com.wbillingsley.handy.{Id, Ref, RefNone, RefWithId}
 import Ref._
 import com.wbillingsley.handy.reactivemongo.DAO
 import reactivemongo.bson._
@@ -24,15 +24,15 @@ object MCPollResponseDAO extends DAO {
 
   val executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-  def unsaved = MCPollResponse(id=allocateId)
+  import CommonFormats._
 
   implicit val pastRespHandler = Macros.handler[PastResponse]
   implicit object bsonReader extends BSONDocumentReader[MCPollResponse] {
     def read(doc:BSONDocument):MCPollResponse = {
       new MCPollResponse(
-        id = doc.getAs[BSONObjectID]("_id").get.stringify,
-        poll = doc.getRef[ContentEntry]("poll"),
-        addedBy = doc.getRef[User]("addedBy"),
+        id = doc.getAs[Id[MCPollResponse, String]]("_id").get,
+        poll = doc.getAs[Id[ContentEntry, String]]("poll").get,
+        addedBy = doc.getAs[Id[User, String]]("addedBy"),
         session = doc.getAs[String]("session"),
         answer = doc.getAs[Set[Int]]("answer").getOrElse(Set.empty),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
@@ -59,15 +59,15 @@ object MCPollResponseDAO extends DAO {
       uid <- optionally(u.refId)
     } yield {
       uid match {
-        case Some(id) => BSONDocument("poll" -> poll, "addedBy" -> id)
-        case None => BSONDocument("poll" -> poll, "session" -> session)
+        case Some(id) => BSONDocument("poll" -> poll.getId, "addedBy" -> id)
+        case None => BSONDocument("poll" -> poll.getId, "session" -> session)
       }
     }
     rQuery flatMap findOne
   }
   
   def byPoll(poll:RefWithId[ContentEntry]) ={
-    findMany(BSONDocument("poll" -> poll))
+    findMany(BSONDocument("poll" -> poll.getId))
   }
   
   def updateVote(vote:MCPollResponse) = {

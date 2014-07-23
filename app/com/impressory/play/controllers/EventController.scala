@@ -2,21 +2,25 @@ package com.impressory.play.controllers
 
 import com.wbillingsley.handy._
 import Ref._
-import com.wbillingsley.handyplay.RefConversions._
+import com.wbillingsley.handyplay._
+import com.wbillingsley.eventroom.Subscribe
+
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.Enumeratee
 import play.api.libs.iteratee.Iteratee
+
 import play.api.http.HeaderNames
-import com.wbillingsley.eventroom.Subscribe
+
 import com.impressory.play.model._
 import com.impressory.eventroom._
 import com.impressory.api._
 import com.impressory.api.events._
+import com.impressory.plugins._
 import com.impressory.security.Permissions
-import com.wbillingsley.handy.appbase.DataAction
+
 import com.impressory.reactivemongo.ChatCommentDAO
 import com.impressory.eventroom.EventRoom
 
@@ -58,14 +62,15 @@ object EventController extends Controller {
         
     for {
       c <- refCourse(courseId);
-      user <- request.approval.who
-      approved <- request.approval ask Permissions.Chat(c.itself);
+      user <- optionally(request.approval.who)
+      userId = user.map(_.id)
+      approved <- request.approval ask Permissions.chat(c.itself);
       text <- Ref((request.body \ "text").asOpt[String].map(_.trim)) if (!text.isEmpty);
       anon <- Ref((request.body \ "anonymous").asOpt[Boolean].orElse(Some(false)));
-      cm = ChatCommentDAO.unsaved.copy(text=text, course=c.itself, addedBy=user.itself, anonymous=anon);
+      cm = ChatComment(id=LookUps.allocateId, text=text, course=c.id, addedBy=userId, anonymous=anon);
       saved <- ChatCommentDAO.saveNew(cm)
     } yield {
-      EventRoom.notifyEventRoom(BroadcastStandard(courseId, saved))
+      EventRoom.notifyEventRoom(BroadcastStandard(c.id, saved))
       Ok("")
     }
     
@@ -74,7 +79,7 @@ object EventController extends Controller {
   def lastFewEvents(courseId:String) = DataAction.returning.many { implicit request => 
     for {
       c <- refCourse(courseId)
-      approved <- request.approval ask Permissions.Read(c.itself)
+      approved <- request.approval ask Permissions.readCourse(c.itself)
       comment <- ChatCommentDAO.lastFew(c.itself)
     } yield comment
   }

@@ -12,15 +12,15 @@ trait RecordedChatEvent {
 
 case class ChatComment (
   
-  id:String,
+  id:Id[ChatComment,String],
     
   text:String,
 
   anonymous:Boolean = true,
 
-  course:RefWithId[Course] = LazyId.empty,
+  course:Id[Course,String],
 
-  addedBy:RefWithId[User] = LazyId.empty,
+  addedBy:Option[Id[User,String]] = None,
 
   session:Option[String] = None,
 
@@ -28,7 +28,7 @@ case class ChatComment (
     
   created: Long = System.currentTimeMillis
     
-) extends HasStringId with RecordedChatEvent {
+) extends HasStringId[ChatComment] with RecordedChatEvent {
   
   /**
    * Two entries are equal if they have the same ID

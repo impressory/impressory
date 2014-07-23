@@ -30,12 +30,7 @@ object QnAAnswerToJson {
   def toJsonFor(ans:QnAAnswer, a: Approval[User]) = {
     for {
       v <- UpDownVotingToJson.toJsonFor(ans.voting, a)
-      ec <- {
-        for {
-          c <- ans.comments.toRefMany
-          j <- EmbeddedCommentToJson.toJsonFor(c, a)
-        } yield j
-      }.toRefOne
+      c <- CommentsToJson.toJsonFor(ans.comments, a)
     } yield Json.obj(
       "id" -> ans.id,
       "text" -> ans.text,
@@ -43,7 +38,7 @@ object QnAAnswerToJson {
       "voting" -> v,
       "created" -> ans.created,
       "updated" -> ans.updated,
-      "comments" -> ec.toSeq 
+      "comments" -> c
     )
   }
 }

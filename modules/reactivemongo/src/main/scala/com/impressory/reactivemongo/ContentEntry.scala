@@ -3,8 +3,9 @@ package com.impressory.reactivemongo
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import com.wbillingsley.handy.{Ref, RefWithId, RefFuture}
+import com.wbillingsley.handy.{Id, Ref, RefWithId, RefFuture}
 import Ref._
+import Id._
 
 import com.wbillingsley.handy.reactivemongo.DAO
 
@@ -24,22 +25,24 @@ object ContentEntryDAO extends DAO {
   val clazz = classOf[ContentEntry]
 
   val executionContext = RefFuture.executionContext
-  
-  def unsaved = ContentEntry(id=allocateId)
+
+  import CommonFormats._
     
   implicit val CETagsFormat = Macros.handler[CETags]
   
   implicit val CESettingsFormat = Macros.handler[CESettings]
-  
+
+  implicit val CEMessageFormat = Macros.handler[CEMessage]
+
   /* Note that when we write a content entry we do not write the votes or comments */
   implicit object bsonWriter extends BSONDocumentWriter[ContentEntry] {
     def write(ce: ContentEntry) = BSONDocument(
       "course" -> ce.course, "addedBy" -> ce.addedBy,
       "kind" -> ce.kind,
       "tags" -> ce.tags,
-      "title" -> ce.title, "note" -> ce.note, 
+      "message" -> ce.message,
       "settings" -> ce.settings,
-      "published" -> ce.published, "updated" -> ce.updated, "created" -> ce.created
+      "updated" -> ce.updated, "created" -> ce.created
     )
   }
   
@@ -52,22 +55,16 @@ object ContentEntryDAO extends DAO {
         i <- ContentItemToBson.read(d, kind) 
       } yield i
 
-      implicit val udvr = UpDownVotingReader
-      implicit val ecr = EmbeddedCommentReader
-      
       val entry = new ContentEntry(
-        id = doc.getAs[BSONObjectID]("_id").get.stringify,
-        course = doc.getRef[Course]("course"),
-        addedBy = doc.getRef[User]("addedBy"),
+        id = doc.getAs[Id[ContentEntry, String]]("_id").get,
+        course = doc.getAs[Id[Course, String]]("course").get,
+        addedBy = doc.getAs[Id[User, String]]("addedBy").get,
         item = item,
         tags = doc.getAs[CETags]("tags").getOrElse(CETags()),
-        title = doc.getAs[String]("title"),
-        note = doc.getAs[String]("note"),
+        message = doc.getAs[CEMessage]("title").getOrElse(new CEMessage),
         settings = doc.getAs[CESettings]("settings").getOrElse(CESettings()),
         voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting),
-        commentCount = doc.getAs[Int]("commentCount").getOrElse(0),
-        comments = doc.getAs[Seq[EmbeddedComment]]("comments").getOrElse(Seq.empty),
-        published = doc.getAs[Long]("published"),
+        comments = doc.getAs[Comments]("comments").getOrElse(new Comments),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
       )
@@ -76,12 +73,12 @@ object ContentEntryDAO extends DAO {
   }  
   
   def byTopic(course:RefWithId[Course], topic:String) = {
-    val query = BSONDocument("course" -> course, "tags.topics" -> topic, "settings.inIndex" -> true, "published" -> BSONDocument("$exists" -> true))
+    val query = BSONDocument("course" -> course.getId, "tags.topics" -> topic, "settings.inIndex" -> true, "settings.published" -> BSONDocument("$exists" -> true))
     findMany(query)
   }
   
   def byKind(course:RefWithId[Course], kind:String) = {
-    val query = BSONDocument("course" -> course, "kind" -> kind, "published" -> BSONDocument("$exists" -> true))
+    val query = BSONDocument("course" -> course.getId, "kind" -> kind, "settings.published" -> BSONDocument("$exists" -> true))
     findMany(query)
   }
   
@@ -89,13 +86,13 @@ object ContentEntryDAO extends DAO {
     val query = for {
       userId <- user.refId
     } yield BSONDocument(
-      "published" -> BSONDocument("$exists" -> false), "addedBy" -> userId, "course" -> course
+      "settings.published" -> BSONDocument("$exists" -> false), "addedBy" -> userId, "course" -> course.getId
     )
     query flatMap findMany
   }
   
   def inIndexByCourse(course:RefWithId[Course]) = {
-    val query = BSONDocument("course" -> course, "settings.inIndex" -> true, "published" -> BSONDocument("$exists" -> true))
+    val query = BSONDocument("course" -> course.getId, "settings.inIndex" -> true, "settings.published" -> BSONDocument("$exists" -> true))
     findMany(query)
   }
 
@@ -103,8 +100,8 @@ object ContentEntryDAO extends DAO {
    * Recently published entries that are listed as being in the news feed
    */
   def recentInNewsByCourse(course:RefWithId[Course]) = {
-    val query = BSONDocument("course" -> course, "settings.inNews" -> true, "published" -> BSONDocument("$exists" -> true))
-    val sort = BSONDocument("published" -> 1)
+    val query = BSONDocument("course" -> course.getId, "settings.inNews" -> true, "settings.published" -> BSONDocument("$exists" -> true))
+    val sort = BSONDocument("settings.published" -> 1)
     findSorted(query, sort)
   }
   
@@ -112,13 +109,13 @@ object ContentEntryDAO extends DAO {
    * Updates the Item in a ContentEntry
    */
   def setItem(ce:RefWithId[ContentEntry], item:ContentItem):Ref[ContentEntry] = {
-    val query = BSONDocument("_id" -> ce)
+    val query = BSONDocument("_id" -> ce.getId)
     val update = BSONDocument("$set" -> (BSONDocument("updated" -> System.currentTimeMillis()) ++ ContentItemToBson.update(Some(item))))
     updateAndFetch(query, update)
   }
   
   def sequencesContaining(ce:RefWithId[ContentEntry]) = {
-    findMany(BSONDocument("kind" -> ContentSequence.itemType, "item.entries" -> ce))
+    findMany(BSONDocument("kind" -> ContentSequence.itemType, "item.entries" -> ce.getId))
   }
   
   /**
@@ -156,7 +153,7 @@ object ContentEntryDAO extends DAO {
     if (!ce.voting.hasVoted(who)) {
       val query = BSONDocument(idIs(ce.id))
       val update = BSONDocument(
-          "$addToSet" -> BSONDocument("voting._up" -> who),
+          "$addToSet" -> BSONDocument("voting.up" -> who.getId),
           "$inc" -> BSONDocument("voting.score" -> 1)
       )
       updateAndFetch(query, update)
@@ -172,7 +169,7 @@ object ContentEntryDAO extends DAO {
     if (!ce.voting.hasVoted(who)) {
       val query = BSONDocument(idIs(ce.id))
       val update = BSONDocument(
-          "$addToSet" -> BSONDocument("voting._down" -> who),
+          "$addToSet" -> BSONDocument("voting.down" -> who.getId),
           "$inc" -> BSONDocument("voting.score" -> -1)
       )
       updateAndFetch(query, update)
@@ -181,11 +178,11 @@ object ContentEntryDAO extends DAO {
     }
   }
   
-  def addComment(ce:ContentEntry, who:RefWithId[User], text:String) = {
+  def addComment(ce:ContentEntry, who:Id[User,String], text:String) = {
     val query = BSONDocument(idIs(ce.id))
     val update = BSONDocument(
-        "$push" -> BSONDocument("comments" -> EmbeddedCommentWriter.writeNew(new EmbeddedComment(id=allocateId, text=text, addedBy=who))),
-        "$inc" -> BSONDocument("commentCount" -> 1)
+        "$push" -> BSONDocument("comments.embedded" -> new EmbeddedComment(id=allocateId.asId[EmbeddedComment], text=text, addedBy=who)),
+        "$inc" -> BSONDocument("comments.count" -> 1)
     )
     updateAndFetch(query, update)
   }

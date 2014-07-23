@@ -12,11 +12,11 @@ case class PastResponse(
 
 case class MCPollResponse (
   
-  id: String,
+  id: Id[MCPollResponse,String],
   
-  poll: RefWithId[ContentEntry] = LazyId.empty,
+  poll: Id[ContentEntry, String],
   
-  addedBy: RefWithId[User] = LazyId.empty,
+  addedBy: Option[Id[User, String]],
   
   session: Option[String] = None,
   
@@ -26,4 +26,4 @@ case class MCPollResponse (
   
   updated: Long = System.currentTimeMillis
 
-) extends HasStringId
+) extends HasStringId[MCPollResponse]

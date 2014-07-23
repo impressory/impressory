@@ -1,66 +1,60 @@
 package com.impressory.json
 
 import com.impressory.api._
+import com.impressory.plugins.LookUps._
 import com.impressory.security.Permissions
 import com.wbillingsley.handy._
 import com.wbillingsley.handy.Ref._
 import com.wbillingsley.handy.RefMany._
 import play.api.libs.json._
-import com.wbillingsley.handy.appbase.JsonConverter
+import com.wbillingsley.handyplay.JsonConverter
 
 
 object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
   
   implicit val settingsFormat = Json.format[CESettings]
-  
+
+  implicit val messageFormat = Json.format[CEMessage]
+
   implicit val tagsFormat = Json.format[CETags]
   
     /**
      * Basic core JSON other methods add to
      */
-    def toJsonCore(ce:ContentEntry) = {
+    def toJson(ce:ContentEntry) = {
       for {
         voting <- UpDownVotingToJson.toJson(ce.voting)
+        comments <- CommentsToJson.toJson(ce.comments)
+        item <- optionally(for {
+          i <- ce.item.toRef
+          j <- ContentItemToJson.toJson(ce, i)
+        } yield j)
       } yield Json.obj(
         "id" -> ce.id,
         "course" -> ce.course,
+        "addedBy" -> ce.addedBy,
         "settings" -> ce.settings,
-        "voting" -> voting,
-        "commentCount" -> ce.commentCount,
-        "title" -> ce.title,
-        "note" -> ce.note,
+        "message" -> ce.message,
         "kind" -> Json.toJson(ce.kind),
+        "item" -> item,
+        "voting" -> voting,
+        "comments" -> comments,
         "tags" -> ce.tags,
-        "published" -> ce.published,
         "updated" -> ce.updated,
-        "created" -> ce.created,
-        "addedBy" -> ce.addedBy
+        "created" -> ce.created
       )
     }    
-    
-    /**
-     * JSON for a course, without permissions etc
-     */
-    def toJson(ce:ContentEntry):Ref[JsObject] = {
-            
-      for {
-        j <- toJsonCore(ce)
-        item <- ce.item.toRef
-        itemj <- ContentItemToJson.toJson(ce, item)
-      } yield {
-        j ++ Json.obj("item" -> itemj)
-      }
-    }
+
     
     /**
      * Permissions on the content entry
      */
     def permissions(ce:ContentEntry, appr:Approval[User]) = for (
-       add <- optionally(appr ask Permissions.AddContent(ce.course));
-       read <- optionally(appr ask Permissions.ReadEntry(ce.itself));
-       edit <- optionally(appr ask Permissions.EditContent(ce.itself));
-       vote <- optionally(appr ask Permissions.VoteOnEntry(ce.itself));
-       comment <- optionally(appr ask Permissions.CommentOnEntry(ce.itself))
+       add <- optionally(appr ask Permissions.addContent(ce.course));
+       read <- optionally(appr ask Permissions.readEntry(ce.itself));
+       edit <- optionally(appr ask Permissions.editContent(ce.itself));
+       vote <- optionally(appr ask Permissions.voteOnEntry(ce.itself));
+       comment <- optionally(appr ask Permissions.commentOnEntry(ce.itself))
     ) yield Json.obj(
       "add" -> add.isDefined,
       "read" -> read.isDefined,
@@ -75,23 +69,28 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
      */
     def toJsonFor(ce:ContentEntry, appr:Approval[User]):Ref[JsObject] = {
       // Combine the JSON responses, noting that reg or perms might be RefNone
-      for (
-        ej <- toJson(ce);
-        p <- optionally(permissions(ce, appr));
-        item <- Ref(ce.item);
-        itemj <- ContentItemToJson.toJsonFor(ce, item, appr);
-        voting <- UpDownVotingToJson.toJsonFor(ce.voting, appr);
-        comments <- (
-          for {
-            c <- ce.comments.toRefMany
-            j <- EmbeddedCommentToJson.toJsonFor(c, appr) 
-          } yield j
-        ).toRefOne
-      ) yield ej ++ Json.obj(
-          "permissions" -> p,
-          "item" -> itemj,
-          "voting" -> voting,
-          "comments" -> comments.toSeq
+      for {
+        voting <- UpDownVotingToJson.toJsonFor(ce.voting, appr)
+        comments <- CommentsToJson.toJsonFor(ce.comments, appr)
+        item <- optionally(for {
+          i <- ce.item.toRef
+          j <- ContentItemToJson.toJson(ce, i)
+        } yield j)
+        p <- optionally(permissions(ce, appr))
+      } yield Json.obj(
+        "id" -> ce.id,
+        "course" -> ce.course,
+        "addedBy" -> ce.addedBy,
+        "settings" -> ce.settings,
+        "message" -> ce.message,
+        "kind" -> Json.toJson(ce.kind),
+        "item" -> item,
+        "voting" -> voting,
+        "comments" -> comments,
+        "tags" -> ce.tags,
+        "updated" -> ce.updated,
+        "created" -> ce.created,
+        "permissions" -> p
       )
     }  
     
@@ -105,8 +104,7 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
         itemj <- ContentItemToJson.toJsonFor(ce, item, Approval(RefNone))
       ) yield {
         Json.obj(
-          "title" -> ce.title,
-          "note" -> ce.note,
+          "message" -> ce.message,
           "kind" -> Json.toJson(ce.kind),
           "tags" -> ce.tags,
           "item" -> itemj
@@ -115,10 +113,8 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
     }
 
   def update(ce:ContentEntry, jsVal: JsValue) = {
-    for (p <- (jsVal \ "setPublished").asOpt[Boolean]) { ce.setPublished(p) }
     ce.copy(
-      title = (jsVal \ "title").asOpt[String] orElse ce.title,
-      note = (jsVal \ "note").asOpt[String] orElse ce.note,
+      message = (jsVal \ "message").asOpt[CEMessage] getOrElse ce.message,
       tags = (jsVal \ "tags").asOpt[CETags] getOrElse ce.tags,
       settings = (jsVal \ "settings").asOpt[CESettings] getOrElse ce.settings
     )

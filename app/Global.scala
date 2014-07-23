@@ -9,7 +9,7 @@ import com.impressory.poll.Plugin
 import play.api.mvc.Results
 import scala.concurrent.Future
 import play.api.libs.json.Json
-import com.wbillingsley.handy.appbase._
+import com.wbillingsley.handyplay._
 import com.impressory.plugins.ContentItemViewHandler
 
 

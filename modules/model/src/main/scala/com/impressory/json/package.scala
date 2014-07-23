@@ -1,6 +1,7 @@
 package com.impressory
 
 import com.wbillingsley.handy._
+import Id._
 import play.api.libs.json._
 import com.impressory.api._
 import scala.language.implicitConversions;
@@ -8,17 +9,24 @@ import scala.language.implicitConversions;
 package object json {
   
   import com.impressory.plugins.LookUps._
-  
-  implicit def writesRef[T <: HasStringId, _] = new Writes[RefWithId[T]] {
+
+  implicit def writesId[T] = new Writes[Id[T, String]] {
+    def writes(r:Id[T, String]) = Json.toJson(r.id)
+  }
+
+  implicit def readsId[T] = new Reads[Id[T, String]] {
+    def reads(j:JsValue) = Reads.StringReads.reads(j).map(s => s.asId[T])
+  }
+
+  implicit def writesIds[T] = new Writes[Ids[T, String]] {
+    def writes(r:Ids[T, String]) = Json.toJson(r.ids)
+  }
+
+  implicit def writesRef[T <: HasStringId[T], _] = new Writes[RefWithId[T]] {
     def writes(r:RefWithId[T]) = Json.toJson(r.getId)
   }
 
-  implicit def writesRefMany[T <: HasStringId, K] = new Writes[RefManyById[T, K]] {
-    def writes(r:RefManyById[T, K]) = Json.toJson(r.getIds)
-  }
-  
-  
-  implicit def readsRef[T <: HasStringId](implicit lu:LookUp[T, String]) = new Reads[Ref[T]] {
+  implicit def readsRef[T <: HasStringId[T]](implicit lu:LookUp[T, String]) = new Reads[Ref[T]] {
     def reads(j:JsValue) = Reads.StringReads.reads(j).map(s => LazyId(s).of(lu))
   }
 

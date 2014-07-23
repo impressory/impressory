@@ -63,7 +63,7 @@ object WebPage {
           val title = meta.title
           
           blank.copy(
-            title = title,
+            message = blank.message.copy(title=title),
             tags = CETags(site=meta.siteName),
             item = Some(new WebPage(
                 title = title,
@@ -83,15 +83,14 @@ object WebPage {
 
     def createFromJson= { case (WebPage.itemType, json, blank) =>
       val url = (json \ "item" \ "url").asOpt[String]
-      blank.setPublished(true)
       blank.copy(
+        settings = blank.settings.copy(published=Some(System.currentTimeMillis())),
         item = format.reads(json \ "item").asOpt
       ).itself
     }
 
     def updateFromJson = { case (WebPage.itemType, json, before) =>
       val url = (json \ "item" \ "url").asOpt[String]
-      before.setPublished(true)
       before.copy(
         tags = before.tags.copy(site = url flatMap { s => MetaExtractor.site(s) }),
         item = format.reads(json \ "item").asOpt

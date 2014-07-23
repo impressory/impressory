@@ -1,6 +1,6 @@
 package com.impressory.plugins
 
-import com.wbillingsley.handy.appbase.DataActionConfig
+import com.wbillingsley.handyplay.DataActionConfig
 import play.api.mvc._
 
 object RouteConfig {

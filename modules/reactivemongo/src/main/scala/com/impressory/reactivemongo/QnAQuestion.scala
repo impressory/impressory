@@ -1,11 +1,10 @@
 package com.impressory.reactivemongo
 
-import com.wbillingsley.handy.Ref
 
 import reactivemongo.api._
 import reactivemongo.bson._
 
-import com.wbillingsley.handy.{Ref, RefNone, RefWithId}
+import com.wbillingsley.handy.{Id, Ref, RefNone, RefWithId}
 
 import com.impressory.api._
 import com.impressory.api.qna._
@@ -21,11 +20,8 @@ object QnAQuestionDAO  {
     )
   }
 
-  implicit val udvr = UpDownVotingReader
-  implicit val ecr = EmbeddedCommentReader
-  
-  import ContentEntryDAO.RefWithStringIdWriter
-  import ContentEntryDAO.idIs
+
+  import CommonFormats._
   
   implicit object bsonReader extends BSONDocumentReader[QnAQuestion] {
     def readi(doc:BSONDocument):QnAQuestion = ibsonReader.read(doc) 
@@ -43,12 +39,12 @@ object QnAQuestionDAO  {
   implicit object QnAAnswerReader extends BSONDocumentReader[QnAAnswer] {
     def read(doc:BSONDocument):QnAAnswer = {
       new QnAAnswer(
-        id = doc.getAs[BSONObjectID]("_id").get.stringify,
+        id = doc.getAs[Id[QnAAnswer,String]]("_id").get,
         text = doc.getAs[String]("text").get,
-        addedBy = doc.getRef[User]("addedBy"),
+        addedBy = doc.getAs[Id[User,String]]("addedBy").get,
         session  = doc.getAs[String]("session"),
         voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting),
-        comments = doc.getAs[Seq[EmbeddedComment]]("comments").getOrElse(Seq.empty),
+        comments = doc.getAs[Comments]("comments").getOrElse(new Comments),
         accepted = doc.getAs[Boolean]("accepted").getOrElse(false),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis)
@@ -66,7 +62,7 @@ object QnAQuestionDAO  {
     )
   
     def writeNew(a: QnAAnswer) = write(a) ++ BSONDocument(
-      "addedBy" -> a.addedBy, "session" -> a.session, "created" -> a.created, idIs(a.id)
+      "addedBy" -> a.addedBy, "session" -> a.session, "created" -> a.created, "_id" -> a.id
     ) 
   }
   
@@ -74,7 +70,7 @@ object QnAQuestionDAO  {
    * Adds an answer to the question, returning an updated question
    */
   def addAnswer(q:RefWithId[ContentEntry], ans:QnAAnswer) = {
-    val query = BSONDocument("_id" -> q, "kind" -> QnAQuestion.itemType)
+    val query = BSONDocument("_id" -> q.getId, "kind" -> QnAQuestion.itemType)
     val update = BSONDocument(
         "$inc" -> BSONDocument("answerCount" -> 1),
         "$push" -> BSONDocument("answers" -> QnAAnswerWriter.writeNew(ans))
@@ -83,10 +79,10 @@ object QnAQuestionDAO  {
   }
 
   def addAnsComment(q:RefWithId[ContentEntry], a:RefWithId[QnAAnswer], ec:EmbeddedComment) = {
-    val query = BSONDocument("_id" -> q, "answers._id" -> a)
+    val query = BSONDocument("_id" -> q.getId, "answers._id" -> a.getId)
     val update = BSONDocument(
-        "$inc" -> BSONDocument("answers.$.commentCount" -> 1),
-        "$push" -> BSONDocument("answers.$.comments" -> EmbeddedCommentWriter.writeNew(ec))
+        "$inc" -> BSONDocument("answers.$.comments.count" -> 1),
+        "$push" -> BSONDocument("answers.$.comments.embedded" -> ec)
     )
     ContentEntryDAO.updateAndFetch(query, update)
   }  

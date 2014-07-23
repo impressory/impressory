@@ -4,6 +4,7 @@ import com.wbillingsley.handy._
 import Ref._
 import com.wbillingsley.eventroom._
 import com.impressory.api._
+import com.impressory.json._
 import com.impressory.security.Permissions
 import com.impressory.api.events._
 import scala.language.implicitConversions
@@ -46,8 +47,8 @@ object ChatStreamLTJH extends ListenToJsonHandler {
   
   def fromJson = { case ("course", j, appr) =>
     for {
-      courseId <- (j \ "courseId").asOpt[String].toRef
-      approved <- appr ask Permissions.Read(LazyId(courseId).of[Course])
+      courseId <- (j \ "courseId").asOpt[Id[Course,String]].toRef
+      approved <- appr ask Permissions.readCourse(courseId.lazily)
     } yield ChatStream(courseId)
     
   }

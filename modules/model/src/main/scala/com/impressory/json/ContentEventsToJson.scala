@@ -5,7 +5,7 @@ import com.impressory.api.events._
 import com.wbillingsley.handy._
 import com.wbillingsley.handy.Ref._
 import play.api.libs.json._
-import com.wbillingsley.handy.appbase.JsonConverter
+import com.wbillingsley.handyplay.JsonConverter
 
 object ContentEditedToJson extends JsonConverter[ContentEdited, User]  {
     

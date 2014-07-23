@@ -1,5 +1,6 @@
 package com.impressory.play.controllers
 
+import com.impressory.plugins.LookUps
 import com.wbillingsley.handy._
 import Ref._
 import com.wbillingsley.handyplay._
@@ -11,7 +12,6 @@ import com.impressory.api._
 import com.impressory.api.qna._
 import play.api.libs.iteratee.Enumerator
 import com.impressory.security.Permissions
-import com.wbillingsley.handy.appbase.DataAction
 import com.impressory.reactivemongo.ContentEntryDAO
 import com.impressory.reactivemongo.QnAQuestionDAO
 
@@ -28,7 +28,7 @@ object QnAController extends Controller {
   def listQuestions(cid:String, skip:Option[Int] = None) = DataAction.returning.many { implicit request => 
       for (
           course <- refCourse(cid);
-          approved <- request.approval ask Permissions.Read(course.itself);
+          approved <- request.approval ask Permissions.readCourse(course.itself);
           question <- ContentEntryDAO.byKind(course.itself, QnAQuestion.itemType)
       ) yield question  
   }
@@ -40,9 +40,12 @@ object QnAController extends Controller {
       for {
         question <- refContentEntry(qid);
         user <- request.approval.who
-        approved <- request.approval ask Permissions.Read(question.course);
+        approved <- request.approval ask Permissions.readCourse(question.course);
         text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("We need some text in that answer");
-        updated <- QnAQuestionDAO.addAnswer(question.itself, new QnAAnswer(id=ContentEntryDAO.allocateId, text=text, addedBy=user.itself, session=Some(request.sessionKey)))
+        updated <- QnAQuestionDAO.addAnswer(
+          question.itself,
+          new QnAAnswer(id=LookUps.allocateId, text=text, addedBy=user.id, session=Some(request.sessionKey))
+        )
       } yield updated
   }
     

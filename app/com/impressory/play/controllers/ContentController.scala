@@ -2,6 +2,8 @@ package com.impressory.play.controllers
 
 import com.wbillingsley.handy._
 import Ref._
+import Id._
+import com.wbillingsley.handyplay._
 import com.wbillingsley.handyplay.RefConversions._
 import play.api._
 import play.api.mvc._
@@ -13,7 +15,7 @@ import com.impressory.plugins._
 import com.impressory.eventroom.EventRoom
 import com.impressory.play.model._
 import com.impressory.security.Permissions
-import com.wbillingsley.handy.appbase.DataAction
+
 import com.impressory.reactivemongo.ContentEntryDAO
 
 object ContentController extends Controller {
@@ -32,14 +34,14 @@ object ContentController extends Controller {
   def entry(courseId:String, entryId:String) = DataAction.returning.one { implicit request => 
     for (
         entry <- refContentEntry(entryId);
-        approved <- request.approval ask Permissions.ReadEntry(entry.itself)
+        approved <- request.approval ask Permissions.readEntry(entry.itself)
     ) yield entry
   }
   
   def findEntriesById(courseId:String) = DataAction.returning.many(parse.json) { implicit request =>
     val ids = (request.body \ "ids").asOpt[Set[String]].getOrElse(Set.empty)
     for {
-      approved <- request.approval ask Permissions.Read(refCourse(courseId)) 
+      approved <- request.approval ask Permissions.readCourse(refCourse(courseId))
       e <- RefManyById.of[ContentEntry](ids.toSeq)
     } yield e
   }  
@@ -64,7 +66,7 @@ object ContentController extends Controller {
         case Some(eid) => {
           // An entry ID has been given. Fetch it if allowed.          
           val entry = refContentEntry(eid)
-          for (e <- entry; a <- approval ask Permissions.ReadEntry(e.itself)) yield e
+          for (e <- entry; a <- approval ask Permissions.readEntry(e.itself)) yield e
         }
         case None => {
           // An entry ID has not been given. Search according to the filters.
@@ -103,14 +105,17 @@ object ContentController extends Controller {
       // Check the user is allowed to create the content (and to protect it if they've chosen to)
       approved <- {
         if (protect) {
-          approval ask(AddContent(c.itself), ProtectContent(c.itself))
+          approval ask(addContent(c.itself), protectContent(c.itself))
         } else {
-          approval ask AddContent(c.itself) 
+          approval ask addContent(c.itself)
         }
       };
       
       // Create a ContentEntry (without its item) from the data
-      blank = ContentEntryDAO.unsaved.copy(course=c.itself, addedBy=user.itself, settings=CESettings(protect=protect));
+      blank = ContentEntry(
+        id=LookUps.allocateId,
+        course=c.id, addedBy=user.id, settings=CESettings(protect=protect)
+      );
       
       // Updated the metadata, as some settings might be changed (eg, published)
       metaUpdated = ContentEntryToJson.update(blank, requestBody);   
@@ -125,7 +130,7 @@ object ContentController extends Controller {
     } yield {
       
       // If the item is published, send a notification
-      if (saved.published.isDefined) {
+      if (saved.settings.published.isDefined) {
         for (c <- course.getId) {
           EventRoom.notifyEventRoom(BroadcastUnique(c, ContentPublished(saved)))
         }
@@ -151,10 +156,10 @@ object ContentController extends Controller {
       e <- entry;
       
       // Was it published before we started?
-      publishedBefore = e.published.isDefined;
+      publishedBefore = e.settings.published.isDefined;
       
       // Check the user is allowed to create the content (and to protect it if they've chosen to)
-      approved <- approval ask Permissions.EditContent(e.itself);
+      approved <- approval ask Permissions.editContent(e.itself);
       
       // Updated the metadata, as some settings might be changed (eg, published)
       metaUpdated = ContentEntryToJson.update(e, request.body);      
@@ -165,10 +170,8 @@ object ContentController extends Controller {
       saved <- ContentEntryDAO.saveWithItem(updated)
     } yield {
       // If the item is published, send a notification
-      if (!publishedBefore && saved.published.isDefined) {
-        for (c <- saved.course.getId) {
-          EventRoom.notifyEventRoom(BroadcastUnique(c, ContentPublished(saved)))
-        }
+      if (!publishedBefore && saved.settings.published.isDefined) {
+        EventRoom.notifyEventRoom(BroadcastUnique(saved.course, ContentPublished(saved)))
       }
       
       saved
@@ -180,7 +183,7 @@ object ContentController extends Controller {
     val approval = request.approval    
     for (
       e <- refContentEntry(entryId);
-      approved <- approval ask Permissions.EditContent(e.itself);
+      approved <- approval ask Permissions.editContent(e.itself);
       updated = ContentEntryToJson.update(e, request.body);
       saved <- ContentEntryDAO.saveExisting(updated)
     ) yield saved
@@ -216,7 +219,7 @@ object ContentController extends Controller {
     for {
       entry <- refContentEntry(entryId);
       user <- request.user
-      approved <- request.approval ask Permissions.VoteOnEntry(entry.itself);
+      approved <- request.approval ask Permissions.voteOnEntry(entry.itself);
       updated <- ContentEntryDAO.voteUp(entry, user.itself)
     } yield updated
   }
@@ -228,7 +231,7 @@ object ContentController extends Controller {
     for {
       entry <- refContentEntry(entryId);
       user <- request.user
-      approved <- request.approval ask Permissions.VoteOnEntry(entry.itself);
+      approved <- request.approval ask Permissions.voteOnEntry(entry.itself);
       updated <- ContentEntryDAO.voteDown(entry, user.itself)
     } yield updated
   }
@@ -238,8 +241,8 @@ object ContentController extends Controller {
       text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("The message contained no text");
       entry <- refContentEntry(entryId);
       user <- request.user
-      approved <- request.approval ask Permissions.CommentOnEntry(entry.itself);
-      updated <- ContentEntryDAO.addComment(entry, user.itself, text)
+      approved <- request.approval ask Permissions.commentOnEntry(entry.itself);
+      updated <- ContentEntryDAO.addComment(entry, user.id, text)
     } yield updated
   }
   
@@ -253,7 +256,8 @@ object ContentController extends Controller {
       case Accepts.Json() => {
         val res = for (
           ce <- ContentItemToJson.whatIsIt(
-              ContentEntryDAO.unsaved,
+              // TODO: avoid putting fake IDs into the object
+              ContentEntry(id=LookUps.allocateId, addedBy = "".asId[User], course="".asId[Course]),
               code
             ) orIfNone UserError("Sorry, I don't recognise that content");
           j <- ContentEntryToJson.toJsonForInput(ce)

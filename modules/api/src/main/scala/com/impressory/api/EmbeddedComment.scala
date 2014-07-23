@@ -4,14 +4,20 @@ import com.wbillingsley.handy._
 
 case class EmbeddedComment (
   
-  id:String,
-    
+  id:Id[EmbeddedComment,String],
+
+  addedBy:Id[User,String],
+
   text:String = "",
 
-  addedBy:RefWithId[User] = RefNone,
-  
   created:Long = System.currentTimeMillis,
   
   voting:UpDownVoting = new UpDownVoting
   
-) extends HasStringId
+) extends HasStringId[EmbeddedComment]
+
+case class Comments(
+  count: Int = 0,
+
+  embedded: Seq[EmbeddedComment] = Seq.empty
+)

@@ -2,7 +2,10 @@ package com.impressory.play.controllers
 
 import com.wbillingsley.handy._
 import Ref._
+import Ids._
+import com.wbillingsley.handyplay._
 import com.wbillingsley.handyplay.RefConversions._
+
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
@@ -10,9 +13,8 @@ import com.impressory.api._
 import com.impressory.api.enrol._
 import com.impressory.security._
 import com.impressory.play.model._
-import com.wbillingsley.handy.appbase.DataAction
 
-import com.impressory.reactivemongo.{CourseDAO, CourseInviteDAO}
+import com.impressory.reactivemongo.{RegistrationDAO, CourseDAO, CourseInviteDAO}
 
 
 
@@ -21,6 +23,7 @@ object CourseController extends Controller {
   implicit val ctoj = com.impressory.json.CourseToJson
   implicit val citoj = com.impressory.json.CourseInviteToJson
   implicit val utoj = com.impressory.json.UserToJson
+  implicit val rtoj = com.impressory.json.RegistrationToJson
   
   import com.impressory.plugins.LookUps._
   import com.impressory.plugins.RouteConfig._
@@ -48,11 +51,10 @@ object CourseController extends Controller {
   def myCourses = DataAction.returning.many { implicit request => 
     for {
       u <- request.user
-      courseIds = {
-        println(u.registrations)
-        for (r <- u.registrations; id <- r.course.getId) yield id
-      }
-      c <- RefManyById.of[Course](courseIds)
+      courseIds <- {
+        for (r <- RegistrationDAO.byUser(u.id)) yield r.course
+      }.toIds
+      c <- courseIds.lookUp
     } yield c
   }
   
@@ -76,7 +78,7 @@ object CourseController extends Controller {
   def invites(cid: String) = { println("foo"); DataAction.returning.many { implicit request => 
     for (
       c <- refCourse(cid);
-      approved <- request.approval ask Permissions.ManageCourseInvites(c.itself);
+      approved <- request.approval ask Permissions.manageCourseInvites(c.itself);
       i <- CourseInviteDAO.byCourse(c.itself)
     ) yield i
   }}

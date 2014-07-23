@@ -2,13 +2,15 @@ package com.impressory.play.controllers
 
 import com.wbillingsley.handy._
 import Ref._
-import com.wbillingsley.handyplay.RefConversions._
+import Id._
+import com.wbillingsley.handyplay._
+import RefConversions._
+
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 import com.impressory.api._
 import com.impressory.reactivemongo.ViewLog
-import com.wbillingsley.handy.appbase.DataAction
 
 object ViewLogController extends Controller {
   
@@ -34,9 +36,9 @@ object ViewLogController extends Controller {
       cId <- Ref(courseId);
       e <- optionally { for (eId <- Ref(entryId); e <- refContentEntry(eId)) yield e }; 
       record = ViewLog.Record(
-        course = refCourse(cId),
+        course = cId.asId[Course],
         entry = e,
-        user = LazyId(userId).whichIs(request.user),
+        user = userId,
         session = Some(request.sessionKey),
         template = template,
         params = params,

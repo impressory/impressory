@@ -3,7 +3,7 @@ package com.impressory.api.events
 import com.wbillingsley.eventroom._
 import com.impressory.api._
 import play.api.libs.json._
-import com.wbillingsley.handy.appbase.JsonConverter
+import com.wbillingsley.handyplay.JsonConverter
 import com.wbillingsley.handy._
 import Ref._
 
@@ -12,7 +12,7 @@ case class Mem(u: Option[User]) extends Member {
   val nickname = u.flatMap(_.nickname).getOrElse("Anonymous")
   
   implicit def toJson = Some(Json.obj(
-    "id" -> u.map(_.id),
+    "id" -> u.map(_.id.id),
     "nickname" -> nickname 
   ))
 
@@ -24,7 +24,7 @@ object Mem {
   }
 }
 
-case class BroadcastStandard[T](courseId:String, cts:T)(implicit ttoj: JsonConverter[T, User]) extends BroadcastEvent(ChatStream(courseId)) {
+case class BroadcastStandard[T](courseId:Id[Course,String], cts:T)(implicit ttoj: JsonConverter[T, User]) extends BroadcastEvent(ChatStream(courseId)) {
   
   override def toJsonFor(mem:Member) = toJson
   
@@ -33,7 +33,7 @@ case class BroadcastStandard[T](courseId:String, cts:T)(implicit ttoj: JsonConve
   }
 }
 
-case class BroadcastUnique[T](courseId:String, cts:T)(implicit ttoj: JsonConverter[T, User]) extends BroadcastEvent(ChatStream(courseId)) {
+case class BroadcastUnique[T](courseId:Id[Course,String], cts:T)(implicit ttoj: JsonConverter[T, User]) extends BroadcastEvent(ChatStream(courseId)) {
   override def toJsonFor(mem:Member) = mem match {
     case Mem(optUser) => ttoj.toJsonFor(cts, Approval(optUser.toRef))
     case _ => ttoj.toJson(cts)

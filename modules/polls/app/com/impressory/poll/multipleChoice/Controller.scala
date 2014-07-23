@@ -1,14 +1,16 @@
 package com.impressory.poll.multipleChoice
 
+import com.impressory.plugins.LookUps
 import com.wbillingsley.handy._
 import com.wbillingsley.handy.Ref._
+import com.wbillingsley.handyplay._
 import com.wbillingsley.handyplay.RefConversions._
+
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 import com.impressory.api._
 import com.impressory.security._
-import com.wbillingsley.handy.appbase.DataAction
 
 // Import the DataAction configuration
 import com.impressory.plugins.RouteConfig.dataActionConfig
@@ -43,13 +45,13 @@ object MCPollController extends Controller {
           }
           case None => {
             val now = System.currentTimeMillis()
-            val v = MCPollResponseDAO.unsaved
-            val updated = v.copy(
-              poll = e.itself,
-              addedBy = u.itself,
+            val updated = MCPollResponse(
+              id = LookUps.allocateId,
+              poll = e.id,
+              addedBy = Some(u.id),
               answer = answer,
               session = Some(request.sessionKey),
-              responses = v.responses :+ PastResponse(answer, Some(request.sessionKey), updated=now),
+              responses = Seq(PastResponse(answer, Some(request.sessionKey), updated=now)),
               updated = now
             )
             MCPollResponseDAO.newVote(updated)
@@ -81,7 +83,7 @@ object MCPollController extends Controller {
     
     val resp = for (
         poll <- LazyId.of[ContentEntry](pid);
-        approved <- request.approval ask Permissions.Chat(poll.course)
+        approved <- request.approval ask Permissions.chat(poll.course)
     ) yield {
       com.impressory.eventroom.EventRoom.default ! PushPollToChat(poll)
       Ok("")

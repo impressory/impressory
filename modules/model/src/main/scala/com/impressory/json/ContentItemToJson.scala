@@ -4,7 +4,7 @@ import com.wbillingsley.handy.{Ref, RefNone, RefFailed, Approval}
 import Ref._
 import com.impressory.api._
 import play.api.libs.json._
-import com.wbillingsley.handy.appbase.JsonConverter
+import com.wbillingsley.handyplay.JsonConverter
 
 object ContentItemToJson {
     

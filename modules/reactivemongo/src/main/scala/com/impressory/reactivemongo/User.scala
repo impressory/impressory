@@ -3,12 +3,14 @@ package com.impressory.reactivemongo
 import reactivemongo.api._
 import reactivemongo.bson._
 import reactivemongo.core.commands.LastError
-import com.wbillingsley.encrypt.Encrypt
-import com.wbillingsley.handy.{RefFuture, Ref, RefWithId}
+import com.wbillingsley.handy.{Id, RefFuture, Ref, RefWithId}
 import com.wbillingsley.handy.reactivemongo.DAO
 import Ref._
+import Id._
 import com.impressory.api._
-import com.wbillingsley.handy.appbase.UserProvider
+import com.wbillingsley.handyplay.UserProvider
+
+import CommonFormats._
 
 // Import the configuration to create RefByIds (where to look them up)
 import com.impressory.plugins.LookUps._
@@ -50,22 +52,17 @@ object UserDAO extends DAO with UserProvider[User] {
 
   /** Converts ActiveSession to and from BSON */
   implicit val activeSessionFormat = Macros.handler[ActiveSession]  
-  
-  /** Converts Registration to and from BSON */
-  implicit val registrationFormat = Macros.handler[Registration]  
 
   implicit object bsonReader extends BSONDocumentReader[User] {
     def read(doc: BSONDocument): User = {
       val user = new User(
-        id = doc.getAs[BSONObjectID]("_id").get.stringify,
+        id = doc.getAs[Id[User,String]]("_id").get,
         name = doc.getAs[String]("name"),
         nickname = doc.getAs[String]("nickname"),
         avatar = doc.getAs[String]("avatar"),
         pwlogin = doc.getAs[PasswordLogin]("pwlogin").getOrElse(PasswordLogin()),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis),
-        identities = doc.getAs[Seq[Identity]]("identities").getOrElse(Seq.empty),
-        registrations = doc.getAs[Seq[Registration]]("registrations").getOrElse(Seq.empty),
-        siteRoles = doc.getAs[Set[SiteRole]]("siteRoles").getOrElse(Set.empty) 
+        identities = doc.getAs[Seq[Identity]]("identities").getOrElse(Seq.empty)
       )
       user
     }
@@ -80,15 +77,13 @@ object UserDAO extends DAO with UserProvider[User] {
   val executionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
 
   def createByEmail(email: String, password: String) = {
-    val u = unsaved
+    val u = User(id=allocateId.asId[User])
     val updated = u.copy(
       nickname=Some(defaultEmailNickname(email)),
-      pwlogin=PasswordLogin(email=Some(email), pwhash = u.pwlogin.hash(password))
+      pwlogin=PasswordLogin(email=Some(email), pwhash = Some(u.pwlogin.hash(password)))
     ) 
     saveNew(updated)
   }
-
-  def unsaved = User(id = allocateId, siteRoles=defaultSiteRoles)
 
   /**
    * Saves the user's details
@@ -117,7 +112,7 @@ object UserDAO extends DAO with UserProvider[User] {
    * Set's the user's password
    */
   def setPassword(u:User, password:String) = {
-    updatePWLogin(u.copy(pwlogin=u.pwlogin.copy(pwhash=u.pwlogin.hash(password))))
+    updatePWLogin(u.copy(pwlogin=u.pwlogin.copy(pwhash=Some(u.pwlogin.hash(password)))))
   }
 
   
@@ -134,8 +129,6 @@ object UserDAO extends DAO with UserProvider[User] {
       "pwlogin" -> u.pwlogin,
       "identities" -> u.identities,
       "activeSessions" -> u.activeSessions,
-      "registrations" -> u.registrations,
-      "siteRoles" -> u.siteRoles,
       "created" -> u.created
     ),
     u
@@ -146,7 +139,7 @@ object UserDAO extends DAO with UserProvider[User] {
    */
   def pushIdentity(ru:RefWithId[User], i:Identity) = {
     updateAndFetch(
-        query = BSONDocument("_id" -> ru), 
+        query = BSONDocument("_id" -> ru.getId),
         update = BSONDocument("$push" -> BSONDocument("identities" -> i)) 
     )
   }  
@@ -166,7 +159,7 @@ object UserDAO extends DAO with UserProvider[User] {
   
   /** Adds a session to this user. Typically this happens at login. */
   def pushSession(ru:RefWithId[User], as:ActiveSession) = updateAndFetch(
-    query = BSONDocument("_id" -> ru), 
+    query = BSONDocument("_id" -> ru.getId),
     update = BSONDocument("$push" -> BSONDocument("activeSessions" -> as))
   )
   
@@ -211,19 +204,6 @@ object UserDAO extends DAO with UserProvider[User] {
        hash == user.pwlogin.pwhash
       }      
     ) yield user
-  }
-  
-  def pushRegistration(ru:Ref[User], r:Registration) = {
-    for {
-      userId <- ru.refId
-      updated <- updateAndFetch(
-        query=BSONDocument(idIs(userId), "registrations.course" -> r.course),
-        update=BSONDocument("$addToSet" -> BSONDocument("registrations.$.roles" -> BSONDocument("$each" -> r.roles)))
-      ) orIfNone updateAndFetch(
-        query=BSONDocument(idIs(userId)),
-        update=BSONDocument("$addToSet" -> BSONDocument("registrations" -> r))
-      )
-    } yield updated
   }
 
 }

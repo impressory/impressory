@@ -6,10 +6,10 @@ import com.wbillingsley.handy._
 import Ref._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.wbillingsley.handy.appbase.DataAction
+import com.wbillingsley.handyplay.DataAction
 import com.impressory.json.UserToJson
 import com.impressory.plugins._
-import com.wbillingsley.handy.appbase.AppbaseRequest
+import com.wbillingsley.handyplay.AppbaseRequest
 
 
 object Application extends Controller {  

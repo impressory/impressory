@@ -8,12 +8,13 @@ define(["./base"], (l) ->
       $scope.question.madeHtml = markdownService.makeHtml($scope.question?.text || "")
     )
 
-    $scope.save = (question) -> QnAService.createQuestion($scope.course.id, question)
-      .success((question) -> $location.path("/course/#{$scope.course.id}/qna/#{question.id}")) 
-      .error((data) ->
-        $scope.errors = [ data.error || "Unexpected error" ]
-        console.log(data)
-      )
+    $scope.save = (question) ->
+      QnAService.createQuestion($scope.course.id, question)
+        .success((question) -> $location.path("/course/#{$scope.course.id}/qna/#{question.id}"))
+        .error((data) ->
+          $scope.errors = [ data.error || "Unexpected error" ]
+          console.log(data)
+        )
   ]
 
 )

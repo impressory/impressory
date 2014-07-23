@@ -4,9 +4,9 @@ import com.wbillingsley.handy._
 
 case class UpDownVoting(
     
-  up:RefManyById[User, String] = RefManyById.empty,
+  up:Ids[User, String] = new Ids(Seq.empty),
   
-  down:RefManyById[User, String] = RefManyById.empty,
+  down:Ids[User, String] = new Ids(Seq.empty),
   
   score: Int = 0
     
@@ -14,7 +14,7 @@ case class UpDownVoting(
 
   def hasVoted(u:RefWithId[User]) = {
     u.getId match {
-      case Some(id) => up.rawIds.contains(id) || down.rawIds.contains(id)
+      case Some(id) => up.ids.contains(id) || down.ids.contains(id)
       case _ => false
     }
     

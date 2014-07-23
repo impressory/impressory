@@ -5,7 +5,7 @@ import com.impressory.api.events._
 import com.wbillingsley.handy._
 import com.wbillingsley.handy.Ref._
 import play.api.libs.json._
-import com.wbillingsley.handy.appbase.JsonConverter
+import com.wbillingsley.handyplay.JsonConverter
 
 
 object ChatCommentToJson extends JsonConverter[ChatComment, User] {
@@ -19,7 +19,7 @@ object ChatCommentToJson extends JsonConverter[ChatComment, User] {
       "created" -> cc.created,
       "text" -> cc.text,
       "topics" -> cc.topics,
-      "addedBy" -> { if (cc.anonymous) RefNone else cc.addedBy }
+      "addedBy" -> { if (cc.anonymous) JsNull else cc.addedBy }
     ).itself
   }
   

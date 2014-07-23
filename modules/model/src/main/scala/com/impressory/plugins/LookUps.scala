@@ -1,17 +1,18 @@
 package com.impressory.plugins
 
 import com.wbillingsley.handy._
+import Id._
 import com.impressory.api._
-import com.wbillingsley.handy.appbase.UserProvider
+import com.wbillingsley.handyplay.UserProvider
 
 object LookUps {
   
   val catalog = new LookUpCatalog
   
   def lookUpFails[T] = new LookUp[T, Any] {
-    def lookUpOne[K <: Any](r:RefById[T, K]) = RefFailed(new IllegalStateException("No look up method for this type has been configured"))
+    def one[K <: Any](r:Id[T, K]) = RefFailed(new IllegalStateException("No look up method for this type has been configured"))
 
-    def lookUpMany[K <: Any](r:RefManyById[T, K]) = RefFailed(new IllegalStateException("No look up method for this type has been configured"))
+    def many[K <: Any](r:Ids[T, K]) = RefFailed(new IllegalStateException("No look up method for this type has been configured"))
   }
 
   implicit var courseLookUp:LookUp[Course,String] = lookUpFails[Course]
@@ -34,7 +35,15 @@ object LookUps {
     
     def bySessionKey(id:String) = failure
   }
-  
+
+  var registrationProvider = new RegistrationProvider {
+    def find(user:Id[User, String], course:Id[Course, String]):Ref[Registration] = new RefFailed(new IllegalStateException("No registration provider has been configured."))
+  }
+
   implicit def getUserProvider = userProvider
+
+  var idAllocator:Option[Function0[String]] = None
+
+  def allocateId[T]:Id[T,String] = idAllocator.get.apply.asId[T]
 
 }

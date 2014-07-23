@@ -12,14 +12,14 @@ import com.impressory.play.model.refCourse
 import play.api.libs.ws.WS.WSRequest
 import play.api.libs.oauth.OAuthCalculator
 import com.impressory.reactivemongo.UserDAO
-import com.wbillingsley.handy.appbase.DataAction
+import com.wbillingsley.handyplay.DataAction
+import DataAction.BodyAction
 import com.wbillingsley.handy.playoauth.OAuthDetails
 import com.wbillingsley.handy.playoauth.UserRecord
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import com.wbillingsley.handy.playoauth.PlayAuth
 import scala.util.Success
-import com.wbillingsley.handy.appbase.DataAction.BodyAction
 import play.api.mvc.BodyParsers
 import play.api.mvc.EssentialAction
 
@@ -44,7 +44,7 @@ object LTIAuthController extends Controller {
     
     val resp = for {
       course <- refCourse(courseId) orIfNone Refused("No such course")
-      valid <- validateOAuthSignature(request, course.lti.key, course.lti.secret);
+      valid <- validateOAuthSignature(request, course.settings.lti.key, course.settings.lti.secret);
       params <- Ref(request.body.asFormUrlEncoded) orIfNone Refused("OAuth response had no parameters")
       tool_consumer_instance_guid <- {
         getParam(params, "oauth_consumer_key") orElse

@@ -59,7 +59,7 @@ object ContentModel {
    * @return
    */
   def recommendCE(course:RefWithId[Course], tok:Approval[User], topic:Option[String], filters:Map[String,String]):Ref[ContentEntry] = {
-    (for (approved <- tok ask Read(course)) yield {
+    (for (approved <- tok ask readCourse(course)) yield {
       val all = ContentEntryDAO.byTopic(course, topic.getOrElse(defaultTopic))
       val filtered = all.withFilter(applyFilters(_, filters))
       pick(filtered)
@@ -67,7 +67,7 @@ object ContentModel {
   }  
 
   def entriesForTopic(course:RefWithId[Course], tok:Approval[User], topic:Option[String]):RefMany[ContentEntry] = {
-    (for (approved <- tok ask Read(course)) yield {
+    (for (approved <- tok ask readCourse(course)) yield {
       val all = ContentEntryDAO.byTopic(course, topic.getOrElse(defaultTopic))
       all
     }).flatten 
@@ -79,7 +79,7 @@ object ContentModel {
   }  
   
   def allEntries(course:RefWithId[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
-    (for (approved <- tok ask Read(course)) yield {
+    (for (approved <- tok ask readCourse(course)) yield {
       val all = ContentEntryDAO.inIndexByCourse(course)
       all
     }).flatten 
@@ -87,7 +87,7 @@ object ContentModel {
 
   def recentEntries(course:RefWithId[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
     for {
-      approved <- tok ask Read(course)
+      approved <- tok ask readCourse(course)
       e <- ContentEntryDAO.recentInNewsByCourse(course)
     } yield e
   }  

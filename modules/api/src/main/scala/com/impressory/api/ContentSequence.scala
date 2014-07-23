@@ -1,10 +1,12 @@
 package com.impressory.api
 
 import com.wbillingsley.handy._
+import Ref._
+import Id.AsId
 
 case class ContentSequence( 
     
-  entries:RefManyById[ContentEntry, String] = RefManyById.empty
+  entries:Ids[ContentEntry, String] = new Ids(Seq.empty)
 
 )(implicit lookupCE:LookUp[ContentEntry, String]) extends ContentItem {
   
@@ -15,20 +17,25 @@ case class ContentSequence(
    */
   def contains(entry:RefWithId[ContentEntry]) = {
     entry.getId match {
-      case Some(id) => entries.rawIds.contains(id)
+      case Some(id) => entries.ids.contains(id)
       case _ => false
     }
   }
   
   def indexOf(entry:RefWithId[ContentEntry]) = {
     entry.getId match {
-      case Some(id) => entries.rawIds.indexOf(id)
+      case Some(id) => entries.ids.indexOf(id)
       case _ => -1
     }    
   }  
   
-  def start = entries.first
-  
+  def start = {
+    val id = for {
+      s <- entries.ids.headOption
+    } yield s.asId[ContentEntry]
+    id.toRef.flatMap(_.lazily)
+  }
+
 }
 
 object ContentSequence {

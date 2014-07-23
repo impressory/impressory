@@ -1,14 +1,15 @@
 package com.impressory.auth.controllers
 
+import com.impressory.plugins.LookUps
 import play.api.mvc.{AnyContent, Controller, Action, Request}
 import play.api.libs.ws.WS
 import play.api.libs.json.Json
 import play.api.Play
 import Play.current
-import com.wbillingsley.encrypt.Encrypt
+
 import com.wbillingsley.handy._
 import com.wbillingsley.handy.playoauth.{OAuthDetails, UserRecord}
-import com.wbillingsley.handy.appbase.DataAction
+import com.wbillingsley.handyplay.DataAction
 import Ref._
 import com.impressory.api._
 import com.impressory.json._
@@ -70,12 +71,13 @@ object InterstitialController extends Controller {
       details <- Ref(mem) orIfNone Refused("There appear to be no user details to register");
       user <- {
         val i = Identity(service=details.service, value=details.id, avatar=details.avatar, username=details.username);
-        val u = UserDAO.unsaved.copy(
-            name=details.name, 
-            nickname=details.nickname, 
-            avatar=details.avatar,
-            identities = Seq(i),
-            activeSessions = Seq(ActiveSession(request.sessionKey, ip = request.remoteAddress))
+        val u = User(
+          id = LookUps.allocateId,
+          name=details.name,
+          nickname=details.nickname,
+          avatar=details.avatar,
+          identities = Seq(i),
+          activeSessions = Seq(ActiveSession(request.sessionKey, ip = request.remoteAddress))
         )
         UserDAO.saveNew(u)
       }

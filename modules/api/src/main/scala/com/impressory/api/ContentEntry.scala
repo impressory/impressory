@@ -1,50 +1,34 @@
 package com.impressory.api
 
 import com.wbillingsley.handy._
-import com.wbillingsley.handy.appbase.JsonConverter
-import com.wbillingsley.encrypt.Encrypt
 
 case class ContentEntry (
     
-  id:String,
+  id:Id[ContentEntry, String],
     
-  course: RefWithId[Course] = RefNone,
+  course: Id[Course, String],
   
-  addedBy: RefWithId[User] = RefNone,
+  addedBy: Id[User, String],
   
   item: Option[ContentItem] = None,
   
-  tags: CETags = CETags(),
+  tags: CETags = new CETags,
   
-  title:Option[String] = None,
+  message: CEMessage = new CEMessage,
   
-  note:Option[String] = None,
-  
-  settings: CESettings = CESettings(),
+  settings: CESettings = new CESettings,
   
   voting: UpDownVoting = new UpDownVoting,
   
-  commentCount:Int = 0,
+  comments:Comments = new Comments,
 
-  comments:Seq[EmbeddedComment] = Seq.empty,
-    
   updated: Long = System.currentTimeMillis,
-  
-  var published: Option[Long] = None,
 
   created: Long = System.currentTimeMillis
     
-) extends HasStringId {
+) extends HasStringId[ContentEntry] {
   
   def kind = item.map(_.itemType)
-  
-  def setPublished(p:Boolean) {
-    if (p) {
-      published = published orElse Some(System.currentTimeMillis())
-    } else {
-      published = None
-    }
-  }
   
   /**
    * Two entries are equal if they have the same ID
@@ -57,6 +41,12 @@ case class ContentEntry (
 }
 
 
+case class CEMessage(
+  title:Option[String] = None,
+
+  note:Option[String] = None
+)
+
 case class CESettings(
   
   showFirst: Boolean = false,
@@ -67,7 +57,9 @@ case class CESettings(
   
   inNews: Boolean = true,
   
-  inIndex: Boolean = true
+  inIndex: Boolean = true,
+
+  published: Option[Long] = None
 )
 
 case class CETags(

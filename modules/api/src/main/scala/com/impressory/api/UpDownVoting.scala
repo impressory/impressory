@@ -14,7 +14,7 @@ case class UpDownVoting(
 
   def hasVoted(u:RefWithId[User]) = {
     u.getId match {
-      case Some(id) => up.ids.contains(id) || down.ids.contains(id)
+      case Some(id) => up.ids.contains(id.id) || down.ids.contains(id.id)
       case _ => false
     }
     

@@ -2,7 +2,9 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /fail                       com.impressory.play.controllers.Application.chunkedFailure
+# WebJars
+GET     /webjars/*file                    controllers.WebJarAssets.at(file)
+GET     /vassets/*file                    controllers.Assets.versioned(path="/public", file: Asset)
 
 # Partials
 

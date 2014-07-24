@@ -6,15 +6,15 @@
   <div class="form form-inline">
   
     <span class="form-group pull-left-gap">
-      <button ng-class="{ active: viewMode=='columns'}" ng-click="viewAsColumns()" class="btn-command thin subdued inline-form-control"><i class="icon-th-large"></i></button>
-      <button ng-class="{ active: viewMode=='rows'}" ng-click="viewAsRows()" class="btn-command thin subdued inline-form-control"><i class="icon-align-justify"></i></button>
+      <button ng-class="{ active: viewMode=='columns'}" ng-click="viewAsColumns()" class="btn-command thin subdued inline-form-control"><i class="fa fa-th-large"></i></button>
+      <button ng-class="{ active: viewMode=='rows'}" ng-click="viewAsRows()" class="btn-command thin subdued inline-form-control"><i class="fa fa-align-justify"></i></button>
     </span>
     
     <div class="form-group pull-left-gap" style="max-width: 150px">
       <span class="input-group input-group-xs" >
         <input type="text" ng-model="tagFilter" placeholder="filter tags" class="form-control">
         <span class="input-group-btn">
-          <button class="btn btn-default" ng-click="tagFilter = null"><i class="icon-remove"></i></button>
+          <button class="btn btn-default" ng-click="tagFilter = null"><i class="fa fa-times"></i></button>
         </span>
       </span>
     </div>

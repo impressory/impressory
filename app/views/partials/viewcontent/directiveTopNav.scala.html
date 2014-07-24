@@ -17,13 +17,13 @@
         <li class="navli">
           <button class="command require-edit" ng-class="{ 'active': panels.top == 'editDetails' }"
             title="Edit details and tags" ng-click="panels.toggleEditDetails()">
-            <i class="icon-tags"></i>
+            <i class="fa fa-tags"></i>
           </button>
         </li>
         <li class="navli">
           <button class="command require-edit" ng-disabled="!entry.permissions.edit" ng-class="{ 'active': panels.top == 'editContent' }" ng-click="panels.toggleEditContent()"
             id="edit-button" title="Edit content">
-            <i class="icon-edit"></i>
+            <i class="fa fa-edit"></i>
           </button>
         </li>
         
@@ -47,7 +47,7 @@
         <span>
           <button class="command require-chat" ng-class="{ 'active': panels.top == 'comments' }" 
                   title="Comments" ng-click="panels.toggleComments();">
-            <span >{{ entry.comments.count || 0 }}</span> <i class="icon-comments"></i>
+            <span >{{ entry.comments.count || 0 }}</span> <i class="fa fa-comments"></i>
           </button>
         </span> 
         <span class="spacer"></span> 

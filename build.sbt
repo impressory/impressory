@@ -62,7 +62,12 @@ lazy val main = (project in file("."))
 // Dependencies for main
 
 libraryDependencies ++= Seq(
-  "com.wbillingsley" %% "handy-play-oauth" % "0.3.0-SNAPSHOT"
+  "com.wbillingsley" %% "handy-play-oauth" % "0.3.0-SNAPSHOT",
+  // JavaScript
+  "org.webjars" %% "webjars-play" % "2.3.0",
+  "org.webjars" % "bootstrap" % "3.1.1-2",
+  "org.webjars" % "font-awesome" % "4.1.0",
+  "org.webjars" % "angularjs" % "1.2.20"
 )
     
 

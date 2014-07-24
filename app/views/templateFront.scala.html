@@ -2,12 +2,9 @@
 <!DOCTYPE html>
 <html>
 
-	<!-- Pure CSS. Used in a couple of places where Bootstrap was being problematic. -->
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.1/pure-min.css">
-    
     <!-- Boostrap 3 -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">    
-    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">    
+    <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))'>
+    <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("css/font-awesome.min.css"))'>
 
     <link href="@routes.Assets.at("stylesheets/main.css")" rel="stylesheet">
     
@@ -22,17 +19,17 @@
       </div>
       <div ng-hide="error" class="full-height">@content</div>
     </div>
-    
+
     <!-- JQuery, required for Bootstrap -->
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    
+    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
+
     <!-- Bootstrap -->
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("js/bootstrap.min.js"))'></script>
 
     <!-- Angular.js -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>    
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-route.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-sanitize.min.js"></script>
+    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))'></script>
+    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("angular-route.min.js"))'></script>
+    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("angular-sanitize.min.js"))'></script>
 
     <!-- Pagedown, used for Markdown -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/pagedown/1.0/Markdown.Converter.js"></script>
@@ -56,6 +53,9 @@
     @includeDirectives()
     
     <!-- Impressory, via require.js -->
-    @helper.requireJs(core = routes.Assets.at("javascripts/require.js").url, module = routes.Assets.at("javascripts/main").url)    
-    
+    <script>
+      @Html(org.webjars.RequireJS.getSetupJavaScript(routes.WebJarAssets.at("").url))
+    </script>
+    <script data-main="@routes.Assets.versioned("javascripts/main.js")" src="@routes.WebJarAssets.at(WebJarAssets.locate("require.min.js"))"></script>
+
 </html>

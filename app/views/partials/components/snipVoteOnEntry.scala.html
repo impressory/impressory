@@ -2,10 +2,10 @@
 
 <span>
     <button class="btn-command thin" ng-disabled="!entry.permissions.vote" ng-click="voteDown(entry);" title="downvote">
-      <i class="icon-sort-down"></i>
+      <i class="fa fa-sort-down"></i>
     </button> 
     <span>{{ entry.voting.score || 0 }}</span>
     <button class="btn-command thin"  ng-disabled="!entry.permissions.vote" ng-click="voteUp(entry);" title="upvote">
-      <i class="icon-sort-up"></i>
+      <i class="fa fa-sort-up"></i>
     </button>
 </span>

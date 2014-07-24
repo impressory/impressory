@@ -15,7 +15,7 @@ object UpDownVotingToJson extends JsonConverter[UpDownVoting, User]{
       id <- a.who.refId
     } yield Json.obj(
       "score" -> udv.score,
-      "voted" -> (udv.up.ids.contains(id) || udv.down.ids.contains(id))
+      "voted" -> (udv.up.ids.contains(id.id) || udv.down.ids.contains(id.id))
     )) orIfNone toJson(udv)
   }
   

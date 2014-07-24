@@ -48,7 +48,14 @@ object CommonFormats {
   implicit val courseIdHandler = idHandler[Course]
   implicit val courseIdsHandler = idsHandler[Course]
 
-  implicit val upDownVoting = Macros.handler[UpDownVoting]
+  implicit val upDownVoting = Macros.writer[UpDownVoting]
+  implicit val upDownVotingR = new BSONDocumentReader[UpDownVoting] {
+    def read(doc:BSONDocument) = UpDownVoting(
+      score = doc.getAs[Int]("score").getOrElse(0),
+      up = doc.getAs[Ids[User,String]]("up").getOrElse(new Ids(Seq.empty)),
+      down = doc.getAs[Ids[User,String]]("down").getOrElse(new Ids(Seq.empty))
+    )
+  }
 
   implicit val embeddedComments = Macros.handler[EmbeddedComment]
 

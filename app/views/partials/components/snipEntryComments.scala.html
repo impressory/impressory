@@ -2,7 +2,7 @@
 
 <div class="view-entry-comments sidemargin" ng-controller="Impressory.Controllers.ViewContent.Comments">
   <div class="comments">
-    <div ng-repeat="comment in entry.comments" class="embedded-comment">
+    <div ng-repeat="comment in entry.comments.embedded" class="embedded-comment">
       @views.html.partials.components.snipEmbeddedComment()
     </div>
   </div>

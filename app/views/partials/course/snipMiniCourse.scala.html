@@ -8,11 +8,11 @@
   </div>
   
   <div class="details">
-    <span id="listEntryShortname">{{course.shortName}}</span><br>
+    <span id="listEntryShortname">{{course.coverMatter.shortName}}</span><br>
     <span class="bookTitle">
-      <a ng-href="{{ '/course/' + course.id }}" class="title">{{ course.title }}</a>
+      <a ng-href="{{ '/course/' + course.id }}" class="title">{{ course.coverMatter.title }}</a>
     </span>
-    <div class="bookSummary">{{ course.shortDescription }}</div>
+    <div class="bookSummary">{{ course.coverMatter.shortDescription }}</div>
   </div>
   <div>
     <a class="title" ng-show="course.permissions.read" ng-href="/course/{{course.id}}/activity">(go to newsfeed)</a>

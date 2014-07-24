@@ -77,7 +77,7 @@ object CourseDAO extends DAO with com.impressory.api.dao.CourseDAO {
   }
 
   def listedCourses = {
-    findMany(BSONDocument("listed" -> true))
+    findMany(BSONDocument("settings.listed" -> true))
   }
   
   def saveNew(course:Course) = {

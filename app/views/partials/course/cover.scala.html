@@ -11,22 +11,22 @@
 	    <div class="bookDetails">
 	      <p>
 	        <label>Short name:</label> 
-	        <span id="bookShortName" class="bookShortName">{{ course.shortName || 'No short name' }}</span>
+	        <span id="bookShortName" class="bookShortName">{{ course.coverMatter.shortName || 'No short name' }}</span>
 	      </p>
 	  
 	  
 	      <p>
 	        <label>Short description:</label> 
-	        <span id="bookShortDescription" class="bookShortDescription">{{ course.shortDescription || 'Undescribed' }}</span>
+	        <span id="bookShortDescription" class="bookShortDescription">{{ course.coverMatter.shortDescription || 'Undescribed' }}</span>
 	      </p>
 	  
 	      <p>
 	        <label>Long description:</label> 
-	        <span id="bookLongDescription" class="description">{{ course.longDescription || 'Undescribed' }}</span>
+	        <span id="bookLongDescription" class="description">{{ course.coverMatter.longDescription || 'Undescribed' }}</span>
 	      </p>
 	  
 	      <p>
-	        <label>Sign up policy:</label> <span class="description">{{ course.signupPolicy }}</span>
+	        <label>Sign up policy:</label> <span class="description">{{ course.settings.signupPolicy }}</span>
 	      </p>
 	  
 	    </div>

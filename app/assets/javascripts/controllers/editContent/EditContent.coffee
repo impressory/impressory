@@ -5,6 +5,10 @@ define(["./base"], (l) ->
     unedited = $scope.entry
   
     $scope.entry = angular.copy($scope.entry)
+
+    $scope.setPublished = () ->
+      if !($scope.entry.settings.published?)
+        $scope.entry.settings.published = (new Date).getTime();
   
     $scope.save = () ->
       $scope.errors = []

@@ -16,8 +16,8 @@ object LookUps {
   var chatCommentDAO:ChatCommentDAO = NullChatCommentDAO
 
   implicit def courseLookUp = courseDAO.lookUp
-  implicit var userLookUp = userDAO.lookUp
-  implicit var entryLookUp = contentEntryDAO.lookUp
+  implicit def userLookUp = userDAO.lookUp
+  implicit def entryLookUp = contentEntryDAO.lookUp
 
   /**
    * How the application figures out which user is making a request

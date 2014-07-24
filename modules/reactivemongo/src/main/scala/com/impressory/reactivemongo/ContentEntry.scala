@@ -61,7 +61,7 @@ object ContentEntryDAO extends DAO with com.impressory.api.dao.ContentEntryDAO {
         addedBy = doc.getAs[Id[User, String]]("addedBy").get,
         item = item,
         tags = doc.getAs[CETags]("tags").getOrElse(CETags()),
-        message = doc.getAs[CEMessage]("title").getOrElse(new CEMessage),
+        message = doc.getAs[CEMessage]("message").getOrElse(new CEMessage),
         settings = doc.getAs[CESettings]("settings").getOrElse(CESettings()),
         voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting),
         comments = doc.getAs[Comments]("comments").getOrElse(new Comments),

@@ -15,31 +15,31 @@
         <div class="form">
           <div class="form-group">
             <label>Title</label>
-            <input type="text" class="form-control" ng-model="course.title" required />
+            <input type="text" class="form-control" ng-model="course.coverMatter.title" required />
           </div>
   
           <div class="form-group">
             <label>Short name</label>
-            <input type="text" class="form-control" ng-model="course.shortName" placeholder="Optional" />
+            <input type="text" class="form-control" ng-model="course.coverMatter.shortName" placeholder="Optional" />
           </div>
           
           <div class="form-group">
             <label>Cover image</label>
-            <input type="text" class="form-control" ng-model="course.coverImageURL" placeholder="Optional" />
+            <input type="text" class="form-control" ng-model="course.coverMatter.coverImageURL" placeholder="Optional" />
           </div>
   
           <div class="form-group">
             <label>Short description</label>
-            <textarea class="form-control" ng-model="course.shortDescription" placeholder="Optional"></textarea>
+            <textarea class="form-control" ng-model="course.coverMatter.shortDescription" placeholder="Optional"></textarea>
           </div>
           
           <div class="form-group">      
             <label>Long description</label>
-            <textarea class="form-control" ng-model="course.longDescription" placeholder="Optional"></textarea>
+            <textarea class="form-control" ng-model="course.coverMatter.longDescription" placeholder="Optional"></textarea>
           </div>
         
           <div class="form-group">
-            <label class="checkbox-inline"><input type="checkbox" ng-model="course.listed" /> List publicly</label>
+            <label class="checkbox-inline"><input type="checkbox" ng-model="course.settings.listed" /> List publicly</label>
           </div>
           
           <div>

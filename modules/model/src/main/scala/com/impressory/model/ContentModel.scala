@@ -1,4 +1,4 @@
-package com.impressory.play.model
+package com.impressory.model
 
 import com.wbillingsley.handy._
 import Ref._
@@ -6,13 +6,8 @@ import _root_.scala.collection.mutable
 import java.net.{URISyntaxException, URI}
 
 import com.impressory.api._
-import com.impressory.reactivemongo.ContentEntryDAO
-import com.impressory.security.Permissions
-import Permissions._
-
-
-
-
+import com.impressory.security.Permissions._
+import com.impressory.plugins.LookUps._
 
 
 /**
@@ -60,7 +55,7 @@ object ContentModel {
    */
   def recommendCE(course:RefWithId[Course], tok:Approval[User], topic:Option[String], filters:Map[String,String]):Ref[ContentEntry] = {
     (for (approved <- tok ask readCourse(course)) yield {
-      val all = ContentEntryDAO.byTopic(course, topic.getOrElse(defaultTopic))
+      val all = contentEntryDAO.byTopic(course, topic.getOrElse(defaultTopic))
       val filtered = all.withFilter(applyFilters(_, filters))
       pick(filtered)
     }).flatten 
@@ -68,7 +63,7 @@ object ContentModel {
 
   def entriesForTopic(course:RefWithId[Course], tok:Approval[User], topic:Option[String]):RefMany[ContentEntry] = {
     (for (approved <- tok ask readCourse(course)) yield {
-      val all = ContentEntryDAO.byTopic(course, topic.getOrElse(defaultTopic))
+      val all = contentEntryDAO.byTopic(course, topic.getOrElse(defaultTopic))
       all
     }).flatten 
   }  
@@ -80,15 +75,16 @@ object ContentModel {
   
   def allEntries(course:RefWithId[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
     (for (approved <- tok ask readCourse(course)) yield {
-      val all = ContentEntryDAO.inIndexByCourse(course)
+      val all = contentEntryDAO.inIndexByCourse(course)
       all
     }).flatten 
   }
 
-  def recentEntries(course:RefWithId[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
+  def recentEntries(course:Ref[Course], tok:Approval[User], filters:Map[String,String] = Map.empty):RefMany[ContentEntry] = {
     for {
-      approved <- tok ask readCourse(course)
-      e <- ContentEntryDAO.recentInNewsByCourse(course)
+      c <- course
+      approved <- tok ask readCourse(c.itself)
+      e <- contentEntryDAO.recentInNewsByCourse(c.itself)
     } yield e
   }  
   
@@ -114,7 +110,7 @@ object ContentModel {
                   case Some(cs: ContentSequence) => cs.contains(e.itself)
                   case _ => false
                 }
-              } orIfNone ContentEntryDAO.sequencesContaining(e.itself).first
+              } orIfNone contentEntryDAO.sequencesContaining(e.itself).first
               
               
               (for (s <- checkedSeq) yield {

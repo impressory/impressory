@@ -11,7 +11,7 @@ import com.wbillingsley.handy.reactivemongo.DAO
 
 import com.impressory.api._
 
-object ContentEntryDAO extends DAO {
+object ContentEntryDAO extends DAO with com.impressory.api.dao.ContentEntryDAO {
   
   // Import the configuration to create RefByIds (where to look them up)
   import com.impressory.plugins.LookUps._
@@ -82,11 +82,12 @@ object ContentEntryDAO extends DAO {
     findMany(query)
   }
   
-  def myDrafts(user:Ref[User], course:RefWithId[Course]) = {
+  def myDrafts(user:Ref[User], course:Ref[Course]) = {
     val query = for {
+      courseId <- course.refId
       userId <- user.refId
     } yield BSONDocument(
-      "settings.published" -> BSONDocument("$exists" -> false), "addedBy" -> userId, "course" -> course.getId
+      "settings.published" -> BSONDocument("$exists" -> false), "addedBy" -> userId, "course" -> courseId
     )
     query flatMap findMany
   }

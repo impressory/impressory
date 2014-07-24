@@ -148,7 +148,7 @@ object Permissions {
     for (
        c <- course;
        u <- user;
-       r <- LookUps.registrationProvider.find(u.id, c.id)
+       r <- LookUps.registrationDAO.byUserAndCourse(u.id, c.id)
     ) yield r.roles
   }
   

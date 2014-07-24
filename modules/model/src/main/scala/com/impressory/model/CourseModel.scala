@@ -1,15 +1,15 @@
-package com.impressory.play.model
+package com.impressory.model
 
-import com.impressory.plugins.LookUps
 import com.wbillingsley.handy._
 import Ref._
-import play.api.libs.json._
+
 import com.impressory.api._
 import com.impressory.api.enrol._
 import com.impressory.json._
+import com.impressory.plugins.LookUps._
 import com.impressory.security.Permissions
 
-import com.impressory.reactivemongo._
+import play.api.libs.json._
 
 /**
  * From BookModel in the previous version
@@ -25,22 +25,26 @@ object CourseModel {
       user <- approval.who
 
       a <- approval ask Permissions.createCourse;
-      course = CourseToJson.update(Course(id=LookUps.allocateId, addedBy=user.id), config);
-      saved <- CourseDAO.saveNew(course);
+      course = CourseToJson.update(Course(id=allocateId, addedBy=user.id), config);
+      saved <- courseDAO.saveNew(course);
       
-      p1 = ContentEntry(
-        id = LookUps.allocateId,
-        course=saved.id, addedBy=user.id, tags=CETags(topics=Set("page one")),
-        settings=CESettings(published=Some(System.currentTimeMillis()))
+      page = ContentEntry(
+        id = allocateId,
+        course = saved.id,
+        addedBy = user.id,
+        tags=CETags(topics=Set("page one")),
+        item = Some(MarkdownPage(
+          text = defaultPageOneText
+        )),
+        settings = CESettings(published=Some(System.currentTimeMillis()))
       );
-      page <- MarkdownPageModel.JsonHandler.createFromJson((MarkdownPage.itemType, Json.obj("item" -> Json.obj("text" -> defaultPageOneText)), p1));
-      p1saved <- ContentEntryDAO.saveNew(page)
+      p1saved <- contentEntryDAO.saveNew(page)
       
       reg = Registration(
-        id = LookUps.allocateId,
+        id = allocateId,
         user=user.id, course=course.id, roles=CourseRole.values.toSet
       )
-      updated <- RegistrationDAO.save(reg)
+      updated <- registrationDAO.save(reg)
     } yield saved
   }
   
@@ -49,7 +53,7 @@ object CourseModel {
       c <- course;
       a <- approval ask Permissions.editCourse(c.itself);
       updated = CourseToJson.update(c, config);
-      saved <- CourseDAO.saveExisting(updated)
+      saved <- courseDAO.saveExisting(updated)
     ) yield saved
   }
   
@@ -61,11 +65,11 @@ object CourseModel {
       u <- approval.who;
       a <- approval ask Permissions.manageCourseInvites(c.itself);
       invite = CourseInvite(
-        id=LookUps.allocateId,
+        id=allocateId,
         course=c.id, addedBy=u.id
       );
       upd = CourseInviteToJson.update(invite, config);
-      saved <- CourseInviteDAO.saveNew(upd)
+      saved <- courseInviteDAO.saveNew(upd)
     ) yield saved
   }
   
@@ -75,17 +79,17 @@ object CourseModel {
       c <- course
       user <- approval.who
       approved <- approval ask Permissions.registerUsingInvite(course)
-      invite <- CourseInviteDAO.availableByCode(c.itself, code)
-      used <- CourseInviteDAO.use(invite.itself, user.itself)
-      oldReg <- optionally(RegistrationDAO.byUserAndCourse(user.id, c.id))
+      invite <- courseInviteDAO.availableByCode(c.itself, code)
+      used <- courseInviteDAO.use(invite.itself, user.itself)
+      oldReg <- optionally(registrationDAO.byUserAndCourse(user.id, c.id))
       updated <- oldReg match {
         case Some(r) => {
           val reg = r.copy(roles=r.roles ++ invite.roles)
-          RegistrationDAO.save(reg)
+          registrationDAO.save(reg)
         }
         case _ => {
-          val reg = Registration(id=LookUps.allocateId, user=user.id, course=c.id, roles=invite.roles)
-          RegistrationDAO.save(reg)
+          val reg = Registration(id=allocateId, user=user.id, course=c.id, roles=invite.roles)
+          registrationDAO.save(reg)
         }
       }
     } yield updated

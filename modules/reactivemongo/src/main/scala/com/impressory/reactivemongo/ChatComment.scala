@@ -16,7 +16,7 @@ import com.impressory.api.events._
 import CommonFormats._
 
 
-object ChatCommentDAO extends DAO {
+object ChatCommentDAO extends DAO with com.impressory.api.dao.ChatCommentDAO {
   
   // Import the configuration to create RefByIds (where to look them up)
   import com.impressory.plugins.LookUps._

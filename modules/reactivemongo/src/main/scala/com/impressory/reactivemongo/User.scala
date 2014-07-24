@@ -15,7 +15,7 @@ import CommonFormats._
 // Import the configuration to create RefByIds (where to look them up)
 import com.impressory.plugins.LookUps._
 
-object UserDAO extends DAO with UserProvider[User] {
+object UserDAO extends DAO with UserProvider[User] with com.impressory.api.dao.UserDAO {
 
   type DataT = User
   

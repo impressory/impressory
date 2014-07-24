@@ -1,6 +1,7 @@
 package com.impressory.play.controllers
 
 import play.api._
+import play.api.libs.iteratee.{Enumeratee, Iteratee, Enumerator}
 import play.api.mvc._
 import com.wbillingsley.handy._
 import Ref._
@@ -31,7 +32,16 @@ object Application extends Controller {
     Ok("")
   }
     
-
+  def chunkedFailure = Action {
+    val enum = Enumerator(5, 4, 3, 2, 1, 0)
+    val iter = Enumeratee.map[Int] { x => 100/x }
+    val str = Enumeratee.map[Int] { x => s"${100/x}," }
+    val recovery = Enumeratee.recover[String] { (error, input) =>
+      error.printStackTrace
+      Logger.error("Failed during enumeration", error)
+    }
+    Results.Ok.chunked(enum.through(str).andThen(Enumerator("finished")))
+  }
   
   def index = DataAction.returning.result { implicit request =>
     for {

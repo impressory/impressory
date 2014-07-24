@@ -1,16 +1,17 @@
-package com.impressory.play.model
+package com.impressory.builtincontent.sequence
 
-import com.wbillingsley.handy._
-import Ref._
-import Ids._
-import play.api.libs.json._
-
+import _root_.reactivemongo.bson.BSONDocument
 import com.impressory.api._
-import com.impressory.security.Permissions._
 import com.impressory.json._
-import com.impressory.plugins._
 
-import LookUps._
+import com.impressory.plugins.ContentItemViewHandler
+import com.impressory.plugins.LookUps._
+import com.impressory.reactivemongo.{CommonFormats, ContentItemBsonHandler}
+
+import com.wbillingsley.handy.Ids._
+import com.wbillingsley.handy.Ref._
+import com.wbillingsley.handy._
+import play.api.libs.json._
 
 /**
  * From PresentationModel in the previous version
@@ -53,11 +54,29 @@ object SequenceModel {
   }
   
   object ViewHandler extends ContentItemViewHandler {
-    def main = { case ContentSequence.itemType => views.html.com.impressory.content.contentSequence.main().body } 
+    def main = { case ContentSequence.itemType => views.html.com.impressory.builtincontent.sequence.main().body }
   
-    def stream = { case ContentSequence.itemType => views.html.com.impressory.content.contentSequence.stream().body } 
+    def stream = { case ContentSequence.itemType => views.html.com.impressory.builtincontent.sequence.stream().body }
   
-    def edit = { case ContentSequence.itemType => views.html.com.impressory.content.contentSequence.edit().body }  
-  }  
+    def edit = { case ContentSequence.itemType => views.html.com.impressory.builtincontent.sequence.edit().body }
+  }
+
+  object BsonHandler extends ContentItemBsonHandler {
+
+    // Import the configuration to create RefByIds (where to look them up)
+    import com.impressory.plugins.LookUps._
+    import CommonFormats._
+
+    def create = { case s:ContentSequence => BSONDocument("entries" -> s.entries) }
+
+    def update = { case s:ContentSequence => BSONDocument("item.entries" -> s.entries) }
+
+    def read = { case (ContentSequence.itemType, doc) =>
+      new ContentSequence(
+        entries = doc.getAs[Ids[ContentEntry, String]]("entries").getOrElse(new Ids(Seq.empty))
+      )
+    }
+
+  }
 
 }

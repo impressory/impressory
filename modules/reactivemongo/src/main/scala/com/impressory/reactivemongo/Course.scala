@@ -1,19 +1,20 @@
 package com.impressory.reactivemongo
 
+import play.api.mvc.Action
 import reactivemongo.api._
 import reactivemongo.bson._
 import reactivemongo.core.commands.LastError
 
 import com.wbillingsley.handy.{Id, RefFuture, Ref, RefWithId}
 import com.wbillingsley.handy.reactivemongo.DAO
-import com.wbillingsley.handyplay.RefEnumIter
+import com.wbillingsley.handyplay.{RefConversions, RefEnumerator, RefEnumIter}
 import Ref._
 
 import com.impressory.api._
 
 import CommonFormats._
 
-object CourseDAO extends DAO {
+object CourseDAO extends DAO with com.impressory.api.dao.CourseDAO {
     
   type DataT = Course
   
@@ -63,8 +64,8 @@ object CourseDAO extends DAO {
   implicit object bsonReader extends BSONDocumentReader[Course] {    
     def read(doc:BSONDocument):Course = {
       val course = new Course(
-        id = doc.getAs[Id[Course, String]]("_id").get,
-        addedBy = doc.getAs[Id[User, String]]("user").get,
+        id = doc.getAsTry[Id[Course, String]]("_id").get,
+        addedBy = doc.getAsTry[Id[User, String]]("addedBy").get,
         coverMatter = doc.getAs[CoverMatter]("coverMatter").getOrElse(new CoverMatter),
         settings = doc.getAs[CourseSettings]("settings").getOrElse(new CourseSettings),
         contentTags = doc.getAs[CourseContentTags]("contentTags").getOrElse(CourseContentTags()),
@@ -73,11 +74,11 @@ object CourseDAO extends DAO {
       )
       course
     }    
-  }  
-  
+  }
+
   def listedCourses = {
     findMany(BSONDocument("listed" -> true))
-  }  
+  }
   
   def saveNew(course:Course) = {
     saveSafe(bsonWriter.writeNew(course), course)

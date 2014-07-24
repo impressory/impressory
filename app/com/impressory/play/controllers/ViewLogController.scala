@@ -10,7 +10,9 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 import com.impressory.api._
+import com.impressory.json._
 import com.impressory.reactivemongo.ViewLog
+import com.impressory.plugins.LookUps._
 
 object ViewLogController extends Controller {
   
@@ -27,16 +29,16 @@ object ViewLogController extends Controller {
     
     val session = request.sessionKey
     val template = (request.body \ "template").asOpt[String] 
-    val courseId = (request.body \ "params" \ "courseId").asOpt[String]
-    val entryId = (request.body \ "params" \ "entryId").asOpt[String]
+    val courseId = (request.body \ "params" \ "courseId").asOpt[Id[Course, String]]
+    val entryId = (request.body \ "params" \ "entryId").asOpt[Id[ContentEntry,String]]
     val params = (request.body \ "params").as[Map[String, String]]
     
     val res = for {
       userId <- request.user.refId
       cId <- Ref(courseId);
-      e <- optionally { for (eId <- Ref(entryId); e <- refContentEntry(eId)) yield e }; 
+      e <- optionally { for (e <- entryId.lazily) yield e };
       record = ViewLog.Record(
-        course = cId.asId[Course],
+        course = cId,
         entry = e,
         user = userId,
         session = Some(request.sessionKey),

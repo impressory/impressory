@@ -1,12 +1,13 @@
-package com.impressory.play.model
+package com.impressory.builtincontent.markdown
 
-import com.wbillingsley.handy._
-import Ref._
-import play.api.libs.json._
-
+import _root_.reactivemongo.bson.{BSONDocument, Macros}
 import com.impressory.api._
 import com.impressory.json._
-import com.impressory.plugins._
+import com.impressory.plugins.ContentItemViewHandler
+import com.impressory.reactivemongo.ContentItemBsonHandler
+import com.wbillingsley.handy.Ref._
+import com.wbillingsley.handy.{RefNone, RefFailed}
+import play.api.libs.json._
 
 object MarkdownPageModel {
 
@@ -52,11 +53,24 @@ object MarkdownPageModel {
   }
 
   object ViewHandler extends ContentItemViewHandler {
-    def main = { case MarkdownPage.itemType => views.html.com.impressory.content.markdownPage.main().body } 
+    def main = { case MarkdownPage.itemType => views.html.com.impressory.builtincontent.markdownPage.main().body }
   
-    def stream = { case MarkdownPage.itemType => views.html.com.impressory.content.markdownPage.stream().body }
+    def stream = { case MarkdownPage.itemType => views.html.com.impressory.builtincontent.markdownPage.stream().body }
   
-    def edit = { case MarkdownPage.itemType => views.html.com.impressory.content.markdownPage.edit().body }  
+    def edit = { case MarkdownPage.itemType => views.html.com.impressory.builtincontent.markdownPage.edit().body }
   }
+
+  object BsonHandler extends ContentItemBsonHandler {
+
+    val format = Macros.handler[MarkdownPage]
+
+    def create = { case p:MarkdownPage => format.write(p) }
+
+    def update = { case p:MarkdownPage => BSONDocument("item" -> format.write(p)) }
+
+    def read = { case (MarkdownPage.itemType, doc) => format.read(doc) }
+
+  }
+
 
 }

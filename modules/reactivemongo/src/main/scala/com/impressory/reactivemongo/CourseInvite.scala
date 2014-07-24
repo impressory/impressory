@@ -12,7 +12,7 @@ import com.impressory.api._
 import com.impressory.api.enrol._
 
 
-object CourseInviteDAO extends DAO {
+object CourseInviteDAO extends DAO with com.impressory.api.dao.CourseInviteDAO {
   
   // Import the configuration to create RefByIds (where to look them up)
   import com.impressory.plugins.LookUps._

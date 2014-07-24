@@ -14,7 +14,7 @@ import play.api.libs.iteratee.Iteratee
 
 import play.api.http.HeaderNames
 
-import com.impressory.play.model._
+import com.impressory.model._
 import com.impressory.eventroom._
 import com.impressory.api._
 import com.impressory.api.events._
@@ -58,10 +58,10 @@ object EventController extends Controller {
   }
   
   
-  def postChatMessage(courseId:String) = DataAction.returning.result(parse.json) { implicit request => 
+  def postChatMessage(rCourse:Ref[Course]) = DataAction.returning.result(parse.json) { implicit request =>
         
     for {
-      c <- refCourse(courseId);
+      c <- rCourse;
       user <- optionally(request.approval.who)
       userId = user.map(_.id)
       approved <- request.approval ask Permissions.chat(c.itself);
@@ -76,9 +76,9 @@ object EventController extends Controller {
     
   }
   
-  def lastFewEvents(courseId:String) = DataAction.returning.many { implicit request => 
+  def lastFewEvents(rCourse:Ref[Course]) = DataAction.returning.many { implicit request =>
     for {
-      c <- refCourse(courseId)
+      c <- rCourse
       approved <- request.approval ask Permissions.readCourse(c.itself)
       comment <- ChatCommentDAO.lastFew(c.itself)
     } yield comment

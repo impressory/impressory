@@ -61,7 +61,7 @@ object CourseToJson extends JsonConverter[Course, User]{
     // Registrations. Note, can produce RefNone
     val reg = for {
       u <- appr.who
-      r <- LookUps.registrationProvider.find(u.id, course.id)
+      r <- LookUps.registrationDAO.byUserAndCourse(u.id, course.id)
       j <- RegistrationToJson.toJson(r)
     } yield j
 

@@ -28,8 +28,8 @@ object UserController extends Controller {
    */
   def valid(email:String) = email.contains("@")
    
-  def user(id:String) = DataAction.returning.one {
-    refUser(id)
+  def user(rU:Ref[User]) = DataAction.returning.one {
+    rU
   }
   
   /**

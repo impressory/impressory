@@ -3,22 +3,21 @@ package com.impressory.plugins
 import com.wbillingsley.handy._
 import Id._
 import com.impressory.api._
+import com.impressory.api.dao._
 import com.wbillingsley.handyplay.UserProvider
 
 object LookUps {
   
-  val catalog = new LookUpCatalog
-  
-  def lookUpFails[T] = new LookUp[T, Any] {
-    def one[K <: Any](r:Id[T, K]) = RefFailed(new IllegalStateException("No look up method for this type has been configured"))
+  var courseDAO:CourseDAO = NullCourseDAO
+  var contentEntryDAO:ContentEntryDAO = NullContentEntryDAO
+  var registrationDAO:RegistrationDAO = NullRegistrationDAO
+  var courseInviteDAO:CourseInviteDAO = NullCourseInviteDAO
+  var userDAO:UserDAO = NullUserDAO
+  var chatCommentDAO:ChatCommentDAO = NullChatCommentDAO
 
-    def many[K <: Any](r:Ids[T, K]) = RefFailed(new IllegalStateException("No look up method for this type has been configured"))
-  }
-
-  implicit var courseLookUp:LookUp[Course,String] = lookUpFails[Course]
-  implicit var userLookUp:LookUp[User,String] = lookUpFails[User]
-  implicit var entryLookUp:LookUp[ContentEntry,String] = lookUpFails[ContentEntry]
-
+  implicit def courseLookUp = courseDAO.lookUp
+  implicit var userLookUp = userDAO.lookUp
+  implicit var entryLookUp = contentEntryDAO.lookUp
 
   /**
    * How the application figures out which user is making a request
@@ -36,14 +35,13 @@ object LookUps {
     def bySessionKey(id:String) = failure
   }
 
-  var registrationProvider = new RegistrationProvider {
-    def find(user:Id[User, String], course:Id[Course, String]):Ref[Registration] = new RefFailed(new IllegalStateException("No registration provider has been configured."))
-  }
-
   implicit def getUserProvider = userProvider
 
   var idAllocator:Option[Function0[String]] = None
 
-  def allocateId[T]:Id[T,String] = idAllocator.get.apply.asId[T]
+  def allocateId[T]:Id[T,String] = idAllocator match {
+    case Some(ia) => ia.apply.asId[T]
+    case _ => throw new IllegalStateException("No idAllocator has been configured in LookUps")
+  }
 
 }

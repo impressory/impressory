@@ -25,9 +25,9 @@ object QnAController extends Controller {
   /**
    * All the questions for a course
    */
-  def listQuestions(cid:String, skip:Option[Int] = None) = DataAction.returning.many { implicit request => 
+  def listQuestions(rCourse:RefWithId[Course], skip:Option[Int] = None) = DataAction.returning.many { implicit request =>
       for (
-          course <- refCourse(cid);
+          course <- rCourse;
           approved <- request.approval ask Permissions.readCourse(course.itself);
           question <- ContentEntryDAO.byKind(course.itself, QnAQuestion.itemType)
       ) yield question  
@@ -36,9 +36,9 @@ object QnAController extends Controller {
   /**
    * Handle submission of the form to add an answer
    */
-  def handleAddAnswer(cid:String, qid:String) = DataAction.returning.one(parse.json) { implicit request =>      
+  def handleAddAnswer(rCourse:RefWithId[Course], rQ:RefWithId[ContentEntry]) = DataAction.returning.one(parse.json) { implicit request =>
       for {
-        question <- refContentEntry(qid);
+        question <- rQ;
         user <- request.approval.who
         approved <- request.approval ask Permissions.readCourse(question.course);
         text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("We need some text in that answer");

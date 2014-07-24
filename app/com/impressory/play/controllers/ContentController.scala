@@ -1,5 +1,6 @@
 package com.impressory.play.controllers
 
+import com.impressory.model.ContentModel
 import com.wbillingsley.handy._
 import Ref._
 import Id._
@@ -13,7 +14,7 @@ import com.impressory.api.events._
 import com.impressory.json._
 import com.impressory.plugins._
 import com.impressory.eventroom.EventRoom
-import com.impressory.play.model._
+import com.impressory.model._
 import com.impressory.security.Permissions
 
 import com.impressory.reactivemongo.ContentEntryDAO
@@ -31,17 +32,17 @@ object ContentController extends Controller {
   /**
    * Returns the JSON for the specified content entry
    */
-  def entry(courseId:String, entryId:String) = DataAction.returning.one { implicit request => 
+  def entry(rCourse:Ref[Course], rEntry:Ref[ContentEntry]) = DataAction.returning.one { implicit request =>
     for (
-        entry <- refContentEntry(entryId);
+        entry <- rEntry;
         approved <- request.approval ask Permissions.readEntry(entry.itself)
     ) yield entry
   }
   
-  def findEntriesById(courseId:String) = DataAction.returning.many(parse.json) { implicit request =>
+  def findEntriesById(rCourse:Ref[Course]) = DataAction.returning.many(parse.json) { implicit request =>
     val ids = (request.body \ "ids").asOpt[Set[String]].getOrElse(Set.empty)
     for {
-      approved <- request.approval ask Permissions.readCourse(refCourse(courseId))
+      approved <- request.approval ask Permissions.readCourse(rCourse)
       e <- RefManyById.of[ContentEntry](ids.toSeq)
     } yield e
   }  
@@ -50,7 +51,7 @@ object ContentController extends Controller {
    * Finds an appropriate ContentEntry
    */
   def contentQuery(
-    courseId:String,
+    rCourse:Ref[Course],
     entryId:Option[String],
     adj:Option[String], 
     noun:Option[String], 
@@ -58,14 +59,14 @@ object ContentController extends Controller {
     site:Option[String]
   ) = DataAction.returning.one { implicit request =>
 
-    val course = refCourse(courseId)
+    val course = rCourse
     val approval = request.approval
     
     for {
       e <- entryId match {
         case Some(eid) => {
           // An entry ID has been given. Fetch it if allowed.          
-          val entry = refContentEntry(eid)
+          val entry = eid.asId[ContentEntry].lazily
           for (e <- entry; a <- approval ask Permissions.readEntry(e.itself)) yield e
         }
         case None => {
@@ -88,7 +89,7 @@ object ContentController extends Controller {
    * Creates a new content entry and fills it in with the appropriate item.
    * TODO: This is a big ugly method; tidy it up.
    */
-  def newContentEntry(course:RefWithId[Course], approval:Approval[User], requestBody:JsValue) = {
+  def newContentEntry(course:Ref[Course], approval:Approval[User], requestBody:JsValue) = {
     
     import Permissions._
 
@@ -131,7 +132,7 @@ object ContentController extends Controller {
       
       // If the item is published, send a notification
       if (saved.settings.published.isDefined) {
-        for (c <- course.getId) {
+        for (c <- course.refId) {
           EventRoom.notifyEventRoom(BroadcastUnique(c, ContentPublished(saved)))
         }
       }
@@ -143,17 +144,16 @@ object ContentController extends Controller {
   /**
    * Request handler for creating content.
    */
-  def createContent(courseId: String) = DataAction.returning.one(parse.json) { implicit request =>
-    newContentEntry(refCourse(courseId), request.approval, request.body)
+  def createContent(rCourse: Ref[Course]) = DataAction.returning.one(parse.json) { implicit request =>
+    newContentEntry(rCourse, request.approval, request.body)
   }
   
-  def editItem(courseId: String, entryId: String) = DataAction.returning.one(parse.json) { implicit request => 
-    val entry = refContentEntry(entryId)
+  def editItem(rCourse: Ref[Course], rEntry:Ref[ContentEntry]) = DataAction.returning.one(parse.json) { implicit request =>
     val approval = request.approval
     
     val r = for {
       // Resolve the references now, to save resolving them multiple times later
-      e <- entry;
+      e <- rEntry;
       
       // Was it published before we started?
       publishedBefore = e.settings.published.isDefined;
@@ -179,45 +179,45 @@ object ContentController extends Controller {
     r
   }
   
-  def editTags(courseId: String, entryId: String) = DataAction.returning.one(parse.json) { implicit request => 
+  def editTags(rCourse:Ref[Course], rEntry:Ref[ContentEntry]) = DataAction.returning.one(parse.json) { implicit request =>
     val approval = request.approval    
     for (
-      e <- refContentEntry(entryId);
+      e <- rEntry;
       approved <- approval ask Permissions.editContent(e.itself);
       updated = ContentEntryToJson.update(e, request.body);
       saved <- ContentEntryDAO.saveExisting(updated)
     ) yield saved
   }
   
-  def entriesForTopic(courseId: String, topic:Option[String]) = DataAction.returning.many { implicit request => 
+  def entriesForTopic(rCourse:Ref[Course], topic:Option[String]) = DataAction.returning.many { implicit request =>
     for (
-      c <- refCourse(courseId);
+      c <- rCourse;
       e <- ContentModel.entriesForTopic(c.itself, request.approval, topic)
     ) yield e
   }
 
-  def allEntries(courseId: String) = DataAction.returning.many { implicit request => 
+  def allEntries(rCourse:Ref[Course]) = DataAction.returning.many { implicit request =>
     for (
-      c <- refCourse(courseId);
+      c <- rCourse;
       e <- ContentModel.allEntries(c.itself, request.approval)
     ) yield e
   }  
   
   
-  def recentEntries(courseId: String) = DataAction.returning.many { implicit request => 
-    ContentModel.recentEntries(refCourse(courseId), request.approval)
+  def recentEntries(rCourse:Ref[Course]) = DataAction.returning.many { implicit request =>
+    ContentModel.recentEntries(rCourse, request.approval)
   }
   
-  def myDrafts(courseId: String) = DataAction.returning.many { implicit request => 
-    ContentEntryDAO.myDrafts(request.user, refCourse(courseId))
+  def myDrafts(rCourse:Ref[Course]) = DataAction.returning.many { implicit request =>
+    ContentEntryDAO.myDrafts(request.user, rCourse)
   }
   
   /**
    * Votes an entry up. Returns JSON for the updated content entry
    */
-  def voteUp(courseId:String, entryId:String) = DataAction.returning.one { implicit request =>
+  def voteUp(rCourse:Ref[Course], rEntry:Ref[ContentEntry]) = DataAction.returning.one { implicit request =>
     for {
-      entry <- refContentEntry(entryId);
+      entry <- rEntry;
       user <- request.user
       approved <- request.approval ask Permissions.voteOnEntry(entry.itself);
       updated <- ContentEntryDAO.voteUp(entry, user.itself)
@@ -227,19 +227,19 @@ object ContentController extends Controller {
   /**
    * Votes an entry down. Returns JSON for the updated content entry
    */
-  def voteDown(courseId:String, entryId:String) = DataAction.returning.one { implicit request =>
+  def voteDown(rCourse:Ref[Course], rEntry:Ref[ContentEntry]) = DataAction.returning.one { implicit request =>
     for {
-      entry <- refContentEntry(entryId);
+      entry <- rEntry;
       user <- request.user
       approved <- request.approval ask Permissions.voteOnEntry(entry.itself);
       updated <- ContentEntryDAO.voteDown(entry, user.itself)
     } yield updated
   }
   
-  def addComment(courseId:String, entryId:String) = DataAction.returning.one(parse.json) { implicit request => 
+  def addComment(courseId:Ref[Course], rEntry:Ref[ContentEntry]) = DataAction.returning.one(parse.json) { implicit request =>
     for {
       text <- Ref((request.body \ "text").asOpt[String]) orIfNone UserError("The message contained no text");
-      entry <- refContentEntry(entryId);
+      entry <- rEntry;
       user <- request.user
       approved <- request.approval ask Permissions.commentOnEntry(entry.itself);
       updated <- ContentEntryDAO.addComment(entry, user.id, text)

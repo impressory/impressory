@@ -35,6 +35,10 @@ lazy val model = project in file("modules/model") dependsOn(api)
 
 lazy val reactivemongo = project in file("modules/reactivemongo") dependsOn(api, model)
 
+lazy val builtincontent = (project in file("modules/builtincontent"))
+  .enablePlugins(play.PlayScala)
+  .dependsOn(api, model, reactivemongo)
+
 lazy val polls = (project in file("modules/polls"))
   .enablePlugins(play.PlayScala)
   .dependsOn(api, model, reactivemongo)
@@ -45,13 +49,22 @@ lazy val externalContent = (project in file("modules/externalcontent"))
 
 lazy val main = (project in file("."))
   .enablePlugins(play.PlayScala)
-  .dependsOn(api, model, reactivemongo, polls, externalContent)
+  .settings(
+    PlayKeys.routesImport ++= Seq(
+      "com.wbillingsley.handy._",
+      "com.impressory.api._",
+      "com.impressory.play.PathBinders._",
+      "scala.language.reflectiveCalls"
+    )
+  )
+  .dependsOn(api, model, reactivemongo, builtincontent, polls, externalContent)
 
 // Dependencies for main
 
 libraryDependencies ++= Seq(
   "com.wbillingsley" %% "handy-play-oauth" % "0.3.0-SNAPSHOT"
 )
+    
 
 pipelineStages := Seq(rjs)
 

@@ -13,7 +13,7 @@ import com.impressory.api._
 
 import CommonFormats._
 
-object RegistrationDAO extends DAO {
+object RegistrationDAO extends DAO with com.impressory.api.dao.RegistrationDAO {
 
   type DataT = Registration
 

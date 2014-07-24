@@ -9,7 +9,7 @@ object ContentItemToBson {
   /**
    * The list of handlers for different kinds of content item. 
    */
-  private var handlers:Seq[ContentItemBsonHandler] = Seq(ContentSequenceHandler, MarkdownPageHandler)
+  private var handlers:Seq[ContentItemBsonHandler] = Seq.empty
   
   /**
    * Register a new database handler for a content item.
@@ -47,14 +47,3 @@ trait ContentItemBsonHandler {
   def read:PartialFunction[(String, BSONDocument), ContentItem]
 }
 
-object MarkdownPageHandler extends ContentItemBsonHandler {
-  
-  val format = Macros.handler[MarkdownPage]
-  
-  def create = { case p:MarkdownPage => format.write(p) }
-  
-  def update = { case p:MarkdownPage => BSONDocument("item" -> format.write(p)) }
-  
-  def read = { case (MarkdownPage.itemType, doc) => format.read(doc) }
-  
-}

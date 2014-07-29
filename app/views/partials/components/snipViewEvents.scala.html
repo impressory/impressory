@@ -7,7 +7,7 @@
       <div ng-switch-when="chat">
         <div class="event comment" ng-class="{ 'question' : isQuestion(event.text) }" >
           <div class="who">
-            <user-tag user="userCache.get(event.addedBy)"></user-tag>
+            <user-tag user-id="{{ event.addedBy }}"></user-tag>
           </div>
           <div class="text" ng-bind-html="event.text | linky"></div>
           <div class="date">{{ event.created | date:'h:mma d MMM yy' }}</div>

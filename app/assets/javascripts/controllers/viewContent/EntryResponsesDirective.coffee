@@ -4,9 +4,19 @@ define(["./base"], (l) ->
 
     $scope.responses = [];
 
-    ContentService.request($scope.entry.course, $scope.entry.responses.entries).then((entries) ->
-                                                                                       $scope.responses = entries
-                                                                                     )
+    $scope.updateResponses = () ->
+      ContentService.request(
+        $scope.entry.course,
+        $scope.entry.responses.entries
+      ).then((entries) ->
+        $scope.responses = entries
+      )
+
+    $scope.$watch(
+      () -> $scope.entry.responses.count,
+      (nv, ov) ->
+        $scope.updateResponses()
+    )
 
   ]
 

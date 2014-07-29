@@ -20,14 +20,23 @@
     </div>
   </div>
   </div>
-  
-  <div ng-switch="viewMode">
-    <div ng-switch-when='columns'>
-      @snipColumnEntries()
+
+  <div class="list-entries rows">
+
+    <div ng-repeat="entry in entries | orderBy:orderBy || '-published' track by $index" ng-show="applyFilter(entry)" class="list-entries" ng-class="viewMode">
+        <div ng-switch="viewMode">
+            <div ng-switch-when='columns'>
+                <entry-with-responses entry="entry"></entry-with-responses>
+            </div>
+            <div ng-switch-when='rows'>
+                <entry-row entry="entry"></entry-row>
+            </div>
+        </div>
     </div>
-    <div ng-switch-when='rows'>
-      @snipRowEntries()
-    </div>
+
   </div>
+
+
+
 
 </div>

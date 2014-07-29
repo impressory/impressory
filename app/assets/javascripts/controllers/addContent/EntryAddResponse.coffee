@@ -27,7 +27,10 @@ define(["./base"], (l) ->
     }
 
     $scope.submit = () ->
-      ContentService.addContent($scope.responseTo.course, $scope.response)
+      ContentService.addContent($scope.responseTo.course, $scope.response).then((resp) ->
+        $scope.responseTo.responses.count = $scope.responseTo.responses.count + 1
+        $scope.responseTo.responses.entries.push(resp.id)
+      )
       $scope.submitted = true
 
   ]

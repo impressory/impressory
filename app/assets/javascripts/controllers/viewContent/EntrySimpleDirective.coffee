@@ -18,7 +18,7 @@ define(["./base"], (l) ->
 
           <div class="header">
             <div class="who">
-              <user-tag user="userCache.get(entry.addedBy)"></user-tag>
+              <user-tag user-id="{{ entry.addedBy }}"></user-tag>
               <span class="pull-right created">{{ entry.created | date:'h:mma d MMM yy' }}</span>
             </div>
           </div>

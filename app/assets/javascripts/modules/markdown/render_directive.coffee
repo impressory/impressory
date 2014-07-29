@@ -1,4 +1,4 @@
-define ['angular', '../app'], () ->
+define ['../app'], () ->
 
   angular.module("impressory")
     .controller('renderMarkdown', ['$scope', '$sce', 'MarkdownService', ($scope, $sce, MarkdownService) ->

@@ -18,12 +18,15 @@ define(["./base"], (l) ->
     $scope.refreshList()
     
     $scope.$on("push", 
-      (event, msg) -> 
+      (event, msg) ->
         if msg.type == "content entry published"
-          $scope.publishedSinceRefresh = $scope.publishedSinceRefresh + 1
-          $scope.$apply() 
+          entry = msg.entry
+          if entry.settings.inNews
+            ContentService.get(entry.course, entry.id).then((got) -> $scope.entries.push(got))
+            $scope.$apply()
     )
-  
+
+
   ]
   
   Impressory.Controllers.Course.ActivityStream.resolve = {

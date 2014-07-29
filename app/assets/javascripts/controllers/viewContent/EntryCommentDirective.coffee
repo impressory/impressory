@@ -12,7 +12,7 @@ define(["./base"], (l) ->
       template: """
         <div class="text">{{ comment.text }}</div>
         <div class="who">
-          <user-tag user="userCache.get(comment.addedBy)"></user-tag>
+          <user-tag user-id="{{ comment.addedBy }}"></user-tag>
           at {{ comment.created | date:'h:mma d MMM yy' }}
         </div>
       """

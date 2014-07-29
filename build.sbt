@@ -72,6 +72,6 @@ libraryDependencies ++= Seq(
 )
     
 
-pipelineStages := Seq(rjs)
+pipelineStages := Seq(rjs, digest, gzip)
 
 includeFilter in (Assets, LessKeys.less) := "main.less"

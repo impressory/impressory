@@ -143,7 +143,15 @@ object ContentController extends Controller {
           EventRoom.notifyEventRoom(BroadcastUnique(c, ContentPublished(saved)))
         }
       }
-      
+
+      // If the item is a reply, send an update notification on the repliedTo
+      if (repliedTo.isDefined) {
+        for (c <- course.refId) {
+          EventRoom.notifyEventRoom(BroadcastUnique(c, ContentEdited(repliedTo.get)))
+        }
+      }
+
+
       saved
     }
   }

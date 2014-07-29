@@ -4,9 +4,6 @@
  * (At the moment we're just including everything!)
  */
 require([
-  "angular",
-
-
   "lib/eventRoom",
          
   "model/base",
@@ -24,6 +21,7 @@ require([
   "controllers/login/SignUp",
   
   "controllers/user/Self",
+  "controllers/user/UserTagDirective",
   "controllers/user/ChangePassword",
   
   "controllers/front/Header",
@@ -61,6 +59,7 @@ require([
   "controllers/viewContent/EntryResponsesDirective",
   "controllers/viewContent/EntrySimpleDirective",
   "controllers/viewContent/EntryWithResponsesDirective",
+  "controllers/viewContent/EntryRowDirective",
   "controllers/viewContent/EntryCommentDirective",
   "controllers/viewContent/EntryCommentsDirective",
 

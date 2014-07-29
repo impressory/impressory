@@ -1,4 +1,4 @@
-define ['angular', '../app'], () ->
+define ['../app'], () ->
 
   angular.module("impressory").factory("MarkdownService", () ->
 

@@ -1,5 +1,5 @@
 
-define(["./base", "services/ContentService", "services/CourseService", "services/UserService", "services/DimensionsService", "./QnAService", "./markdownService", "./viewingContent", "./viewingEvents" ], () ->
+define(["./base", "services/ContentService", "services/CourseService", "services/UserService", "services/DimensionsService", "./QnAService", "./viewingContent", "./viewingEvents" ], () ->
    
     Impressory.angularApp.config(['$locationProvider', ($locationProvider) ->
         $locationProvider.html5Mode(true)

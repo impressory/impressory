@@ -17,6 +17,8 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
   implicit val messageFormat = Json.format[CEMessage]
 
   implicit val tagsFormat = Json.format[CETags]
+
+  implicit val responsesFormat = Json.format[CEResponses]
   
     /**
      * Basic core JSON other methods add to
@@ -39,6 +41,7 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
         "item" -> item,
         "voting" -> voting,
         "comments" -> comments,
+        "responses" -> ce.responses,
         "tags" -> ce.tags,
         "updated" -> ce.updated,
         "created" -> ce.created
@@ -87,6 +90,7 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
         "item" -> item,
         "voting" -> voting,
         "comments" -> comments,
+        "responses" -> ce.responses,
         "tags" -> ce.tags,
         "updated" -> ce.updated,
         "created" -> ce.created,
@@ -113,10 +117,14 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
     }
 
   def update(ce:ContentEntry, jsVal: JsValue) = {
+    System.out.println((jsVal \ "responseTo"))
+    System.out.println((jsVal \ "responseTo").asOpt[Id[ContentEntry, String]])
+
     ce.copy(
       message = (jsVal \ "message").asOpt[CEMessage] getOrElse ce.message,
       tags = (jsVal \ "tags").asOpt[CETags] getOrElse ce.tags,
-      settings = (jsVal \ "settings").asOpt[CESettings] getOrElse ce.settings
+      settings = (jsVal \ "settings").asOpt[CESettings] getOrElse ce.settings,
+      responseTo = (jsVal \ "responseTo").asOpt[Id[ContentEntry, String]]
     )
   }
 }

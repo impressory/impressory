@@ -125,6 +125,13 @@ object ContentController extends Controller {
       
       // Set the item, and save
       saved <- ContentEntryDAO.saveNew(updated)
+
+      repliedTo <- optionally({
+        for {
+          rToId <- saved.responseTo.toRef
+          rTo <- ContentEntryDAO.addResponse(rToId, saved.id)
+        } yield rTo
+      })
       
       // Check for any sequences the new entry is part of
       eis <- ContentModel.entryInSequence(saved.itself, RefNone)

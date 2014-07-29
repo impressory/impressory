@@ -1,6 +1,6 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.MarkdownPage.Edit = ["$scope", "markdownService", ($scope,markdownService) ->
+  Impressory.Controllers.MarkdownPage.Edit = ["$scope", "MarkdownService", ($scope,markdownService) ->
   
     updatePreview = () -> 
       $scope.preview = markdownService.makeHtml($scope.entry?.item?.text)

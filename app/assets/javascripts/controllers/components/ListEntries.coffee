@@ -41,7 +41,7 @@ define(["./base"], (l) ->
   Impressory.angularApp.directive("listEntries", () -> 
     {
       restrict: 'E'
-      scope: { entries: '=entries', viewMode: '@', orderBy: '@' }
+      scope: { entries: '=entries', course: '=', viewMode: '@', orderBy: '@' }
       controller: Impressory.Controllers.Components.ListEntries
       templateUrl: "directive_listEntries.html"
     }

@@ -34,6 +34,8 @@ object ContentEntryDAO extends DAO with com.impressory.api.dao.ContentEntryDAO {
 
   implicit val CEMessageFormat = Macros.handler[CEMessage]
 
+  implicit val CEResponsesFormat = Macros.handler[CEResponses]
+
   /* Note that when we write a content entry we do not write the votes or comments */
   implicit object bsonWriter extends BSONDocumentWriter[ContentEntry] {
     def write(ce: ContentEntry) = BSONDocument(
@@ -65,6 +67,7 @@ object ContentEntryDAO extends DAO with com.impressory.api.dao.ContentEntryDAO {
         settings = doc.getAs[CESettings]("settings").getOrElse(CESettings()),
         voting = doc.getAs[UpDownVoting]("voting").getOrElse(new UpDownVoting),
         comments = doc.getAs[Comments]("comments").getOrElse(new Comments),
+        responses = doc.getAs[CEResponses]("responses").getOrElse(new CEResponses),
         updated = doc.getAs[Long]("updated").getOrElse(System.currentTimeMillis),
         created = doc.getAs[Long]("created").getOrElse(System.currentTimeMillis)
       )
@@ -187,5 +190,13 @@ object ContentEntryDAO extends DAO with com.impressory.api.dao.ContentEntryDAO {
     )
     updateAndFetch(query, update)
   }
-  
+
+  def addResponse(responseTo:Id[ContentEntry, String], response: Id[ContentEntry, String]) = {
+    val query = BSONDocument(idIs(responseTo))
+    val update = BSONDocument(
+      "$push" -> BSONDocument("responses.entries" -> response),
+      "$inc" -> BSONDocument("responses.count" -> 1)
+    )
+    updateAndFetch(query, update)
+  }
 }

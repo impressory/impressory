@@ -31,9 +31,9 @@
     <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("angular-route.min.js"))'></script>
     <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("angular-sanitize.min.js"))'></script>
 
-    <!-- Pagedown, used for Markdown -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/pagedown/1.0/Markdown.Converter.js"></script>
-    
+    <!-- Marked, used for Markdown -->
+    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("marked.js"))'></script>
+
     <!-- The client-side custom error pages -->
     <script type="text/ng-template" id="client-error-template">
       <div ng-switch="error.status">

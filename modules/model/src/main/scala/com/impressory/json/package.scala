@@ -2,6 +2,9 @@ package com.impressory
 
 import com.wbillingsley.handy._
 import Id._
+import Ids._
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
 import play.api.libs.json._
 import com.impressory.api._
 import scala.language.implicitConversions;
@@ -16,6 +19,10 @@ package object json {
 
   implicit def readsId[T] = new Reads[Id[T, String]] {
     def reads(j:JsValue) = Reads.StringReads.reads(j).map(s => s.asId[T])
+  }
+
+  implicit def readsIds[T] = new Reads[Ids[T, String]] {
+    def reads(j:JsValue) = Reads.ArrayReads[String].reads(j).map(s => s.toSeq.asIds[T])
   }
 
   implicit def writesIds[T] = new Writes[Ids[T, String]] {

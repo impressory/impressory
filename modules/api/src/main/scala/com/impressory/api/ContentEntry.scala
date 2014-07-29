@@ -9,6 +9,8 @@ case class ContentEntry (
   course: Id[Course, String],
   
   addedBy: Id[User, String],
+
+  responseTo: Option[Id[ContentEntry, String]] = None,
   
   item: Option[ContentItem] = None,
   
@@ -21,6 +23,8 @@ case class ContentEntry (
   voting: UpDownVoting = new UpDownVoting,
   
   comments:Comments = new Comments,
+
+  responses:CEResponses = new CEResponses(),
 
   updated: Long = System.currentTimeMillis,
 
@@ -59,6 +63,8 @@ case class CESettings(
   
   inIndex: Boolean = true,
 
+  allowResponses: Boolean = false,
+
   published: Option[Long] = None
 )
 
@@ -70,6 +76,13 @@ case class CETags(
   topics: Set[String] = Set.empty,
   
   site: Option[String] = None    
+)
+
+case class CEResponses(
+
+  count: Int = 0,
+
+  entries: Ids[ContentEntry, String] = new Ids(Seq.empty)
 )
 
 trait ContentItem { 

@@ -1,6 +1,6 @@
 define(["./base"], (l) -> 
 
-  Impressory.Controllers.MCPoll.View = ["$scope", "MCPollService", "markdownService", ($scope, MCPollService, markdownService) ->
+  Impressory.Controllers.MCPoll.View = ["$scope", "MCPollService", "MarkdownService", ($scope, MCPollService, markdownService) ->
   
     updateHtml = () -> 
       $scope.madeHtml = markdownService.makeHtml($scope.entry?.item?.text)

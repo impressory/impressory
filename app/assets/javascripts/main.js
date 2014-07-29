@@ -1,12 +1,20 @@
+
 /*
  * Require.js set of modules for various info style pages.
  * (At the moment we're just including everything!)
  */
 require([
+  "angular",
+
+
   "lib/eventRoom",
          
   "model/base",
   "modules/app",
+
+  "modules/markdown/markdown_service",
+  "modules/markdown/render_directive",
+  "modules/markdown/editor_directive",
 
   "controllers/analytics/base",
   "controllers/analytics/ViewAnalytics",
@@ -50,7 +58,12 @@ require([
   "controllers/viewContent/MainContent",
   "controllers/viewContent/EditDetails",
   "controllers/viewContent/ListContentForTopic",
-  
+  "controllers/viewContent/EntryResponsesDirective",
+  "controllers/viewContent/EntrySimpleDirective",
+  "controllers/viewContent/EntryWithResponsesDirective",
+  "controllers/viewContent/EntryCommentDirective",
+  "controllers/viewContent/EntryCommentsDirective",
+
   "controllers/editContent/EditContent",
   "controllers/editContent/Sequence",
   
@@ -60,7 +73,8 @@ require([
   "controllers/addContent/GenericAddForm",
   "controllers/addContent/Sequence",
   "controllers/addContent/Share",
-  
+  "controllers/addContent/EntryAddResponse",
+
   "controllers/markdownPage/View",
   "controllers/markdownPage/Edit",
   

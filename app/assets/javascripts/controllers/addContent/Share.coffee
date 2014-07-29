@@ -53,8 +53,15 @@ define(["./base"], (l) ->
               title: $scope.write.title
               note: $scope.write.note
               kind: "Markdown page"
-              settings: { inIndex: false }
-              setPublished: true
+              settings: {
+                showFirst: false
+                protect: false
+                inTrash: false
+                inNews: true
+                inIndex: false
+                allowResponses: true
+                published: Date.now()
+              }
               tags: {
                 nouns: [ "News post" ]
                 adjectives: []
@@ -97,7 +104,7 @@ define(["./base"], (l) ->
     {
       restrict: 'E'
       controller: Impressory.Controllers.AddContent.Share
-      scope: { course: '=course', viewMode: '@' }
+      scope: { course: '=course', viewMode: '@', responseTo: '@', message: '@' }
       templateUrl: "directive_ce_add_content.html" 
     }
   )  

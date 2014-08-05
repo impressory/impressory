@@ -21,6 +21,12 @@ case class YouTubeVideo (
 ) extends ContentItem {
   
   val itemType = YouTubeVideo.itemType
+
+  override def defaultTitle = title
+
+  override def defaultImageUrl = imageUrl
+
+  override def defaultNote = summary
   
 }
 

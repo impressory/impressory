@@ -3,7 +3,7 @@ define(["./base"], (l) ->
 
   Impressory.Controllers.ViewContent.EntryWithResponses = ["$scope", "ContentService", "$location", ($scope, ContentService, $location) ->
 
-
+    $scope.viewEntryPath = () -> ContentService.viewEntryPath($scope.entry)
 
   ]
 
@@ -24,8 +24,8 @@ define(["./base"], (l) ->
           </div>
 
           <div class="body">
-            <h3 class="media-heading" ng-show="entry.title"><a ng-href="{{viewPath(entry)}}" ng-bind-html="entry.title"></a></h3>
-            <p>{{ entry.note }}</p>
+            <h3 class="media-heading" ng-show="entry.message.title"><a ng-href="{{viewPath(entry)}}" ng-bind-html="entry.message.title"></a></h3>
+            <p>{{ entry.message.note }}</p>
 
 
             <ce-render-entry-stream entry="entry"></ce-render-entry-stream>

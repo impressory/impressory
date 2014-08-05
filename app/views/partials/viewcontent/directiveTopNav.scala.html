@@ -42,7 +42,7 @@
       <div id="ceInfo" class="ceInfo">
   
         <entry-vote entry="entry"></entry-vote> 
-        <span class="title">{{ entry.message.title || '(Untitled)' }}</span>
+        <span class="title">{{ entry.message.title || entry.message.defaultTitle || '(Untitled)' }}</span>
         <span class="spacer"></span> 
         <span>
           <button class="command require-chat" ng-class="{ 'active': panels.top == 'comments' }" 

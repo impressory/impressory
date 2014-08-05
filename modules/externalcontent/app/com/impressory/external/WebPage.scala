@@ -24,6 +24,12 @@ case class WebPage (
   val itemType = WebPage.itemType
   
   override def embeddable = !noFrame
+
+  override def defaultTitle = title
+
+  override def defaultImageUrl = imageUrl
+
+  override def defaultNote = summary
 }
 
 object WebPage {

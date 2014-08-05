@@ -93,5 +93,11 @@ trait ContentItem {
    *  Whether or not the content can be embedded on third party sites.
    */
   def embeddable:Boolean = true
+
+  def defaultTitle:Option[String] = None
+
+  def defaultNote:Option[String] = None
+
+  def defaultImageUrl:Option[String] = None
   
 }

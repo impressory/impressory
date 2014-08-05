@@ -9,9 +9,12 @@ import Ref._
 
 case class GoogleSlides (
   var embedCode:Option[String] = None,
-  var presId:Option[String] = None  
+  var presId:Option[String] = None,
+  var title:Option[String] = None
 ) extends ContentItem {
-  
+
+  override def defaultTitle = title
+
   val itemType = GoogleSlides.itemType
 }
 
@@ -26,7 +29,7 @@ object GoogleSlides {
   object ViewHandler extends ContentItemViewHandler {
     def main = { case GoogleSlides.itemType => views.html.com.impressory.external.googleSlides.main().body } 
   
-    def stream = PartialFunction.empty
+    def stream = { case GoogleSlides.itemType => views.html.com.impressory.external.googleSlides.stream().body }
   
     def edit = { case GoogleSlides.itemType => views.html.com.impressory.external.googleSlides.edit().body }  
   }
@@ -52,9 +55,19 @@ object GoogleSlides {
      */
     def urlChecker(blank: ContentEntry, url: String) = {
       val presId = extractGoogleSlidesId(url)
-      for (pid <- presId) yield {
+      for {
+        pid <- presId.toRef
+
+        // If we just fetch and extract data from the web page version, we don't have to be signed up to Google APIs
+        meta <- MetaExtractor.fetchAndExtract(s"https://docs.google.com/presentation/d/${pid}/embed")
+      } yield {
+
         blank.copy(
-          item = Some(GoogleSlides(embedCode = Some(url), presId = Some(pid))))
+          item = Some(GoogleSlides(
+            embedCode = Some(url), presId = Some(pid),
+            title = meta.title.map(_.replaceAll(" - Google Slides$", ""))
+          ))
+        )
       }
     }
 
@@ -72,7 +85,8 @@ object GoogleSlides {
         tags = before.tags.copy(site = Some("google.com")),
         item = Some(GoogleSlides(
           embedCode = ec,
-          presId = presId
+          presId = presId,
+          title = (json \ "item" \ "title").asOpt[String]
         ))
       ).itself
     }

@@ -19,6 +19,23 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
   implicit val tagsFormat = Json.format[CETags]
 
   implicit val responsesFormat = Json.format[CEResponses]
+
+
+  /**
+   * Extends the Message to include "displayTitle", "displayNote", "displayImageUrl"
+   * which take their defaults from the content item.
+   *
+   * This is not set in the
+   */
+  def embellishedMessage(ce:ContentEntry) = {
+    val rawMessage = messageFormat.writes(ce.message)
+    val embellishedMessage = rawMessage ++ Json.obj(
+      "defaultTitle" -> ce.message.title.orElse(ce.item.flatMap(_.defaultTitle)),
+      "defaultNote" -> ce.message.title.orElse(ce.item.flatMap(_.defaultNote)),
+      "defaultImageUrl" -> ce.message.title.orElse(ce.item.flatMap(_.defaultImageUrl))
+    )
+    embellishedMessage
+  }
   
     /**
      * Basic core JSON other methods add to
@@ -36,8 +53,8 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
         "course" -> ce.course,
         "addedBy" -> ce.addedBy,
         "settings" -> ce.settings,
-        "message" -> ce.message,
         "kind" -> Json.toJson(ce.kind),
+        "message" -> embellishedMessage(ce),
         "item" -> item,
         "voting" -> voting,
         "comments" -> comments,
@@ -85,7 +102,7 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
         "course" -> ce.course,
         "addedBy" -> ce.addedBy,
         "settings" -> ce.settings,
-        "message" -> ce.message,
+        "message" -> embellishedMessage(ce),
         "kind" -> Json.toJson(ce.kind),
         "item" -> item,
         "voting" -> voting,
@@ -108,7 +125,7 @@ object ContentEntryToJson extends JsonConverter[ContentEntry, User] {
         itemj <- ContentItemToJson.toJsonFor(ce, item, Approval(RefNone))
       ) yield {
         Json.obj(
-          "message" -> ce.message,
+          "message" -> embellishedMessage(ce),
           "kind" -> Json.toJson(ce.kind),
           "tags" -> ce.tags,
           "item" -> itemj

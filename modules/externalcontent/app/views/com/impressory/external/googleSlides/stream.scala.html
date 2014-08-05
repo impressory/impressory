@@ -1,0 +1,26 @@
+@()
+
+<div>
+  <div ng-hide="expanded" class="media">
+      <h3>
+          <img class="" src="https://lh6.googleusercontent.com/JpBsLB8CDUDjuDi0mMEYvteg36LJKD00v9KaPsq_lCyNl_nbonYjtILsEHBEieN32oLFKG0m=s128-h128-e365" alt="Google slides">
+          <span class="" ng-bind-html="entry.item.title || 'Google Slides'"></span>
+      </h3>
+      <p ng-bind-html="entry.item.summary"></p>
+    </div>
+  </div>
+  
+  <div ng-if="expanded">
+    <div ng-controller="Impressory.Controllers.Components.SceTrustSrc" ng-init="embedUrl = 'https://docs.google.com/presentation/d/' + entry.item.presId + '/embed'">
+      <iframe ng-src="{{ trustAsResourceUrl(embedUrl) }}" style="border: none; width:100%; height: 600px;">
+      </iframe>
+    </div>
+  </div>
+  
+  <div class="activity-stream-buttons">
+    <btn-open-in-viewer entry="entry"></btn-open-in-viewer>
+    <button class="btn btn-small btn-default" ng-show="!expanded" ng-click="expanded=true">Expand</button>
+    <button class="btn btn-small btn-default" ng-show="expanded" ng-click="expanded=false">Contract</button>
+  </div>
+  
+</div>

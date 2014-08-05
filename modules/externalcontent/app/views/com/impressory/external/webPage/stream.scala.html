@@ -6,7 +6,7 @@
       <img class="media-object" ng-src="{{entry.item.imageUrl}}" ng-show="entry.item.imageUrl" alt="..." style="max-width: 100%;">
     </a>
     <div class="media-body">
-      <h3 class="media-heading" ng-show="{{ entry.item.title && (entry.item.title != entry.title) }}" ng-bind-html="entry.item.title"></h3>
+      <h3 class="media-heading" ng-show="{{ entry.item.title && (entry.item.title != entry.message.title) }}" ng-bind-html="entry.item.title"></h3>
       <p ng-bind-html="entry.item.summary"></p>
       <p class="site">{{ entry.tags.site }}</p>
   

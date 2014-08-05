@@ -5,7 +5,7 @@
   <div ng-repeat="event in EventRoom.events | orderBy:'created':true">
     <div ng-switch="event.type">
       <div ng-switch-when="chat">
-        <div class="event comment" ng-class="{ 'question' : isQuestion(event.text) }" >
+        <div class="event comment" ng-class="{ 'question' : isQuestion(event.text), 'answer' : isAnswer(event.text) }" >
           <div class="who">
             <user-tag user-id="{{ event.addedBy }}"></user-tag>
           </div>
